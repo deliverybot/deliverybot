@@ -1,0 +1,54 @@
+review:
+  exec:
+    image: "cloud-run"
+    params: {}
+  cluster: staging
+  environment: pr{{ pull_request.number }}
+  transient_environment: true
+  production_environment: false
+  description: A test environment based on Docker
+  auto_merge: false
+  required_contexts:
+    - continuous-integration/travis-ci/push
+  payload: {}
+canary:
+  exec:
+    image: "cloud-run"
+    params: {}
+  cluster: production
+  environment: production
+  transient_environment: false
+  production_environment: true
+  description: A test environment based on Docker
+  auto_merge: true
+  required_contexts:
+    - continuous-integration/travis-ci/push
+  payload:
+    canary: 20%
+production:
+  exec:
+    image: "cloud-run"
+    params: {}
+  auto_deploy_on: refs/tags/simple-tag
+  cluster: production
+  environment: production
+  transient_environment: false
+  production_environment: true
+  description: A test environment based on Docker
+  auto_merge: true
+  required_contexts:
+    - continuous-integration/travis-ci/push
+  payload: {}
+performance:
+  exec:
+    image: "cloud-run"
+    params: {}
+  cluster: staging
+  environment: performance
+  transient_environment: false
+  production_environment: false
+  description: A test environment based on Docker
+  auto_merge: false
+  required_contexts:
+    - continuous-integration/travis-ci/push
+  payload: {}
