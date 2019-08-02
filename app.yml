@@ -129,7 +129,7 @@ default_permissions:
 name: deliverybot
 
 # The homepage of your GitHub App.
-url: https://github.com/colinjfw/deliverybot
+url: https://deliverybot.github.io
 
 # A description of the GitHub App.
 description: Controls and configures deployments using the GitHub API.

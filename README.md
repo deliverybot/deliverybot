@@ -25,4 +25,4 @@ For more, check out the [Contributing Guide](CONTRIBUTING.md).
 
 ## License
 
-[ISC](LICENSE) © 2019 Colin Walker <me@colinjfw.com> (https://github.com/colinjfw/deploybot)
+[ISC](LICENSE) © 2019 Colin Walker <me@colinjfw.com> (https://github.com/deliverybot/deliverybot)
