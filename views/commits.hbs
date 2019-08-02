@@ -1,0 +1,98 @@
+{{> repo_header}}
+
+<nav class="UnderlineNav">
+  <div class="content">
+    <div class="UnderlineNav-body">
+      <a href="/deploy/{{owner}}/{{repo}}" role="tab" title="Deploy" class="UnderlineNav-item selected">Deploy</a>
+      <a href="/secrets/{{owner}}/{{repo}}" role="tab" title="Secrets" class="UnderlineNav-item">Secrets</a>
+    </div>
+  </div>
+</nav>
+
+<div class="height-full bg-white">
+  <div class="content">
+
+    <details class="details-reset details-overlay pt-3" style="display: inline-block;">
+      <summary class="btn btn-sm" type="button" aria-haspopup="true" aria-expanded="true">
+        Target: <b>{{target}}</b>
+      </summary>
+      <div class="SelectMenu">
+        <div class="SelectMenu-modal">
+          <menu class="SelectMenu-list">
+            {{#each targets}}
+            <a href="/deploy/{{name}}/{{../owner}}/{{../repo}}" class="SelectMenu-item" role="menuitem">
+              {{name}}
+            </a>
+            {{/each}}
+          </menu>
+        </div>
+      </div>
+    </details>
+
+    <details class="details-reset details-overlay pt-3" style="display: inline-block;">
+      <summary class="btn btn-sm" type="button" aria-haspopup="true" aria-expanded="true">
+        Branch: <b>{{branch}}</b>
+      </summary>
+      <div class="SelectMenu">
+        <div class="SelectMenu-modal">
+          <menu class="SelectMenu-list">
+            {{#each branches}}
+            <a href="/deploy/{{../target}}/{{../owner}}/{{../repo}}/{{name}}" class="SelectMenu-item" role="menuitem">
+              {{name}}
+            </a>
+            {{/each}}
+          </menu>
+        </div>
+      </div>
+    </details>
+
+    <div class="Box mt-3" id="commits">
+      {{#each commits}}
+      <div class="Box-row d-flex flex-items-center Box-row--hover-blue">
+        <div class="flex-auto">
+          <a class="text-gray-dark" target="_blank" href="https://github.com/{{owner}}/{{repo}}/commit/{{oid}}">
+            {{message}}
+          </a>
+          <div class="text-gray-light">
+            <strong><code>{{oid}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
+          </div>
+        </div>
+        <div style="margin-right: 16px;">
+          <a href="{{logUrl}}" class="tooltipped tooltipped-n text-{{color}}" aria-label="Deployment: {{state}}">
+            {{#if deployed}}{{> icon_check}}{{/if}}
+            {{#if pending}}{{> icon_dot}}{{/if}}
+            {{#if failure}}{{> icon_x}}{{/if}}
+          </a>
+        </div>
+
+        {{#if ../target}}
+        <button type="button" data-oid="{{oid}}" aria-label="Deploy this commit to {{../target}}."
+          class="deploy btn btn-outline tooltipped tooltipped-n" name="button">
+          {{> icon_play}}
+        </button>
+        {{/if}}
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var deploys = document.getElementsByClassName("deploy")
+    for (var i = 0; i < deploys.length; i++) {
+      deploys[i].onclick = function (e) {
+        var sha = this.dataset.oid;
+        e.preventDefault();
+        fetch("/deploy/{{target}}/{{owner}}/{{repo}}/" + sha, { method: "POST" })
+          .then(function () {
+            window.location.reload()
+          }).catch(function (err) {
+            console.error(err)
+          })
+      }
+    }
+  })()
+</script>
+
+{{> footer}}
