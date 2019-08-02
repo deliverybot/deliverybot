@@ -1,0 +1,36 @@
+{{> repo_header}}
+
+<nav class="UnderlineNav">
+  <div class="content">
+    <div class="UnderlineNav-body">
+      <a href="/deploy/{{owner}}/{{repo}}" role="tab" title="Deploy" class="UnderlineNav-item">Deploy</a>
+      <a href="/secrets/{{owner}}/{{repo}}" role="tab" title="Secrets" class="UnderlineNav-item">Secrets</a>
+    </div>
+  </div>
+</nav>
+
+
+<div class="height-full bg-white">
+  <div class="content pt-5">
+    <div class="Box">
+      <div class="Box-body bg-gray-light">
+        <pre><code id="logs">{{logs}}</code></pre>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+  function poller() {
+    fetch("/logs/{{owner}}/{{repo}}/{{id}}/json")
+      .then(function (resp) { return resp.json() })
+      .then(function (data) {
+        document.getElementById("logs").innerText = data.logs;
+      })
+      .catch(function (err) { console.error(err) })
+  }
+
+  setInterval(poller, 5000);
+</script>
+{{> footer}}
