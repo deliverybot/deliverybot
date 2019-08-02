@@ -1,0 +1,23 @@
+{{> header}}
+<div class="content">
+  <div class="box-shadow rounded-2 border p-6 bg-white">
+    <div class="text-center">
+      <h3>Welcome to {{pkg.name}}</h3>
+      <p>
+        Below are all the installed repositories that you can manage.
+      </p>
+      <hr>
+    </div>
+
+    <div id="list" class="Box mt-5" style="border: none; margin: 0;">
+      {{#each repos}}
+      <div class="Box-row d-flex flex-items-center">
+        <div class="flex-auto">
+          <a href="/{{owner}}/{{repo}}"><strong>{{owner}} / {{repo}}</strong></a>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</div>
+{{> footer}}
