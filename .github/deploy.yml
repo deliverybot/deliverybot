@@ -1,0 +1,37 @@
+production:
+  auto_deploy_on: refs/heads/master
+  environment: production
+  production_environment: true
+  url: 'https://deliverybot-lhanl2ut4q-uc.a.run.app/'
+
+  exec:
+    image: cloud-run
+    params:
+      service: deliverybot
+      platform: managed
+      region: us-central1
+      image:
+        repository: gcr.io/coldog-181700/deliverybot
+        tag: '{{short_sha}}'
+
+
+  required_contexts:
+  - "Build (390495068715)"
+
+review:
+  environment: pr{{ pr }}
+  transient_environment: true
+  production_environment: false
+
+  exec:
+    image: cloud-run
+    params:
+      service: deliverybot-pr{{pr}}
+      platform: managed
+      region: us-central1
+      image:
+        repository: gcr.io/coldog-181700/deliverybot
+        tag: '{{short_sha}}'
+
+  required_contexts:
+  - "Build (390495068715)"

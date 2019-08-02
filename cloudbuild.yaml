@@ -1,0 +1,36 @@
+steps:
+  - name: "gcr.io/cloud-builders/gsutil"
+    id: "deliverybot-0"
+    args: ["cp", "gs://$PROJECT_ID-cache/deliverybot/node_modules.tgz", "node_modules.tgz"]
+    waitFor: ["-"]
+  - name: "gcr.io/$PROJECT_ID/tar"
+    id: "deliverybot-1"
+    args: ["xpzf", "node_modules.tgz"]
+    waitFor: ["deliverybot-0"]
+  - name: "gcr.io/cloud-builders/npm"
+    id: "deliverybot-2"
+    args: ["install"]
+    waitFor: ["deliverybot-1"]
+  - name: "gcr.io/cloud-builders/npm"
+    id: "deliverybot-3"
+    args: ["test"]
+    waitFor: ["deliverybot-2"]
+  - name: "gcr.io/cloud-builders/npm"
+    id: "deliverybot-4"
+    args: ["run", "package"]
+    waitFor: ["deliverybot-3"]
+  - name: "gcr.io/cloud-builders/docker"
+    id: "deliverybot-5"
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/deliverybot:$SHORT_SHA", "."]
+    waitFor: ["deliverybot-4"]
+  - name: "gcr.io/$PROJECT_ID/tar"
+    id: "deliverybot-6"
+    args: ["cpzf", "node_modules.tgz", "node_modules"]
+    waitFor: ["deliverybot-5"]
+  - name: "gcr.io/cloud-builders/gsutil"
+    id: "deliverybot-7"
+    args: ["cp", "node_modules.tgz", "gs://$PROJECT_ID-cache/deliverybot/node_modules.tgz"]
+    waitFor: ["deliverybot-6"]
+
+images:
+  - "gcr.io/$PROJECT_ID/deliverybot:$SHORT_SHA"
