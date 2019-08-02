@@ -1,0 +1,68 @@
+{
+  "name": "deliverybot",
+  "version": "1.0.0",
+  "description": "Controls and configures deployments using the GitHub API.",
+  "author": "Colin Walker <me@colinjfw.com> (https://github.com/colinjfw/deliverybot)",
+  "license": "ISC",
+  "repository": "https://github.com/colinjfw/deliverybot.git",
+  "homepage": "https://github.com/colinjfw/deliverybot",
+  "bugs": "https://github.com/colinjfw/deliverybot/issues",
+  "keywords": [
+    "probot",
+    "github",
+    "probot-app"
+  ],
+  "scripts": {
+    "package": "tsc -p tsconfig.json && mkdir -p dist/node_modules && rm -r dist/* && cp -r static views entrypoint.sh app.yml dist/ && cp -r lib dist/lib && cp package* dist/ && cp ./LICENSE dist/ && npm install --prefix dist --production",
+    "build": "tsc -p tsconfig.json",
+    "dev": "nodemon --watch src --exec \"npm start\"",
+    "start": "tsc -p tsconfig.json && probot run ./lib/index.js",
+    "format": "prettier --write ./src/**/*.ts ./test/**",
+    "test": "jest",
+    "test:watch": "jest --watch --notify --notifyMode=change --coverage"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^3.0.3",
+    "@octokit/graphql": "^3.0.1",
+    "@types/js-yaml": "^3.12.1",
+    "body-parser": "1.19.0",
+    "client-sessions": "^0.8.0",
+    "express": "4.16.4",
+    "express-async-errors": "^3.1.1",
+    "google-auth-library": "^4.2.5",
+    "handlebars": "4.1.2",
+    "js-yaml": "^3.13.1",
+    "node-uuid": "^1.4.8",
+    "probot": "9.2.19",
+    "request": "2.88.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.17.0",
+    "@types/client-sessions": "^0.8.0",
+    "@types/express": "^4.17.0",
+    "@types/jest": "^24.0.0",
+    "@types/nock": "^9.3.0",
+    "@types/node": "^11.9.0",
+    "@types/node-uuid": "0.0.28",
+    "@types/request": "^2.48.2",
+    "eslint-plugin-typescript": "^0.14.0",
+    "jest": "^24.0.0",
+    "jest-raw-loader": "^1.0.1",
+    "nock": "^10.0.0",
+    "nodemon": "^1.17.2",
+    "prettier": "^1.17.0",
+    "smee-client": "^1.0.2",
+    "ts-jest": "^24.0.0",
+    "typescript": "^3.3.1",
+    "typescript-eslint-parser": "^22.0.0"
+  },
+  "engines": {
+    "node": ">= 8.3.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {
+      "\\.yaml$": "jest-raw-loader"
+    }
+  }
+}
