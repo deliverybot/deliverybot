@@ -1,36 +1,51 @@
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "default.fullname" . -}}
+{{- if .Values.service.enabled -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ template "fullname" . }}
   labels:
-{{ include "default.labels" . | indent 4 }}
-  {{- with .Values.ingress.annotations }}
+    app: {{ template "appname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version| replace "+" "_" }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.ingress.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+{{ toYaml .Values.ingress.annotations | indent 4 }}
+{{- end }}
 spec:
-{{- if .Values.ingress.tls }}
+{{- if .Values.ingress.tls.enabled }}
   tls:
-  {{- range .Values.ingress.tls }}
-    - hosts:
-      {{- range .hosts }}
-        - {{ . | quote }}
-      {{- end }}
-      secretName: {{ .secretName }}
-  {{- end }}
+  - hosts:
+{{- if .Values.service.commonName }}
+    - {{ template "hostname" .Values.service.commonName }}
+{{- end }}
+    - {{ template "hostname" .Values.service.url }}
+{{- if .Values.service.additionalHosts }}
+{{- range $host := .Values.service.additionalHosts }}
+    - {{ $host }}
+{{- end -}}
+{{- end }}
+    secretName: {{ .Values.ingress.tls.secretName | default (printf "%s-tls" (include "fullname" .)) }}
 {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-        {{- range .paths }}
-          - path: {{ . }}
-            backend:
-              serviceName: {{ $fullName }}
-              servicePort: http
-        {{- end }}
-  {{- end }}
-{{- end }}
+  - host: {{ template "hostname" .Values.service.url }}
+    http:
+      &httpRule
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ template "fullname" . }}
+          servicePort: {{ .Values.service.externalPort }}
+{{- if .Values.service.commonName }}
+  - host: {{ template "hostname" .Values.service.commonName }}
+    http:
+      <<: *httpRule
+{{- end -}}
+{{- if .Values.service.additionalHosts }}
+{{- range $host := .Values.service.additionalHosts }}
+  - host: {{ $host }}
+    http:
+      <<: *httpRule
+{{- end -}}
+{{- end -}}
+{{- end -}}

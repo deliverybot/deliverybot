@@ -35,3 +35,15 @@ review:
 
   required_contexts:
   - "Build (538437845459)"
+
+review-k8s:
+  environment: pr-k8s{{ pr }}
+  transient_environment: true
+  production_environment: false
+
+  exec:
+    image: helm
+    params:
+      namespace: pr{{pr}}
+      chart:
+

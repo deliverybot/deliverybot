@@ -1,0 +1,39 @@
+{{- if .Values.application.migrateCommand -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "trackableappname" . }}-db-migrate
+  labels:
+    app: {{ template "appname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version| replace "+" "_" }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "0"
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ template "appname" . }}
+        release: {{ .Release.Name }}
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+{{ toYaml .Values.image.secrets | indent 10 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        command: ["/bin/sh"]
+        args: ["-c", "{{ .Values.application.migrateCommand }}"]
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.application.secretName }}
+        envFrom:
+        - secretRef:
+            name: {{ .Values.application.secretName }}
+        {{- end }}
+        env:
+        - name: DATABASE_URL
+          value: {{ .Values.application.database_url | quote }}
+{{- end -}}
