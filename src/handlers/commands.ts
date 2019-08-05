@@ -2,13 +2,14 @@ import { Application, Context, Octokit } from "probot";
 import { render } from "../util";
 import yaml from "js-yaml";
 
-async function deployConfig(context: Context, command: string) {
-  const config = await context.config("deploy.yml");
+async function deployConfig(context: Context, command: string, ref: string) {
+  const conf = await config(context.github, context.repo({ ref }));
   const name = command.split(" ")[1];
-  return config[name];
+  return conf[name];
 }
 
 async function logError(context: Context, message: string) {
+  context.log.error({ error: message }, "Error while handling deploy");
   await context.github.issues.createComment({
     owner: context.payload.repository.owner.login,
     repo: context.payload.repository.name,
@@ -55,7 +56,13 @@ function getDeployBody(deployment: any, data: any): any {
 async function handleDeploy(context: Context, command: string) {
   context.log.info({ command }, "Deploy: handling command");
 
-  const deployment = await deployConfig(context, command);
+  const pr = await context.github.pulls.get({
+    owner: context.payload.repository.owner.login,
+    repo: context.payload.repository.name,
+    pull_number: context.payload.issue.number
+  });
+
+  const deployment = await deployConfig(context, command, pr.data.head.ref);
   if (!deployment) {
     await logError(
       context,
@@ -69,11 +76,6 @@ async function handleDeploy(context: Context, command: string) {
     deployment
   });
 
-  const pr = await context.github.pulls.get({
-    owner: context.payload.repository.owner.login,
-    repo: context.payload.repository.name,
-    pull_number: context.payload.issue.number
-  });
   const params = {
     ref: pr.data.head.ref,
     sha: pr.data.head.sha,
@@ -112,34 +114,45 @@ async function checkAutoDeploys(context: Context, owner: string, repo: string) {
 
 export async function config(
   github: Octokit,
-  owner: string,
-  repo: string,
-  target?: string
+  {
+    owner,
+    repo,
+    ref
+  }: {
+    owner: string;
+    repo: string;
+    ref: string;
+  }
 ): Promise<any> {
   const content = await github.repos.getContents({
     owner,
     repo,
+    ref,
     path: `.github/deploy.yml`
   });
   const conf =
     yaml.safeLoad(Buffer.from(content.data.content, "base64").toString()) || {};
-  if (!target) {
-    return { targets: Object.keys(conf).map(k => k) };
-  }
-  if (!conf[target]) {
-    throw new Error(`Invalid target: ${target}`);
-  }
-  return { ...conf[target], targets: Object.keys(conf).map(k => k) };
+  return conf;
 }
 
 export async function deployCommit(
   github: Octokit,
-  owner: string,
-  repo: string,
-  target: string,
-  commit: string
+  {
+    owner,
+    repo,
+    target,
+    commit
+  }: {
+    owner: string;
+    repo: string;
+    target: string;
+    commit: string;
+  }
 ) {
-  const deployment = await config(github, owner, repo, target);
+  const deployment = await config(github, { owner, repo, ref: commit });
+  if (!deployment[target]) {
+    throw new Error(`Deployment target "${target}" does not exist`);
+  }
   const params = {
     ref: commit,
     sha: commit,
