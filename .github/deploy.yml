@@ -36,14 +36,16 @@ review:
   required_contexts:
   - "Build (538437845459)"
 
-review-k8s:
-  environment: pr-k8s{{ pr }}
-  transient_environment: true
+staging-k8s:
+  environment: staging-k8s
+  transient_environment: false
   production_environment: false
 
   exec:
     image: helm
     params:
-      namespace: pr{{pr}}
-      chart:
-
+      namespace: staging-k8s
+      release: deliverybot-staging
+      image:
+        repository: gcr.io/coldog-181700/deliverybot
+        tag: '{{short_sha}}'
