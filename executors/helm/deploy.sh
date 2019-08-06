@@ -5,23 +5,23 @@ export KUBECONFIG="$PWD/kubeconfig"
 
 echo $PARAMS > params.json
 
-namespace="$(jq '.namespace' < params.json)"
-release="$(jq '.release' < params.json)"
-chart="$(jq '.chart' < params.json)"
+namespace="$(jq -Mr '.namespace' < params.json)"
+release="$(jq -Mr '.release' < params.json)"
+chart="$(jq -Mr '.chart' < params.json)"
 
-if [ "$namespace" = "" ]; then
+if [ "$namespace" = "null" ]; then
   echo "'namespace' must be set in exec.params"
   exit 1
 fi
-if [ "$release" = "" ]; then
+if [ "$release" = "null" ]; then
   echo "'release' must be set in exec.params"
   exit 1
 fi
-if [ "$chart" = "" ]; then
-  chart="/charts/default"
+if [ "$chart" = "null" ]; then
+  chart="/default"
 fi
 
-helm init
+helm init --client-only
 helm upgrade "$release" "$chart"  \
   --install --wait \
   --namespace "$namespace" \

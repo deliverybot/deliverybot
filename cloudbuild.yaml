@@ -28,6 +28,16 @@ steps:
     - "--key=node_modules"
     - "--path=node_modules"
 
+  - name: gcr.io/cloud-builders/docker
+    dir: executors
+    args: ["build", "--cache-from", "gcr.io/$PROJECT_ID/helm:latest",
+           "-f", "helm/Dockerfile", "-t", "gcr.io/$PROJECT_ID/helm:latest", "."]
+  - name: gcr.io/cloud-builders/docker
+    dir: executors
+    args: ["build", "--cache-from", "gcr.io/$PROJECT_ID/cloud-run:latest",
+           "-f", "cloud-run/Dockerfile", "-t", "gcr.io/$PROJECT_ID/cloud-run:latest", "."]
 
 images:
   - "gcr.io/$PROJECT_ID/deliverybot:$SHORT_SHA"
+  - "gcr.io/$PROJECT_ID/cloud-run:latest"
+  - "gcr.io/$PROJECT_ID/helm:latest"
