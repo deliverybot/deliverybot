@@ -6,30 +6,45 @@ import * as pkg from "../package";
 
 export async function create(req: AuthedRequest, res: Response) {
   const { owner, repo, target, sha } = req.params;
-  await deployCommit(req.user!.github, { owner, repo, target, commit: sha });
-  res.json({ message: "ok", sha });
+  try {
+    const deployed = await deployCommit(req.user!.github, {
+      owner,
+      repo,
+      target,
+      commit: sha
+    });
+    res.json({ message: "ok", sha, ...deployed.data });
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
+async function tryConfig(req: AuthedRequest) {
+  const { owner, repo, branch } = req.params;
+  try {
+    return await config(req.user!.github, {
+      owner,
+      repo,
+      ref: branch ? `refs/heads/${branch}` : `refs/heads/master`
+    });
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 }
 
 export async function get(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch } = req.params;
-  const conf = await (async () => {
-    try {
-      return await config(req.user!.github, {
-        owner,
-        repo,
-        ref: `refs/heads/${branch}`
-      });
-    } catch (err) {
-      return null;
-    }
-  })();
+  const conf = await tryConfig(req);
   const deployment = conf && conf[target];
 
   const query = await commitQuery(
     req.user!.token,
     owner,
     repo,
-    deployment && deployment && deployment.environment ? [deployment.environment] : [],
+    deployment && deployment && deployment.environment
+      ? [deployment.environment]
+      : [],
     branch || "master"
   );
   res.render("commits", {
@@ -52,9 +67,10 @@ export async function get(req: AuthedRequest, res: Response) {
   });
 }
 
-export function redirect(req: AuthedRequest, res: Response) {
+export async function redirect(req: AuthedRequest, res: Response) {
   const { owner, repo } = req.params;
-  const target = "production";
+  const conf = await tryConfig(req);
+  const target = Object.keys(conf)[0] || "none";
   const branch = "master";
   res.redirect(`/deploy/${target}/${owner}/${repo}/${branch}`);
 }
@@ -128,7 +144,9 @@ async function commitQuery(
     headers: { authorization: `token ${token}` }
   });
   if (data.data.errors && data.data.errors.length > 0) {
-    throw new Error(`Graphql request failure: ${JSON.stringify(data.data.errors)}`)
+    throw new Error(
+      `Graphql request failure: ${JSON.stringify(data.data.errors)}`
+    );
   }
   const branches = data.data.data.repository.refs.nodes.map((n: any) => n.name);
   const commits = data.data.data.repository.ref.target.history.edges.map(

@@ -12,7 +12,7 @@ import {
 export type State = "error" | "failure" | "pending" | "success";
 
 export interface Build {
-  ownerId: string;
+  id: string;
   secrets: Secrets;
   image: string;
   args: string[];
@@ -22,18 +22,23 @@ export interface Build {
 export interface BuildResult {
   id: string;
 }
+export interface BuildLogs {
+  id: string;
+  state: string;
+  logs: string;
+}
 
 export interface Client {
   exec: (build: Build) => Promise<BuildResult>;
-  logs: (owner: string, id: string) => Promise<string>;
+  logs: (id: string) => Promise<BuildLogs>;
 }
 
 export class MockBuildClient {
   async exec(build: Build): Promise<BuildResult> {
     return { id: undefined } as any;
   }
-  async logs(owner: string, id: string): Promise<string> {
-    return `start ${id}...\nDONE\n`;
+  async logs(id: string): Promise<BuildLogs> {
+    return { id, state: "SUCCESS", logs: `start ${id}...\nDONE\n` };
   }
 }
 
@@ -84,12 +89,17 @@ export class GoogleCloudClient {
     return signed;
   }
 
-  async ownerFile(id: string, owner: string): Promise<void> {
+  /**
+   * Store a reference from the GitHub deployment ID to the CloudBuild logs id.
+   * @param id GitHub deployment id.
+   * @param logsId CloudBuild id to find the logs later.
+   */
+  async refFile(id: string, logsId: string): Promise<void> {
     const { storage, logsBucket } = await this.getClient();
     await storage
       .bucket(logsBucket)
       .file(`owner-${id}.txt`)
-      .save(owner, { contentType: "text/plain" });
+      .save(logsId, { contentType: "text/plain" });
   }
 
   async exec(build: Build): Promise<BuildResult> {
@@ -120,28 +130,32 @@ export class GoogleCloudClient {
       })
     });
     const { id } = (resp.data as any).metadata.build;
-    await this.ownerFile(id, build.ownerId);
+    await this.refFile(build.id, id);
     return { id };
   }
 
-  async logs(owner: string, id: string): Promise<string> {
-    const { storage, client, logsBucket } = await this.getClient();
+  async logs(githubId: string): Promise<BuildLogs> {
+    const { storage, client, projectId, logsBucket } = await this.getClient();
     const [buf] = await storage
       .bucket(logsBucket)
-      .file(`owner-${id}.txt`)
+      .file(`owner-${githubId}.txt`)
       .download();
-    if (owner !== buf.toString("utf-8")) {
-      throw new Error("Unauthorized access");
-    }
-
+    const id = buf.toString("utf-8");
     const logsObject = `log-${id}.txt`;
-    const url = `https://www.googleapis.com/storage/v1/b/${logsBucket}/o/${logsObject}?alt=media`;
-    const resp = await client.request({
-      url,
+    const logResp = await client.request({
+      url: `https://www.googleapis.com/storage/v1/b/${logsBucket}/o/${logsObject}?alt=media`,
       method: "GET",
       responseType: "json"
     });
-    return resp.data as string;
+    const logs = logResp.data as string;
+
+    const buildResp = await client.request({
+      url: `https://cloudbuild.googleapis.com/v1/projects/${projectId}/builds/${id}`,
+      method: "GET",
+      responseType: "json"
+    })
+    const state = (buildResp.data as any).status;
+    return { logs, id, state }
   }
 }
 

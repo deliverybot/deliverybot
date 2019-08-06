@@ -8,10 +8,11 @@
     </div>
   </div>
 </nav>
+</header>
 
-<div class="height-full bg-white">
+<div class="bg-white fill">
   <div class="content">
-
+    <div id="error-container"></div>
     <details class="details-reset details-overlay pt-3" style="display: inline-block;">
       <summary class="btn btn-sm" type="button" aria-haspopup="true" aria-expanded="true">
         Target: <b>{{target}}</b>
@@ -85,14 +86,32 @@
         var sha = this.dataset.oid;
         e.preventDefault();
         fetch("/deploy/{{target}}/{{owner}}/{{repo}}/" + sha, { method: "POST" })
-          .then(function () {
-            window.location.reload()
+          .then(function (resp) { return resp.json() })
+          .then(function (data) {
+            if (data.error) {
+              error(data.error);
+              return;
+            }
+            window.location.href = "/logs/{{owner}}/{{repo}}/" + data.id;
           }).catch(function (err) {
-            console.error(err)
-          })
+            error("Failed to create deployment.");
+          });
       }
     }
   })()
+
+
+  function error(message) {
+    var container = document.getElementById("error-container");
+    var div = document.createElement("div");
+    div.className = "flash flash-error";
+    div.innerText = message;
+    container.appendChild(div);
+
+    setTimeout(function() {
+      div.remove();
+    }, 5000);
+  }
 </script>
 
 {{> footer}}

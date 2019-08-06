@@ -165,7 +165,7 @@ export async function deployCommit(
     ref: commit,
     ...getDeployBody(deployment, params)
   };
-  await github.repos.createDeployment(body);
+  return await github.repos.createDeployment(body);
 }
 
 async function handleAutoDeploy(

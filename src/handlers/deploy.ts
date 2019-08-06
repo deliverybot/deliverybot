@@ -67,7 +67,7 @@ class Handler {
     url?: string,
     description?: string
   ) {
-    this.context.log.info({ state, url, description }, "Deploy: set status")
+    this.context.log.info({ state, url, description }, "Deploy: set status");
     await this.context.github.repos.createDeploymentStatus(
       withPreview({
         ...this.repo,
@@ -98,8 +98,7 @@ class Handler {
       this.context.log.info({ result }, "Deploy: started");
       await this.setStatus(result.state, result.logs, result.description);
     } catch (err) {
-      console.error(err);
-      this.context.log.error({ error: err.message }, "Deploy: error");
+      this.context.log.error({ error: err }, "Deploy: error");
       await this.setStatus("failure");
     }
   }
@@ -107,10 +106,7 @@ class Handler {
   async handlePRClose(): Promise<void> {
     const ref = this.context.payload.pull_request.head.ref;
     const deployments = await this.context.github.repos.listDeployments(
-      withPreview({
-        ...this.repo,
-        ref
-      })
+      withPreview({ ...this.repo, ref })
     );
     for (const deployment of deployments.data) {
       // Only terminate transient environments.

@@ -4,19 +4,38 @@ import { client } from "../clients/exec";
 import * as pkg from "../package";
 
 async function handle(req: AuthedRequest, res: Response) {
-  const { owner, repo, id: repoId } = req.user!.repo!;
-  const { id } = req.params;
-  const logs = await client.logs(repoId, id);
-
-  res.render("logs", { owner, repo, id, pkg, logs });
+  const github = req.user!.github;
+  const { owner, repo, id } = req.params;
+  const deployment = await github.repos.getDeployment({
+    owner,
+    repo,
+    deployment_id: id
+  });
+  res.render("logs", {
+    owner,
+    repo,
+    id,
+    pkg,
+    deployment: deployment.data
+  });
 }
 
 async function json(req: AuthedRequest, res: Response) {
-  const { id: repoId } = req.user!.repo!;
-  const { id } = req.params;
-  const logs = await client.logs(repoId, id);
+  const github = req.user!.github;
+  const { owner, repo, id } = req.params;
 
-  res.json({ logs });
+  // Deployment check, will error if this deployment doesn't belong to the repo.
+  await github.repos.getDeployment({
+    owner,
+    repo,
+    deployment_id: id
+  });
+  try {
+    const logs = await client.logs(id);
+    res.json(logs);
+  } catch (err) {
+    res.json({ state: "PENDING" });
+  }
 }
 
 export function logs(app: Application) {

@@ -47,10 +47,11 @@ export const success = (url: string): DeployState => ({
 export async function run(deploy: Deploy): Promise<DeployState> {
   const secrets = await secretClient.get(deploy.repoId);
   secrets.push({ name: "GITHUB_TOKEN", value: deploy.token });
+  const logs = `${BASE_URL}/logs/${deploy.owner}/${deploy.repo}/${deploy.deploymentId}`;
   const env: string[] = [
     `PARAMS=${JSON.stringify(deploy.exec.params)}`,
     `DEPLOYMENT=${deploy.deploymentId}`,
-    `LOGS_URL=${BASE_URL}/logs/${deploy.owner}/${deploy.repo}/$BUILD_ID`,
+    `LOGS_URL=${logs}`,
     `OWNER=${deploy.owner}`,
     `REPO=${deploy.repo}`,
     `ENVIRONMENT=${deploy.environment}`,
@@ -59,14 +60,13 @@ export async function run(deploy: Deploy): Promise<DeployState> {
     `ACTION=${deploy.action}`
   ];
   const build = {
-    ownerId: deploy.repoId,
+    id: deploy.deploymentId,
     secrets,
     env,
     image: deploy.exec.image,
     args: deploy.exec.args
   };
   const { id } = await client.exec(build);
-  const logs = `${BASE_URL}/logs/${deploy.owner}/${deploy.repo}/${id}`;
   return {
     id,
     state: "pending",

@@ -44,6 +44,7 @@ export = (robot: Application) => {
 
   const hbs = require('hbs');
   hbs.registerPartials(path.join(__dirname, "..", "views", "partials"));
+  hbs.registerHelper("json", (arg: object) => JSON.stringify(arg, null, 2));
 
   app.use(bodyParser.json());
 
@@ -52,6 +53,7 @@ export = (robot: Application) => {
   handlers.forEach(register => register(robot));
 
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error(err);
     res.status(500).sendFile(error5xx)
   })
   app.use((req: Request, res: Response) => {
