@@ -29,10 +29,21 @@ steps:
     - "--path=node_modules"
 
   - name: gcr.io/cloud-builders/docker
+    id: pull-helm
+    args: ["pull", "gcr.io/$PROJECT_ID/helm:latest"]
+  - name: gcr.io/cloud-builders/docker
+    id: build-helm
+    waitFor: ["pull-helm"]
     dir: executors
     args: ["build", "--cache-from", "gcr.io/$PROJECT_ID/helm:latest",
            "-f", "helm/Dockerfile", "-t", "gcr.io/$PROJECT_ID/helm:latest", "."]
+
   - name: gcr.io/cloud-builders/docker
+    id: pull-cloud-run
+    args: ["pull", "gcr.io/$PROJECT_ID/cloud-run:latest"]
+  - name: gcr.io/cloud-builders/docker
+    id: build-cloud-run
+    waitFor: ["pull-cloud-run"]
     dir: executors
     args: ["build", "--cache-from", "gcr.io/$PROJECT_ID/cloud-run:latest",
            "-f", "cloud-run/Dockerfile", "-t", "gcr.io/$PROJECT_ID/cloud-run:latest", "."]
