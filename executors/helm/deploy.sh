@@ -18,7 +18,7 @@ if [ "$release" = "null" ]; then
   exit 1
 fi
 if [ "$chart" = "null" ]; then
-  chart="/charts/default"
+  chart="/default"
 fi
 
 helm init --client-only
