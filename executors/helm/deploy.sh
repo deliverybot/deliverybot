@@ -21,7 +21,7 @@ if [ "$chart" = "" ]; then
   chart="/charts/default"
 fi
 
-helm init
+helm init --client-only
 helm upgrade "$release" "$chart"  \
   --install --wait \
   --namespace "$namespace" \
