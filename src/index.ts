@@ -34,6 +34,10 @@ export = (robot: Application) => {
     "/probot/static/",
     express.static(path.join(__dirname, "..", "static"))
   );
+
+  const error5xx = path.join(__dirname, "..", "static", "5xx.html");
+  const error404 = path.join(__dirname, "..", "static", "404.html");
+
   app.set("trust proxy", true);
   app.set("view engine", "hbs");
   app.set("views", path.join(__dirname, "..", "views"));
@@ -46,6 +50,13 @@ export = (robot: Application) => {
   // Register applications.
   apps.forEach(register => register(app));
   handlers.forEach(register => register(robot));
+
+  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    res.status(500).sendFile(error5xx)
+  })
+  app.use((req: Request, res: Response) => {
+    res.status(404).sendFile(error404)
+  })
 
   robot.router.use(app);
 };
