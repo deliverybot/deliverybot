@@ -18,7 +18,7 @@ if [ "$release" = "null" ]; then
   exit 1
 fi
 if [ "$chart" = "null" ]; then
-  chart="/default"
+  chart="/deliverybot-default-0.1.0.tgz"
 fi
 
 helm init --client-only
