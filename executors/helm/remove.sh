@@ -5,8 +5,8 @@ export KUBECONFIG="$PWD/kubeconfig"
 
 echo $PARAMS > params.json
 
-release="$(jq '.release' < params.json)"
-if [ "$release" = "" ]; then
+release="$(jq -Mr '.release' < params.json)"
+if [ "$release" = "null" ]; then
   echo "'release' must be set in exec.params"
   exit 1
 fi
