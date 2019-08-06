@@ -18,7 +18,7 @@ describe("Deployment Provider", () => {
     test("can create a build", async done => {
       const client = new BuildClient();
       const resp = await client.exec({
-        ownerId: "test",
+        id: "test",
         args: ["echo", "hello"],
         env: [],
         secrets: [{ name: "TEST", value: "FOO" }],
@@ -28,7 +28,7 @@ describe("Deployment Provider", () => {
 
       await sleep(5000);
 
-      const logs = await client.logs("test", resp.id);
+      const logs = await client.logs("test");
       console.log(logs);
       done();
     });
