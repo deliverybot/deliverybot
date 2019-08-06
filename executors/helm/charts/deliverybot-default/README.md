@@ -1,5 +1,7 @@
 # Default Helm Chart
 
+Originally adapted from: https://gitlab.com/gitlab-org/charts/auto-deploy-app.
+
 ## Requirements
 
 - Helm `2.9.0` and above is required in order support `"helm.sh/hook-delete-policy": before-hook-creation` for migrations
