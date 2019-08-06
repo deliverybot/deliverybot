@@ -11,7 +11,7 @@ production:
       platform: managed
       region: us-central1
       image:
-        repository: gcr.io/coldog-181700/deliverybot
+        repository: gcr.io/deliverybot/deliverybot
         tag: '{{short_sha}}'
 
 
@@ -30,7 +30,7 @@ review:
       platform: managed
       region: us-central1
       image:
-        repository: gcr.io/coldog-181700/deliverybot
+        repository: gcr.io/deliverybot/deliverybot
         tag: '{{short_sha}}'
 
   required_contexts:
