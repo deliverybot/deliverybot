@@ -6,33 +6,47 @@ import * as pkg from "../package";
 
 export async function create(req: AuthedRequest, res: Response) {
   const { owner, repo, target, sha } = req.params;
-  await deployCommit(req.user!.github, owner, repo, target, sha);
+  await deployCommit(req.user!.github, { owner, repo, target, commit: sha });
   res.json({ message: "ok", sha });
 }
 
 export async function get(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch } = req.params;
-  const deployment = await config(req.user!.github, owner, repo, target);
+  const conf = await (async () => {
+    try {
+      return await config(req.user!.github, {
+        owner,
+        repo,
+        ref: `refs/heads/${branch}`
+      });
+    } catch (err) {
+      return null;
+    }
+  })();
+  const deployment = conf && conf[target];
+
   const query = await commitQuery(
     req.user!.token,
     owner,
     repo,
-    deployment.environment || "production",
-    branch || "master",
+    deployment && deployment && deployment.environment ? [deployment.environment] : [],
+    branch || "master"
   );
   res.render("commits", {
     target,
-    targets: deployment.targets.map((name: string) => ({
-      name,
-      active: name === target
-    })),
+    targets:
+      conf &&
+      Object.keys(conf).map((name: string) => ({
+        name,
+        active: name === target
+      })),
     owner,
     repo,
     pkg,
     branch,
     branches: query.branches.map(name => ({
       name,
-      active: branch === name,
+      active: branch === name
     })),
     commits: query.commits.map(c => commitView(c))
   });
@@ -55,7 +69,12 @@ interface Commit {
 export function deploy(app: Application) {
   app.get("/:owner/:repo", authenticate, verifyRepo, redirect);
   app.get("/deploy/:owner/:repo", authenticate, verifyRepo, redirect);
-  app.get("/deploy/:target/:owner/:repo/:branch", authenticate, verifyRepo, get);
+  app.get(
+    "/deploy/:target/:owner/:repo/:branch",
+    authenticate,
+    verifyRepo,
+    get
+  );
   app.post(
     "/deploy/:target/:owner/:repo/:sha",
     authenticate,
@@ -68,10 +87,10 @@ async function commitQuery(
   token: string,
   owner: string,
   repo: string,
-  environment: string,
-  branch: string,
-): Promise<{ commits: Commit[], branches: string[] }> {
-  const query = `query commits($owner: String!, $repo: String!, $environment: String!, $branch: String!) {
+  environments: string[],
+  branch: string
+): Promise<{ commits: Commit[]; branches: string[] }> {
+  const query = `query commits($owner: String!, $repo: String!, $environments: [String!]!, $branch: String!) {
     repository(owner:$owner,name:$repo) {
       refs(refPrefix:"refs/heads/",first:50) { nodes { name } }
       ref(qualifiedName:$branch) {
@@ -84,7 +103,7 @@ async function commitQuery(
                   oid
                   message
                   author { user { login } }
-                  deployments(last: 1, environments: [$environment]) {
+                  deployments(last: 1, environments: $environments) {
                     nodes {
                       id
                       environment
@@ -103,12 +122,15 @@ async function commitQuery(
     }
   }`;
   const data = await ghRequest({
-    data: { query, variables: { owner, repo, environment, branch } },
+    data: { query, variables: { owner, repo, environments, branch } },
     method: "POST",
     url: "/graphql",
     headers: { authorization: `token ${token}` }
   });
-  const branches = data.data.data.repository.refs.nodes.map((n: any) => n.name)
+  if (data.data.errors && data.data.errors.length > 0) {
+    throw new Error(`Graphql request failure: ${JSON.stringify(data.data.errors)}`)
+  }
+  const branches = data.data.data.repository.refs.nodes.map((n: any) => n.name);
   const commits = data.data.data.repository.ref.target.history.edges.map(
     (node: any) => {
       const state = (() => {

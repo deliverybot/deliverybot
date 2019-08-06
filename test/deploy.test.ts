@@ -34,6 +34,7 @@ describe("Deployment Provider", () => {
       .reply(200, { token: "test" });
     nock("https://api.github.com")
       .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+      .query(true)
       .reply(200, {
         content: Buffer.from(fixtures.deploy).toString("base64")
       });
@@ -69,6 +70,7 @@ describe("Deployment Provider", () => {
       .reply(200, { token: "test" });
     nock("https://api.github.com")
       .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+      .query(true)
       .reply(200, {
         content: Buffer.from(fixtures.deploy).toString("base64")
       });
@@ -110,6 +112,7 @@ describe("Deployment Provider", () => {
       .reply(200, { token: "test" });
     nock("https://api.github.com")
       .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+      .query(true)
       .reply(200, {
         content: Buffer.from(fixtures.deploy).toString("base64")
       });

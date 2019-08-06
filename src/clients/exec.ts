@@ -2,7 +2,12 @@ import { auth, Compute, JWT, UserRefreshClient } from "google-auth-library";
 import { Storage } from "@google-cloud/storage";
 import { Secrets } from "./secrets";
 import { v4 as uuid } from "node-uuid";
-import { EXECUTORS, EXECUTOR_WHITELIST, EXEC_CLIENT, ExecClients } from "../config";
+import {
+  EXECUTORS,
+  EXECUTOR_WHITELIST,
+  EXEC_CLIENT,
+  ExecClients
+} from "../config";
 
 export type State = "error" | "failure" | "pending" | "success";
 
@@ -92,7 +97,7 @@ export class GoogleCloudClient {
     const secretFile = await this.secretFile(build.secrets);
     const image = EXECUTOR_WHITELIST ? EXECUTORS[build.image] : build.image;
     if (!image) {
-      throw new Error(`Invalid image: ${build.image}`)
+      throw new Error(`Invalid image: ${build.image}`);
     }
     const resp = await client.request({
       url: `https://cloudbuild.googleapis.com/v1/projects/${projectId}/builds`,

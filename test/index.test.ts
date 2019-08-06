@@ -50,6 +50,7 @@ describe("Deployments", () => {
       .reply(200, fixtures.pullRequest);
     nock("https://api.github.com")
       .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+      .query(true)
       .reply(200, {
         content: Buffer.from(fixtures.deployValid).toString("base64")
       });
@@ -72,6 +73,7 @@ describe("Deployments", () => {
       .reply(200, { token: "test" });
     nock("https://api.github.com")
       .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+      .query(true)
       .reply(200, {
         content: Buffer.from(fixtures.deployValid).toString("base64")
       });
@@ -109,6 +111,7 @@ describe("Deployments", () => {
       .reply(200, { token: "test" });
     nock("https://api.github.com")
       .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+      .query(true)
       .reply(200, {
         content: Buffer.from(fixtures.deployValid).toString("base64")
       });
@@ -149,6 +152,7 @@ describe("Deployments", () => {
       .reply(200, { token: "test" });
     nock("https://api.github.com")
       .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+      .query(true)
       .reply(200, {
         content: Buffer.from(fixtures.deployInvalid).toString("base64")
       });
@@ -182,6 +186,7 @@ describe("Deployments", () => {
       .reply(200, { token: "test" });
     nock("https://api.github.com")
       .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+      .query(true)
       .reply(200, {
         content: Buffer.from(fixtures.deployValid).toString("base64")
       });
@@ -209,6 +214,7 @@ describe("Deployments", () => {
       .reply(200, { token: "test" });
     nock("https://api.github.com")
       .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+      .query(true)
       .reply(200, {
         content: Buffer.from(fixtures.deployValid).toString("base64")
       });
@@ -236,6 +242,7 @@ describe("Deployments", () => {
       .reply(200, { token: "test" });
     nock("https://api.github.com")
       .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+      .query(true)
       .reply(200, {
         content: Buffer.from(fixtures.deployValid).toString("base64")
       });
@@ -268,6 +275,7 @@ describe("Deployments", () => {
       .reply(200, { token: "test" });
     nock("https://api.github.com")
       .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+      .query(true)
       .reply(200, {
         content: Buffer.from(fixtures.deployValid).toString("base64")
       });
