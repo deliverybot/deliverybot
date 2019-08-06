@@ -6,13 +6,13 @@ import * as pkg from "../package";
 
 export async function create(req: AuthedRequest, res: Response) {
   const { owner, repo, target, sha } = req.params;
-  await deployCommit(req.user!.github, owner, repo, target, sha);
+  await deployCommit(req.user!.github, { owner, repo, target, commit: sha });
   res.json({ message: "ok", sha });
 }
 
 export async function get(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch } = req.params;
-  const deployment = await config(req.user!.github, owner, repo, target);
+  const deployment = await config(req.user!.github, { owner, repo });
   const query = await commitQuery(
     req.user!.token,
     owner,
