@@ -47,5 +47,10 @@ export = (robot: Application) => {
   apps.forEach(register => register(app));
   handlers.forEach(register => register(robot));
 
+  app.use(function (err: Error, req: Request, res: Response, next: NextFunction) {
+    console.error(err)
+    res.status(500).send('Something broke!')
+  })
+
   robot.router.use(app);
 };

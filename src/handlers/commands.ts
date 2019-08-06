@@ -121,7 +121,7 @@ export async function config(
   }: {
     owner: string;
     repo: string;
-    ref?: string;
+    ref: string;
   }
 ): Promise<any> {
   const content = await github.repos.getContents({
