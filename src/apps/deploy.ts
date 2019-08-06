@@ -12,7 +12,7 @@ export async function create(req: AuthedRequest, res: Response) {
 
 export async function get(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch } = req.params;
-  const deployment = await (async () => {
+  const conf = await (async () => {
     try {
       return await config(req.user!.github, {
         owner,
@@ -23,19 +23,20 @@ export async function get(req: AuthedRequest, res: Response) {
       return null;
     }
   })();
+  const deployment = conf && conf[target];
 
   const query = await commitQuery(
     req.user!.token,
     owner,
     repo,
-    deployment ? [deployment.environment] : [],
+    deployment && deployment && deployment.environment ? [deployment.environment] : [],
     branch || "master"
   );
   res.render("commits", {
     target,
     targets:
-      deployment &&
-      deployment.targets.map((name: string) => ({
+      conf &&
+      Object.keys(conf).map((name: string) => ({
         name,
         active: name === target
       })),
@@ -126,6 +127,9 @@ async function commitQuery(
     url: "/graphql",
     headers: { authorization: `token ${token}` }
   });
+  if (data.data.errors && data.data.errors.length > 0) {
+    throw new Error(`Graphql request failure: ${JSON.stringify(data.data.errors)}`)
+  }
   const branches = data.data.data.repository.refs.nodes.map((n: any) => n.name);
   const commits = data.data.data.repository.ref.target.history.edges.map(
     (node: any) => {

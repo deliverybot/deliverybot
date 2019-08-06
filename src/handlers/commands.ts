@@ -149,10 +149,11 @@ export async function deployCommit(
     commit: string;
   }
 ) {
-  const deployment = await config(github, { owner, repo, ref: commit });
-  if (!deployment[target]) {
+  const conf = await config(github, { owner, repo, ref: commit });
+  if (!conf[target]) {
     throw new Error(`Deployment target "${target}" does not exist`);
   }
+  const deployment = conf[target];
   const params = {
     ref: commit,
     sha: commit,
