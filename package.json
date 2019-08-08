@@ -14,7 +14,8 @@
     "probot-app"
   ],
   "scripts": {
-    "package": "tsc -p tsconfig.json && mkdir -p dist/node_modules && rm -r dist/* && cp -r static views entrypoint.sh app.yml dist/ && cp -r lib dist/lib && cp package* dist/ && cp ./LICENSE dist/ && npm install --prefix dist --production",
+    "package": "npm run build && npm run dist && npm install --prefix dist --production",
+    "dist": "mkdir -p dist/node_modules && rm -r dist/* && cp -r static views lib package* LICENSE entrypoint.sh app.yml function.js dist/",
     "build": "tsc -p tsconfig.json",
     "dev": "nodemon --watch src --exec \"npm start\"",
     "start": "tsc -p tsconfig.json && probot run ./lib/index.js",
