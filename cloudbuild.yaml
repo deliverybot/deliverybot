@@ -27,5 +27,9 @@ steps:
     - "--bucket=gs://$PROJECT_ID-cache/"
     - "--key=node_modules"
     - "--path=node_modules"
+  - name: gcr.io/cloud-builders/gsutil
+    id: "upload"
+    waitFor: ["package"]
+    args: ["cp", "dist.zip", "gs://$PROJECT_ID-cache/deliverybot-$SHORT_SHA.zip"]
 images:
   - "gcr.io/$PROJECT_ID/deliverybot:$SHORT_SHA"

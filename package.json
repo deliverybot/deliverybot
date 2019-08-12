@@ -14,16 +14,17 @@
     "probot-app"
   ],
   "scripts": {
-    "package": "npm run build && npm run dist && npm install --prefix dist --production",
+    "package": "npm run build && npm run dist && npm install --prefix dist --production && cd dist && zip -qr ../dist.zip .",
     "dist": "mkdir -p dist/node_modules && rm -r dist/* && cp -r static views lib package* LICENSE entrypoint.sh app.yml function.js dist/",
     "build": "tsc -p tsconfig.json",
     "dev": "nodemon --watch src --exec \"npm start\"",
     "start": "tsc -p tsconfig.json && probot run ./lib/index.js",
-    "format": "prettier --write ./src/**/*.ts ./test/**",
+    "format": "prettier --write ./**/*.ts",
     "test": "jest",
     "test:watch": "jest --watch --notify --notifyMode=change --coverage"
   },
   "dependencies": {
+    "@google-cloud/logging-bunyan": "^1.2.1",
     "@google-cloud/storage": "^3.0.3",
     "@octokit/graphql": "^3.0.1",
     "@types/js-yaml": "^3.12.1",

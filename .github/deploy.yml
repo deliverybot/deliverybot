@@ -5,15 +5,13 @@ production:
   url: 'https://deliverybot-lhanl2ut4q-uc.a.run.app/'
 
   exec:
-    image: cloud-run
+    image: cloud-functions
     params:
-      service: deliverybot
-      platform: managed
+      name: deliverybot
       region: us-central1
-      image:
-        repository: gcr.io/deliverybot/deliverybot
-        tag: '{{short_sha}}'
-
+      runtime: nodejs8
+      entrypoint: deliverybot
+      source: gs://deliverybot-cache/deliverybot-{{short_sha}}.zip
 
   required_contexts:
   - "Build (538437845459)"
