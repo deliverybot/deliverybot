@@ -12,14 +12,17 @@ import 'express-async-errors';
 
 export = (robot: Application) => {
   const app = express();
+
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.secure) (req.connection as any).proxySecure = true;
+    res.setHeader("cache-control", "private");
     next();
   });
 
   app.use(
     session({
-      cookieName: "session",
+      requestKey: "session",
+      cookieName: "__session",
       secret: APP_SECRET,
       duration: 24 * 60 * 60 * 1000,
       cookie: {
@@ -55,10 +58,10 @@ export = (robot: Application) => {
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
     res.status(500).sendFile(error5xx)
-  })
+  });
   app.use((req: Request, res: Response) => {
     res.status(404).sendFile(error404)
-  })
+  });
 
   robot.router.use(app);
 };

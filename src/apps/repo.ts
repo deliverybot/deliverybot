@@ -1,4 +1,4 @@
-import { AuthedRequest, authenticate } from "./auth";
+import { AuthedRequest, setUser } from "./auth";
 import { Response, Application } from "express";
 import * as pkg from "../package";
 
@@ -26,5 +26,5 @@ export async function index(req: AuthedRequest, res: Response) {
 }
 
 export function repo(app: Application) {
-  app.get("/", authenticate, index);
+  app.get("/", setUser, index);
 }

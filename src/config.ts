@@ -44,5 +44,5 @@ export const EXEC_CLIENT = process.env.EXEC_CLIENT
 export const EXECUTOR_WHITELIST = process.env.EXECUTOR_WHITELIST === "true";
 export const EXECUTORS: { [k: string]: string | undefined } = {
   "cloud-run": "gcr.io/deliverybot/cloud-run:latest",
-  "helm": "gcr.io/deliverybot/helm:latest",
-}
+  helm: "gcr.io/deliverybot/helm:latest"
+};

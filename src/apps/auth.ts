@@ -20,8 +20,7 @@ export function setUser(req: AuthedRequest, res: Response, next: NextFunction) {
     return;
   }
   const username = req.session!.login;
-  const octokit = new Octokit();
-  octokit.authenticate({ type: "token", token });
+  const octokit = new Octokit({ auth: token });
   req.user = {
     github: octokit,
     token,

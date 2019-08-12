@@ -15,7 +15,7 @@ export async function create(req: AuthedRequest, res: Response) {
     });
     res.json({ message: "ok", sha, ...deployed.data });
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    res.status(500).json({ error: err.message });
   }
 }
 

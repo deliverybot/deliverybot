@@ -153,9 +153,9 @@ export class GoogleCloudClient {
       url: `https://cloudbuild.googleapis.com/v1/projects/${projectId}/builds/${id}`,
       method: "GET",
       responseType: "json"
-    })
+    });
     const state = (buildResp.data as any).status;
-    return { logs, id, state }
+    return { logs, id, state };
   }
 }
 
