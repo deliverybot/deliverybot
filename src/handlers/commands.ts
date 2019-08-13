@@ -2,6 +2,13 @@ import { Application, Context, Octokit } from "probot";
 import { render } from "../util";
 import yaml from "js-yaml";
 
+const preview = "application/vnd.github.ant-man-preview+json";
+
+function withPreview<T>(arg: T): T {
+  (arg as any).headers = { accept: preview };
+  return arg as T;
+}
+
 async function deployConfig(context: Context, command: string, ref: string) {
   const conf = await config(context.github, context.repo({ ref }));
   const name = command.split(" ")[1];
@@ -214,6 +221,32 @@ async function handleAutoDeploy(
   }
 }
 
+async function handlePRClose(
+  context: Context,
+) {
+  const ref = context.payload.pull_request.head.ref;
+  const deployments = await context.github.repos.listDeployments(
+    withPreview({ ...context.repo(), ref })
+  );
+  for (const deployment of deployments.data) {
+    // Only terminate transient environments.
+    if (!deployment.transient_environment) {
+      continue;
+    }
+    if (!deployment.payload || !(deployment.payload as any).exec) {
+      continue;
+    }
+    context.log.info({ deployment }, "Deploy: removing");
+    await context.github.repos.createDeploymentStatus(
+      withPreview({
+        ...context.repo(),
+        deployment_id: deployment.id,
+        state: "inactive"
+      })
+    );
+  }
+}
+
 export function commands(app: Application) {
   app.on("push", async context => {
     await checkAutoDeploys(
@@ -240,5 +273,8 @@ export function commands(app: Application) {
     if (context.payload.comment.body.startsWith("/deploy")) {
       await handleDeploy(context, context.payload.comment.body);
     }
+  });
+  app.on("pull_request.closed", async context => {
+    await handlePRClose(context);
   });
 }
