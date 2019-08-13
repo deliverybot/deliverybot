@@ -1,9 +1,6 @@
 review:
-  exec:
-    image: "cloud-run"
-    params: {}
   cluster: staging
-  environment: pr{{ pull_request.number }}
+  environment: pr{{ pr }}
   transient_environment: true
   production_environment: false
   description: A test environment based on Docker
@@ -12,9 +9,6 @@ review:
     - continuous-integration/travis-ci/push
   payload: {}
 canary:
-  exec:
-    image: "cloud-run"
-    params: {}
   cluster: production
   environment: production
   transient_environment: false
@@ -26,9 +20,6 @@ canary:
   payload:
     canary: 20%
 production:
-  exec:
-    image: "cloud-run"
-    params: {}
   auto_deploy_on: refs/tags/simple-tag
   cluster: production
   environment: production
@@ -40,9 +31,6 @@ production:
     - continuous-integration/travis-ci/push
   payload: {}
 performance:
-  exec:
-    image: "cloud-run"
-    params: {}
   cluster: staging
   environment: performance
   transient_environment: false

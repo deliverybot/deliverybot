@@ -1,4 +1,4 @@
-import { Application, Context, Octokit } from "probot";
+import { Application, Context, Octokit, Logger } from "probot";
 import { render } from "../util";
 import yaml from "js-yaml";
 
@@ -7,116 +7,6 @@ const preview = "application/vnd.github.ant-man-preview+json";
 function withPreview<T>(arg: T): T {
   (arg as any).headers = { accept: preview };
   return arg as T;
-}
-
-async function deployConfig(context: Context, command: string, ref: string) {
-  const conf = await config(context.github, context.repo({ ref }));
-  const name = command.split(" ")[1];
-  return conf[name];
-}
-
-async function logError(context: Context, message: string) {
-  context.log.error({ error: message }, "Error while handling deploy");
-  await context.github.issues.createComment({
-    owner: context.payload.repository.owner.login,
-    repo: context.payload.repository.name,
-    issue_number: context.payload.issue.number,
-    body: message
-  });
-}
-
-function validate(body: any) {
-  if (!body.environment) throw new Error("'environment' is required.");
-  if (body.payload.exec) {
-    const { exec } = body.payload;
-    if (typeof exec.image !== "string")
-      throw new Error("'exec.image' must be a string.");
-    if (typeof exec.params !== "object")
-      throw new Error("'exec.params' must be an object.");
-    if (exec.args && !Array.isArray(exec.args)) {
-      throw new Error("'exec.args' must be an array");
-    }
-    if (exec.env && !Array.isArray(exec.env)) {
-      throw new Error("'exec.env' must be an array");
-    }
-  }
-}
-
-function getDeployBody(deployment: any, data: any): any {
-  return {
-    transient_environment: deployment.transient_environment || false,
-    production_environment: deployment.production_environment || false,
-    environment: render(deployment.environment || "production", data),
-    auto_merge: deployment.auto_merge || false,
-    required_contexts: deployment.required_contexts,
-    description: deployment.description,
-    payload: {
-      url: render(deployment.url, data),
-      exec: render(deployment.exec, data)
-    },
-    headers: {
-      accept: "application/vnd.github.ant-man-preview+json"
-    }
-  };
-}
-
-async function handleDeploy(context: Context, command: string) {
-  context.log.info({ command }, "Deploy: handling command");
-
-  const pr = await context.github.pulls.get({
-    owner: context.payload.repository.owner.login,
-    repo: context.payload.repository.name,
-    pull_number: context.payload.issue.number
-  });
-
-  const deployment = await deployConfig(context, command, pr.data.head.ref);
-  if (!deployment) {
-    await logError(
-      context,
-      `:rotating_light: Deployment "${command}" found no target. :rotating_light:`
-    );
-    return;
-  }
-
-  context.log.info({
-    message: "found deployment configuration",
-    deployment
-  });
-
-  const params = {
-    ref: pr.data.head.ref,
-    sha: pr.data.head.sha,
-    short_sha: pr.data.head.sha.substr(0, 7),
-    number: pr.data.number,
-    pr: pr.data.number
-  };
-  const body = {
-    owner: pr.data.head.repo.owner.login,
-    repo: pr.data.head.repo.name,
-    ref: pr.data.head.ref,
-    ...getDeployBody(deployment, params)
-  };
-
-  try {
-    validate(body);
-    context.log.info({ body, params }, "Deploy: creating");
-    await context.github.repos.createDeployment(body);
-  } catch (error) {
-    context.log.error({ error }, "Deploy: creation failed");
-    await logError(
-      context,
-      `:rotating_light: Failed to trigger deployment. :rotating_light:\n${error.message}`
-    );
-    return;
-  }
-}
-
-async function checkAutoDeploys(context: Context, owner: string, repo: string) {
-  const config = await context.config("deploy.yml");
-  for (const key in config) {
-    const deployment = config[key];
-    await handleAutoDeploy(context, owner, repo, deployment);
-  }
 }
 
 export async function config(
@@ -142,82 +32,141 @@ export async function config(
   return conf;
 }
 
+function getDeployBody(target: string, deployment: any, data: any): any {
+  return withPreview({
+    transient_environment: deployment.transient_environment || false,
+    production_environment: deployment.production_environment || false,
+    environment: render(deployment.environment || "production", data),
+    auto_merge: deployment.auto_merge || false,
+    required_contexts: deployment.required_contexts || [],
+    description: deployment.description,
+    payload: render({
+      ...deployment.payload,
+      target,
+    }, data),
+  });
+}
+
+async function handlePRDeploy(context: Context, command: string) {
+  context.log.info({ command }, "Deploy: handling command");
+  const target = command.split(" ")[1];
+  const pr = await context.github.pulls.get({
+    owner: context.payload.repository.owner.login,
+    repo: context.payload.repository.name,
+    pull_number: context.payload.issue.number
+  });
+
+  try {
+    // TODO: Ensure that the creator has deploy access to the repository.
+    await deployCommit(context.github, context.log, context.repo({
+      target,
+      commit: pr.data.head.sha,
+      pr: pr.data.number,
+    }));
+  } catch (error) {
+    await context.github.issues.createComment({
+      owner: context.payload.repository.owner.login,
+      repo: context.payload.repository.name,
+      issue_number: context.payload.issue.number,
+      body: `:rotating_light: Failed to trigger deployment. :rotating_light:\n${error.message}`
+    });
+  }
+}
+
+/**
+ * Deploy commit handles all the necessities of creating a conformant deployment
+ * including templating and more. All deploys should go through this function.
+ */
 export async function deployCommit(
   github: Octokit,
+  log: Logger,
   {
     owner,
     repo,
     target,
-    commit
+    commit,
+    pr,
   }: {
     owner: string;
     repo: string;
     target: string;
     commit: string;
+    pr?: number;
   }
 ) {
   const conf = await config(github, { owner, repo, ref: commit });
   if (!conf[target]) {
+    log.error({ owner, repo, target, commit, pr }, "deploying failed - no target");
     throw new Error(`Deployment target "${target}" does not exist`);
   }
   const deployment = conf[target];
   const params = {
     ref: commit,
     sha: commit,
-    short_sha: commit.substr(0, 7)
+    short_sha: commit.substr(0, 7),
+    pr,
   };
   const body = {
     owner,
     repo,
     ref: commit,
-    ...getDeployBody(deployment, params)
+    ...getDeployBody(target, deployment, params)
   };
-  return await github.repos.createDeployment(body);
+  try {
+    log.info({ body }, "deploying");
+    // TODO: Handle auto_merge case correctly here.
+    // https://developer.github.com/v3/repos/deployments/#merged-branch-response
+    const deploy = await github.repos.createDeployment(body);
+    await github.repos.createDeploymentStatus({
+      owner, repo, deployment_id: deploy.data.id, state: "queued",
+    });
+    log.info({ body, id: deploy.data.id }, "deploy successful");
+    return deploy.data;
+  } catch (error) {
+    log.error({ error, body }, "deploying failed");
+    throw error
+  }
 }
 
-async function handleAutoDeploy(
+async function handleAutoDeploy(context: Context) {
+  context.log.info("auto deploy: checking deployments");
+  const config = await context.config("deploy.yml");
+  for (const key in config) {
+    const deployment = config[key];
+    await autoDeployTarget(context, key, deployment);
+  }
+}
+
+async function autoDeployTarget(
   context: Context,
-  owner: string,
-  repo: string,
+  target: string,
   deployment: any
 ) {
-  const ref = deployment.auto_deploy_on;
-  if (!ref) {
+  const autoDeploy = deployment.auto_deploy_on;
+  if (!autoDeploy) {
     return;
   }
-  context.log.info({ ref }, "Auto Deploy: verifying");
-  const refData = await context.github.git.getRef({
-    owner,
-    repo,
-    ref: ref.replace("refs/", "")
-  });
+  const ref = autoDeploy.replace("refs/", "")
+  context.log.info(context.repo({ ref }), "auto deploy: verifying");
+  const refData = await context.github.git.getRef(context.repo({ ref }));
   const sha = refData.data.object.sha;
-  const deploys = await context.github.repos.listDeployments({
-    owner,
-    repo,
-    sha
-  });
+
+  const deploys = await context.github.repos.listDeployments(context.repo({ sha }));
   if (deploys.data.find(d => d.environment === deployment.environment)) {
-    context.log.info({ ref }, "Auto Deploy: already deployed");
+    context.log.info(context.repo({ ref }), "auto deploy: already deployed");
     return;
   }
 
-  const params = {
-    ref,
-    sha,
-    short_sha: sha.substr(0, 7)
-  };
-  const body = {
-    owner,
-    repo,
-    ref,
-    ...getDeployBody(deployment, params)
-  };
-  context.log.info({ body, params }, "Auto Deploy: attempting create");
+  context.log.info(context.repo({ ref, target }), "auto deploy: deploying");
   try {
-    await context.github.repos.createDeployment(body);
-  } catch (apiError) {
-    context.log.error({ error: apiError.message }, "Auto Deploy: failed");
+    await deployCommit(context.github, context.log, context.repo({
+      commit: sha,
+      target,
+    }));
+    context.log.info(context.repo({ ref, target }), "auto deploy: done")
+  } catch (error) {
+    console.error(error);
+    context.log.error(context.repo({ error, ref, target }), "auto deploy: failed")
   }
 }
 
@@ -236,7 +185,7 @@ async function handlePRClose(
     if (!deployment.payload || !(deployment.payload as any).exec) {
       continue;
     }
-    context.log.info({ deployment }, "Deploy: removing");
+    context.log.info({ deployment }, "auto deploy: removing");
     await context.github.repos.createDeploymentStatus(
       withPreview({
         ...context.repo(),
@@ -249,29 +198,17 @@ async function handlePRClose(
 
 export function commands(app: Application) {
   app.on("push", async context => {
-    await checkAutoDeploys(
-      context,
-      context.payload.repository.owner.login,
-      context.payload.repository.name
-    );
+    await handleAutoDeploy(context);
   });
   app.on("status", async context => {
-    await checkAutoDeploys(
-      context,
-      context.payload.repository.owner.login,
-      context.payload.repository.name
-    );
+    await handleAutoDeploy(context);
   });
   app.on("check_run", async context => {
-    await checkAutoDeploys(
-      context,
-      context.payload.repository.owner.login,
-      context.payload.repository.name
-    );
+    await handleAutoDeploy(context);
   });
   app.on("issue_comment.created", async context => {
     if (context.payload.comment.body.startsWith("/deploy")) {
-      await handleDeploy(context, context.payload.comment.body);
+      await handlePRDeploy(context, context.payload.comment.body);
     }
   });
   app.on("pull_request.closed", async context => {

@@ -13,6 +13,7 @@ export = (robot: Application) => {
   const app = express();
 
   app.use((req: Request, res: Response, next: NextFunction) => {
+    (req as any).log = robot.log;
     if (req.secure) (req.connection as any).proxySecure = true;
     res.setHeader("cache-control", "private");
     next();

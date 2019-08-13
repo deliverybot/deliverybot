@@ -1,13 +1,13 @@
 import { AuthedRequest, authenticate, verifyRepo } from "./auth";
 import { Response, Application } from "express";
 import { request as ghRequest } from "@octokit/request";
-import { deployCommit, config } from "../handlers/commands";
+import { deployCommit, config } from "./commands";
 import * as pkg from "../package";
 
 export async function create(req: AuthedRequest, res: Response) {
   const { owner, repo, target, sha } = req.params;
   try {
-    const deployed = await deployCommit(req.user!.github, {
+    const deployed = await deployCommit(req.user!.github, (req as any).log, {
       owner,
       repo,
       target,
