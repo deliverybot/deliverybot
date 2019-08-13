@@ -5,8 +5,7 @@ import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import { APP_SECRET, PRODUCTION } from "./config";
 
-import { apps } from "./apps";
-import { handlers } from "./handlers";
+import { apps, handlers } from "./apps";
 
 import 'express-async-errors';
 
