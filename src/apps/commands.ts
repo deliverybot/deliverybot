@@ -41,10 +41,13 @@ function getDeployBody(target: string, deployment: any, data: any): any {
     auto_merge: deployment.auto_merge || false,
     required_contexts: deployment.required_contexts || [],
     description: deployment.description,
-    payload: render({
-      ...deployment.payload,
-      target,
-    }, data),
+    payload: render(
+      {
+        ...deployment.payload,
+        target
+      },
+      data
+    )
   });
 }
 
@@ -59,11 +62,16 @@ async function handlePRDeploy(context: Context, command: string) {
 
   try {
     // TODO: Ensure that the creator has deploy access to the repository.
-    await deployCommit(context.github, context.log, context.repo({
-      target,
-      commit: pr.data.head.sha,
-      pr: pr.data.number,
-    }));
+    await deployCommit(
+      context.github,
+      context.log,
+      context.repo({
+        target,
+        ref: pr.data.head.ref,
+        sha: pr.data.head.sha,
+        pr: pr.data.number
+      })
+    );
   } catch (error) {
     await context.github.issues.createComment({
       owner: context.payload.repository.owner.login,
@@ -77,6 +85,8 @@ async function handlePRDeploy(context: Context, command: string) {
 /**
  * Deploy commit handles all the necessities of creating a conformant deployment
  * including templating and more. All deploys should go through this function.
+ * We need to deploy always using the ref of a branch so that finding
+ * deployments later we can query using the branch ref.
  */
 export async function deployCommit(
   github: Octokit,
@@ -85,47 +95,50 @@ export async function deployCommit(
     owner,
     repo,
     target,
-    commit,
-    pr,
+    ref,
+    sha,
+    pr
   }: {
     owner: string;
     repo: string;
     target: string;
-    commit: string;
+    ref: string;
+    sha: string;
     pr?: number;
   }
 ) {
-  const conf = await config(github, { owner, repo, ref: commit });
+  const conf = await config(github, { owner, repo, ref });
   if (!conf[target]) {
-    log.error({ owner, repo, target, commit, pr }, "deploying failed - no target");
+    log.error({ owner, repo, target, ref, pr }, "deploying failed - no target");
     throw new Error(`Deployment target "${target}" does not exist`);
   }
   const deployment = conf[target];
-  const params = {
-    ref: commit,
-    sha: commit,
-    short_sha: commit.substr(0, 7),
-    pr,
-  };
+  const params = { ref, sha: sha, short_sha: sha.substr(0, 7), pr };
   const body = {
     owner,
     repo,
-    ref: commit,
+    ref,
     ...getDeployBody(target, deployment, params)
   };
+
   try {
     log.info({ body }, "deploying");
     // TODO: Handle auto_merge case correctly here.
     // https://developer.github.com/v3/repos/deployments/#merged-branch-response
     const deploy = await github.repos.createDeployment(body);
-    await github.repos.createDeploymentStatus(withPreview({
-      owner, repo, deployment_id: deploy.data.id, state: "queued",
-    }));
+    await github.repos.createDeploymentStatus(
+      withPreview({
+        owner,
+        repo,
+        deployment_id: deploy.data.id,
+        state: "queued"
+      })
+    );
     log.info({ body, id: deploy.data.id }, "deploy successful");
     return deploy.data;
   } catch (error) {
     log.error({ error, body }, "deploying failed");
-    throw error
+    throw error;
   }
 }
 
@@ -147,12 +160,14 @@ async function autoDeployTarget(
   if (!autoDeploy) {
     return;
   }
-  const ref = autoDeploy.replace("refs/", "")
+  const ref = autoDeploy.replace("refs/", "");
   context.log.info(context.repo({ ref }), "auto deploy: verifying");
   const refData = await context.github.git.getRef(context.repo({ ref }));
   const sha = refData.data.object.sha;
 
-  const deploys = await context.github.repos.listDeployments(context.repo({ sha }));
+  const deploys = await context.github.repos.listDeployments(
+    context.repo({ sha })
+  );
   if (deploys.data.find(d => d.environment === deployment.environment)) {
     context.log.info(context.repo({ ref }), "auto deploy: already deployed");
     return;
@@ -160,29 +175,40 @@ async function autoDeployTarget(
 
   context.log.info(context.repo({ ref, target }), "auto deploy: deploying");
   try {
-    await deployCommit(context.github, context.log, context.repo({
-      commit: sha,
-      target,
-    }));
-    context.log.info(context.repo({ ref, target }), "auto deploy: done")
+    await deployCommit(
+      context.github,
+      context.log,
+      context.repo({
+        ref,
+        sha,
+        target
+      })
+    );
+    context.log.info(context.repo({ ref, target }), "auto deploy: done");
   } catch (error) {
-    console.error(error);
-    context.log.error(context.repo({ error, ref, target }), "auto deploy: failed")
+    context.log.error(
+      context.repo({ error, ref, target }),
+      "auto deploy: failed"
+    );
   }
 }
 
-async function handlePRClose(
-  context: Context,
-) {
+async function handlePRClose(context: Context) {
   const ref = context.payload.pull_request.head.ref;
   const deployments = await context.github.repos.listDeployments(
     withPreview({ ...context.repo(), ref })
   );
-  context.log.info(context.repo({ count: deployments.data.length }), "pr close: listed deploys");
+  context.log.info(
+    context.repo({ count: deployments.data.length }),
+    "pr close: listed deploys"
+  );
   for (const deployment of deployments.data) {
     // Only terminate transient environments.
     if (!deployment.transient_environment) {
-      context.log.info(context.repo({ id: deployment.id }), "pr close: not transient");
+      context.log.info(
+        context.repo({ id: deployment.id }),
+        "pr close: not transient"
+      );
       continue;
     }
     context.log.info(context.repo({ id: deployment.id }), "pr close: removing");

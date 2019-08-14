@@ -11,7 +11,10 @@ export async function create(req: AuthedRequest, res: Response) {
       owner,
       repo,
       target,
-      commit: sha
+      sha,
+      // TODO: Change to the branch here as well so that we can query by branch
+      // later on.
+      ref: sha
     });
     res.json({ message: "ok", sha, ...deployed.data });
   } catch (err) {
