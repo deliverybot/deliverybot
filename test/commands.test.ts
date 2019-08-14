@@ -22,11 +22,19 @@ const fixtures = {
 
 nock.disableNetConnect();
 
-const mockDeploy = ({ pr, deploy, valid }: { pr?: boolean, deploy?: boolean, valid?: boolean,  }) => {
+const mockDeploy = ({
+  pr,
+  deploy,
+  valid
+}: {
+  pr?: boolean;
+  deploy?: boolean;
+  valid?: boolean;
+}) => {
   nock("https://api.github.com")
     .post("/app/installations/2/access_tokens")
     .reply(200, { token: "test" });
-  let deployCall
+  let deployCall;
   if (deploy) {
     deployCall = nock("https://api.github.com")
       .post("/repos/Codertocat/Hello-World/deployments")
@@ -34,13 +42,15 @@ const mockDeploy = ({ pr, deploy, valid }: { pr?: boolean, deploy?: boolean, val
   }
   nock("https://api.github.com")
     .post("/repos/Codertocat/Hello-World/deployments/1/statuses")
-    .reply(200)
+    .reply(200);
   nock("https://api.github.com")
     .persist()
     .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
     .query(() => true)
     .reply(200, {
-      content: Buffer.from(valid ? fixtures.deployValid : fixtures.deployInvalid).toString("base64")
+      content: Buffer.from(
+        valid ? fixtures.deployValid : fixtures.deployInvalid
+      ).toString("base64")
     });
   if (pr) {
     nock("https://api.github.com")
@@ -48,15 +58,15 @@ const mockDeploy = ({ pr, deploy, valid }: { pr?: boolean, deploy?: boolean, val
       .reply(200, fixtures.pullRequest);
   }
   return deployCall;
-}
+};
 
 describe("Deployments", () => {
   jest.setTimeout(30000);
   let probot: any;
 
   afterEach(() => {
-    nock.cleanAll()
-  })
+    nock.cleanAll();
+  });
 
   beforeEach(() => {
     probot = new Probot({ id: 123, cert: "test" });
@@ -154,7 +164,7 @@ describe("Deployments", () => {
         }
       )
       .reply(200);
-   await probot.receive({
+    await probot.receive({
       name: "issue_comment",
       payload
     });

@@ -2,10 +2,11 @@ import { Application, Context, Octokit, Logger } from "probot";
 import { render } from "../util";
 import yaml from "js-yaml";
 
-const preview = "application/vnd.github.ant-man-preview+json";
+const previewAnt = "application/vnd.github.ant-man-preview+json";
+const previewFlash = "application/vnd.github.flash-preview+json";
 
 function withPreview<T>(arg: T): T {
-  (arg as any).headers = { accept: preview };
+  (arg as any).headers = { accept: `${previewAnt},${previewFlash}` };
   return arg as T;
 }
 
@@ -117,9 +118,9 @@ export async function deployCommit(
     // TODO: Handle auto_merge case correctly here.
     // https://developer.github.com/v3/repos/deployments/#merged-branch-response
     const deploy = await github.repos.createDeployment(body);
-    await github.repos.createDeploymentStatus({
+    await github.repos.createDeploymentStatus(withPreview({
       owner, repo, deployment_id: deploy.data.id, state: "queued",
-    });
+    }));
     log.info({ body, id: deploy.data.id }, "deploy successful");
     return deploy.data;
   } catch (error) {
@@ -177,15 +178,14 @@ async function handlePRClose(
   const deployments = await context.github.repos.listDeployments(
     withPreview({ ...context.repo(), ref })
   );
+  context.log.info(context.repo({ count: deployments.data.length }), "pr close: listed deploys");
   for (const deployment of deployments.data) {
     // Only terminate transient environments.
     if (!deployment.transient_environment) {
+      context.log.info(context.repo({ id: deployment.id }), "pr close: not transient");
       continue;
     }
-    if (!deployment.payload || !(deployment.payload as any).exec) {
-      continue;
-    }
-    context.log.info({ deployment }, "auto deploy: removing");
+    context.log.info(context.repo({ id: deployment.id }), "pr close: removing");
     await context.github.repos.createDeploymentStatus(
       withPreview({
         ...context.repo(),
