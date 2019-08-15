@@ -5,7 +5,7 @@ import * as pkg from "../package";
 export async function index(req: AuthedRequest, res: Response) {
   if (!req.user) {
     req.session!.started = Date.now();
-    res.render("probot", { pkg, anonymous: true });
+    res.render("probot", { ...pkg, anonymous: true });
     return;
   }
 
@@ -22,9 +22,9 @@ export async function index(req: AuthedRequest, res: Response) {
     }
   }
 
-  res.render("repos", { repos: repoList, pkg });
+  res.render("home", { repos: repoList, pkg });
 }
 
-export function repo(app: Application) {
+export function home(app: Application) {
   app.get("/", setUser, index);
 }

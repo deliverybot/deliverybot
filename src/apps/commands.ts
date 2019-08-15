@@ -56,6 +56,9 @@ export async function config(
     const err = validation.errors[0];
     throw new Error(`${err.property} ${err.message}`)
   }
+  for (const key in conf) {
+    conf[key].deployments = conf[key].deployments || [];
+  }
   return conf;
 }
 

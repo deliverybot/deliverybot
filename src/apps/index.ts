@@ -1,7 +1,7 @@
 import { auth } from "./auth";
 import { deploy } from "./deploy";
-import { repo } from "./repo";
+import { home } from "./home";
 import { commands } from "./commands";
 
-export const apps = [auth, deploy, repo];
+export const apps = [auth, deploy, home];
 export const handlers = [commands];

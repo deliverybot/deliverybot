@@ -49,7 +49,7 @@ export async function get(req: AuthedRequest, res: Response) {
     environments,
     branch || "master"
   );
-  res.render("commits", {
+  res.render("deploy", {
     target,
     targets:
       conf &&
