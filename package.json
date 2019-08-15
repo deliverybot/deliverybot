@@ -28,6 +28,7 @@
     "@google-cloud/storage": "^3.0.3",
     "@octokit/graphql": "^3.0.1",
     "@types/js-yaml": "^3.12.1",
+    "@types/jsonschema": "^1.1.1",
     "body-parser": "1.19.0",
     "client-sessions": "^0.8.0",
     "express": "4.16.4",
@@ -35,6 +36,7 @@
     "google-auth-library": "^4.2.5",
     "handlebars": "4.1.2",
     "js-yaml": "^3.13.1",
+    "jsonschema": "^1.2.4",
     "node-uuid": "^1.4.8",
     "probot": "9.2.19",
     "request": "2.88.0"

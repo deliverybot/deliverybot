@@ -1,42 +1,42 @@
 review:
-  cluster: staging
-  environment: pr{{ pr }}
-  transient_environment: true
-  production_environment: false
-  description: A test environment based on Docker
-  auto_merge: false
-  required_contexts:
-    - continuous-integration/travis-ci/push
-  payload: {}
+  deployments:
+  - environment: pr{{ pr }}
+    transient_environment: true
+    production_environment: false
+    description: A test environment based on Docker
+    auto_merge: false
+    required_contexts:
+      - continuous-integration/travis-ci/push
+    payload: {}
 canary:
-  cluster: production
-  environment: production
-  transient_environment: false
-  production_environment: true
-  description: A test environment based on Docker
-  auto_merge: true
-  required_contexts:
-    - continuous-integration/travis-ci/push
-  payload:
-    canary: 20%
+  deployments:
+  - environment: production
+    transient_environment: false
+    production_environment: true
+    description: A test environment based on Docker
+    auto_merge: true
+    required_contexts:
+      - continuous-integration/travis-ci/push
+    payload:
+      canary: 20%
 production:
   auto_deploy_on: refs/tags/simple-tag
-  cluster: production
-  environment: production
-  transient_environment: false
-  production_environment: true
-  description: A test environment based on Docker
-  auto_merge: true
-  required_contexts:
-    - continuous-integration/travis-ci/push
-  payload: {}
+  deployments:
+  - environment: production
+    transient_environment: false
+    production_environment: true
+    description: A test environment based on Docker
+    auto_merge: true
+    required_contexts:
+      - continuous-integration/travis-ci/push
+    payload: {}
 performance:
-  cluster: staging
-  environment: performance
-  transient_environment: false
-  production_environment: false
-  description: A test environment based on Docker
-  auto_merge: false
-  required_contexts:
-    - continuous-integration/travis-ci/push
-  payload: {}
+  deployments:
+  - environment: performance
+    transient_environment: false
+    production_environment: false
+    description: A test environment based on Docker
+    auto_merge: false
+    required_contexts:
+      - continuous-integration/travis-ci/push
+    payload: {}

@@ -1,7 +1,9 @@
 import { Application, Context, Octokit, Logger } from "probot";
 import { render } from "../util";
 import yaml from "js-yaml";
+import { validate } from "jsonschema";
 import { ReposListDeploymentsResponseItem } from "@octokit/rest";
+import schema from '../schema.json'
 
 const previewAnt = "application/vnd.github.ant-man-preview+json";
 const previewFlash = "application/vnd.github.flash-preview+json";
@@ -10,6 +12,24 @@ function withPreview<T>(arg: T): T {
   (arg as any).headers = { accept: `${previewAnt},${previewFlash}` };
   return arg as T;
 }
+
+interface Deployment {
+  task: string;
+  payload: any;
+  environment: string;
+  description: string;
+  auto_merge: boolean;
+  required_contexts: string[];
+  transient_environment: boolean;
+  production_environment: boolean;
+}
+
+interface Target {
+  auto_deploy_on: string;
+  deployments: Deployment[];
+}
+
+type Targets = { [k: string]: Target | undefined }
 
 export async function config(
   github: Octokit,
@@ -22,7 +42,7 @@ export async function config(
     repo: string;
     ref: string;
   }
-): Promise<any> {
+): Promise<Targets> {
   const content = await github.repos.getContents({
     owner,
     repo,
@@ -31,24 +51,24 @@ export async function config(
   });
   const conf =
     yaml.safeLoad(Buffer.from(content.data.content, "base64").toString()) || {};
+  const validation = validate(conf, schema, { propertyName: "config", allowUnknownAttributes: true })
+  if (validation.errors.length > 0) {
+    const err = validation.errors[0];
+    throw new Error(`${err.property} ${err.message}`)
+  }
   return conf;
 }
 
-function getDeployBody(target: string, deployment: any, data: any): any {
+function getDeployBody(deployment: Deployment, data: any): Deployment {
   return withPreview({
+    task: "deploy",
     transient_environment: deployment.transient_environment || false,
     production_environment: deployment.production_environment || false,
     environment: render(deployment.environment || "production", data),
     auto_merge: deployment.auto_merge || false,
     required_contexts: deployment.required_contexts || [],
     description: deployment.description,
-    payload: render(
-      {
-        ...deployment.payload,
-        target
-      },
-      data
-    )
+    payload: render(deployment.payload, data),
   });
 }
 
@@ -109,29 +129,30 @@ export async function deployCommit(
   }
 ) {
   const conf = await config(github, { owner, repo, ref });
-  if (!conf[target]) {
+  const targetVal = conf[target];
+  if (!targetVal) {
     log.error({ owner, repo, target, ref, pr }, "deploying failed - no target");
     throw new Error(`Deployment target "${target}" does not exist`);
   }
-  const deployment = conf[target];
-  const params = { ref, sha: sha, short_sha: sha.substr(0, 7), pr };
-  const body = {
-    owner,
-    repo,
-    ref,
-    ...getDeployBody(target, deployment, params)
-  };
-
-  try {
-    log.info({ body }, "deploying");
-    // TODO: Handle auto_merge case correctly here.
-    // https://developer.github.com/v3/repos/deployments/#merged-branch-response
-    const deploy = await github.repos.createDeployment(body);
-    log.info({ body, id: deploy.data.id }, "deploy successful");
-    return deploy.data;
-  } catch (error) {
-    log.error({ error, body }, "deploying failed");
-    throw error;
+  for (const deployment of targetVal.deployments) {
+    const params = { ref, sha: sha, short_sha: sha.substr(0, 7), pr };
+    const body = {
+      owner,
+      repo,
+      ref,
+      ...getDeployBody(deployment, params)
+    };
+    try {
+      log.info({ body }, "deploying");
+      // TODO: Handle auto_merge case correctly here.
+      // https://developer.github.com/v3/repos/deployments/#merged-branch-response
+      const deploy = await github.repos.createDeployment(body);
+      log.info({ body, id: deploy.data.id }, "deploy successful");
+      return deploy.data;
+    } catch (error) {
+      log.error({ error, body }, "deploying failed");
+      throw error;
+    }
   }
 }
 
@@ -147,9 +168,9 @@ async function handleAutoDeploy(context: Context) {
 async function autoDeployTarget(
   context: Context,
   target: string,
-  deployment: any
+  targetVal: Target,
 ) {
-  const autoDeploy = deployment.auto_deploy_on;
+  const autoDeploy = targetVal.auto_deploy_on;
   if (!autoDeploy) {
     return;
   }
@@ -161,7 +182,8 @@ async function autoDeployTarget(
   const deploys = await context.github.repos.listDeployments(
     context.repo({ sha })
   );
-  if (deploys.data.find(d => d.environment === deployment.environment)) {
+  const environments = targetVal.deployments.map(d => d.environment);
+  if (deploys.data.find(d => environments.includes(d.environment))) {
     context.log.info(context.repo({ ref }), "auto deploy: already deployed");
     return;
   }
@@ -232,6 +254,8 @@ async function handlePRClose(context: Context) {
   for (const env in environments) {
     const deployment = environments[env];
     try {
+      // Undeploy for every unique environment by copying the deployment params
+      // and triggering a deployment with the task "remove".
       await context.github.repos.createDeployment(
         context.repo({
           ref,

@@ -159,7 +159,7 @@ describe("Deployments", () => {
         (body: object) => {
           expect(body).toMatchObject({
             body:
-              ':rotating_light: Failed to trigger deployment. :rotating_light:\nDeployment target "review" does not exist'
+              ':rotating_light: Failed to trigger deployment. :rotating_light:\nconfig.fake is not of a type(s) object'
           });
           return true;
         }

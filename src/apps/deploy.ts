@@ -40,14 +40,13 @@ export async function get(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch } = req.params;
   const conf = await tryConfig(req);
   const deployment = conf && conf[target];
+  const environments = deployment && deployment.deployments.map(d => d.environment) || [];
 
   const query = await commitQuery(
     req.user!.token,
     owner,
     repo,
-    deployment && deployment && deployment.environment
-      ? [deployment.environment]
-      : [],
+    environments,
     branch || "master"
   );
   res.render("commits", {
@@ -73,7 +72,7 @@ export async function get(req: AuthedRequest, res: Response) {
 export async function redirect(req: AuthedRequest, res: Response) {
   const { owner, repo } = req.params;
   const conf = await tryConfig(req);
-  const target = Object.keys(conf)[0] || "none";
+  const target = Object.keys(conf || {})[0] || "none";
   const branch = "master";
   res.redirect(`/deploy/${target}/${owner}/${repo}/${branch}`);
 }

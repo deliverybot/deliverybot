@@ -1,0 +1,51 @@
+{
+  "$id": "https://example.com/card.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Configuration housed at .github/deploy.yml",
+  "type": "object",
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "properties": {
+        "auto_deploy": {
+          "type": "boolean"
+        },
+        "deployments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "environment": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "task": {
+                "type": "string"
+              },
+              "payload": {
+                "type": "object"
+              },
+              "required_contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "auto_merge": {
+                "type": "boolean"
+              },
+              "transient_environment": {
+                "type": "boolean"
+              },
+              "production_environment": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
