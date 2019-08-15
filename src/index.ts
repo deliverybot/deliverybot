@@ -7,7 +7,7 @@ import { APP_SECRET, PRODUCTION } from "./config";
 
 import { apps, handlers } from "./apps";
 
-import 'express-async-errors';
+import "express-async-errors";
 
 export = (robot: Application) => {
   const app = express();
@@ -45,7 +45,7 @@ export = (robot: Application) => {
   app.set("view engine", "hbs");
   app.set("views", path.join(__dirname, "..", "views"));
 
-  const hbs = require('hbs');
+  const hbs = require("hbs");
   hbs.registerPartials(path.join(__dirname, "..", "views", "partials"));
   hbs.registerHelper("json", (arg: object) => JSON.stringify(arg, null, 2));
 
@@ -57,10 +57,10 @@ export = (robot: Application) => {
 
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
-    res.status(500).sendFile(error5xx)
+    res.status(500).sendFile(error5xx);
   });
   app.use((req: Request, res: Response) => {
-    res.status(404).sendFile(error404)
+    res.status(404).sendFile(error404);
   });
 
   robot.router.use(app);

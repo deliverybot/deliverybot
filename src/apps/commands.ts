@@ -1,6 +1,7 @@
 import { Application, Context, Octokit, Logger } from "probot";
 import { render } from "../util";
 import yaml from "js-yaml";
+import { ReposListDeploymentsResponseItem } from "@octokit/rest";
 
 const previewAnt = "application/vnd.github.ant-man-preview+json";
 const previewFlash = "application/vnd.github.flash-preview+json";
@@ -126,14 +127,6 @@ export async function deployCommit(
     // TODO: Handle auto_merge case correctly here.
     // https://developer.github.com/v3/repos/deployments/#merged-branch-response
     const deploy = await github.repos.createDeployment(body);
-    await github.repos.createDeploymentStatus(
-      withPreview({
-        owner,
-        repo,
-        deployment_id: deploy.data.id,
-        state: "queued"
-      })
-    );
     log.info({ body, id: deploy.data.id }, "deploy successful");
     return deploy.data;
   } catch (error) {
@@ -202,7 +195,11 @@ async function handlePRClose(context: Context) {
     context.repo({ count: deployments.data.length }),
     "pr close: listed deploys"
   );
-  for (const deployment of deployments.data) {
+
+  // List all deployments for this pull request by environment to undeploy the
+  // last deployment for every environment.
+  const environments: { [env: string]: ReposListDeploymentsResponseItem } = {};
+  for (const deployment of deployments.data.reverse()) {
     // Only terminate transient environments.
     if (!deployment.transient_environment) {
       context.log.info(
@@ -211,14 +208,48 @@ async function handlePRClose(context: Context) {
       );
       continue;
     }
-    context.log.info(context.repo({ id: deployment.id }), "pr close: removing");
-    await context.github.repos.createDeploymentStatus(
-      withPreview({
-        ...context.repo(),
-        deployment_id: deployment.id,
-        state: "inactive"
-      })
-    );
+    try {
+      context.log.info(
+        context.repo({ id: deployment.id }),
+        "pr close: removing"
+      );
+      await context.github.repos.createDeploymentStatus(
+        withPreview({
+          ...context.repo(),
+          deployment_id: deployment.id,
+          state: "inactive"
+        })
+      );
+    } catch (error) {
+      context.log.info(
+        context.repo({ id: deployment.id, error: error.message }),
+        "pr close: marking inactive failed"
+      );
+    }
+    environments[deployment.environment] = deployment;
+  }
+
+  for (const env in environments) {
+    const deployment = environments[env];
+    try {
+      await context.github.repos.createDeployment(
+        context.repo({
+          ref,
+          task: "remove",
+          required_contexts: [],
+          payload: deployment.payload as any,
+          environment: deployment.environment,
+          description: deployment.description || "",
+          transient_environment: deployment.transient_environment,
+          production_environment: deployment.production_environment
+        })
+      );
+    } catch (error) {
+      context.log.error(
+        context.repo({ id: deployment.id, error: error.message, ref }),
+        "pr close: failed to undeploy"
+      );
+    }
   }
 }
 

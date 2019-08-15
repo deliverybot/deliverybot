@@ -15,9 +15,10 @@ const fixtures = {
   pullRequest: JSON.parse(
     fs.readFileSync("./test/fixtures/pull-request.json").toString()
   ),
-  push: JSON.parse(fs.readFileSync("./test/fixtures/push.json").toString()),
-  status: JSON.parse(fs.readFileSync("./test/fixtures/status.json").toString()),
-  ref: JSON.parse(fs.readFileSync("./test/fixtures/ref.json").toString())
+  push: require("./fixtures/push.json"),
+  status: require("./fixtures/status.json"),
+  ref: require("./fixtures/ref.json"),
+  prClosed: require("./fixtures/pull_request.closed.json"),
 };
 
 nock.disableNetConnect();
@@ -232,6 +233,49 @@ describe("Deployments", () => {
       name: "status",
       payload: fixtures.status
     });
+    expect(deployCall!.isDone()).toBeFalsy();
+  });
+
+  test("creates deployment closed if a pr is closed", async () => {
+    const deployCall = mockDeploy({ pr: false, valid: true, deploy: true });
+    nock("https://api.github.com")
+      .get("/repos/Codertocat/Hello-World/deployments")
+      .query(true)
+      .reply(200, [{ id: 1, environment: "production", transient_environment: true }]);
+    await probot.receive({
+      name: "pull_request",
+      payload: fixtures.prClosed,
+    })
+    expect(deployCall!.isDone()).toBeTruthy();
+  });
+
+  test("does not creates deployment on pr close for transient", async () => {
+    const deployCall = mockDeploy({ pr: false, valid: true, deploy: true });
+    nock("https://api.github.com")
+      .get("/repos/Codertocat/Hello-World/deployments")
+      .query(true)
+      .reply(200, [{ id: 1, environment: "production", transient_environment: false }]);
+    await probot.receive({
+      name: "pull_request",
+      payload: fixtures.prClosed,
+    })
+    expect(deployCall!.isDone()).toBeFalsy();
+  });
+
+  test("creates a single deployment on pr close per env", async () => {
+    // Will fail since mock deployment call is only setup once.
+    const deployCall = mockDeploy({ pr: false, valid: true, deploy: true });
+    nock("https://api.github.com")
+      .get("/repos/Codertocat/Hello-World/deployments")
+      .query(true)
+      .reply(200, [
+        { id: 1, environment: "production", transient_environment: false },
+        { id: 2, environment: "production", transient_environment: false },
+      ]);
+    await probot.receive({
+      name: "pull_request",
+      payload: fixtures.prClosed,
+    })
     expect(deployCall!.isDone()).toBeFalsy();
   });
 });

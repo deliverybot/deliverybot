@@ -19,8 +19,8 @@
     "build": "tsc -p tsconfig.json",
     "dev": "nodemon --watch src --exec \"npm start\"",
     "start": "tsc -p tsconfig.json && probot run ./lib/index.js",
-    "format": "prettier --write ./**/*.ts",
-    "test": "jest",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "test": "LOG_LEVEL=fatal jest",
     "test:watch": "jest --watch --notify --notifyMode=change --coverage"
   },
   "dependencies": {
