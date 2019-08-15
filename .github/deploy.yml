@@ -1,35 +1,19 @@
 production:
   auto_deploy_on: refs/heads/master
-  environment: production
-  production_environment: true
-  url: 'https://deliverybot-lhanl2ut4q-uc.a.run.app/'
+  deployments:
+  - environment: production
+    production_environment: true
+    url: https://deliverybot.web.app
 
-  exec:
-    image: cloud-functions
-    params:
+    payload:
+      steps:
+      - name: gcr.io/deliverybot/cloud-functions
       name: deliverybot
+      project: deliverybot
       region: us-central1
       runtime: nodejs8
       entrypoint: deliverybot
       source: gs://deliverybot-cache/deliverybot-{{short_sha}}.zip
 
-  required_contexts:
-  - "Build (538437845459)"
-
-review:
-  environment: pr{{ pr }}
-  transient_environment: true
-  production_environment: false
-
-  exec:
-    image: cloud-run
-    params:
-      service: deliverybot-pr{{pr}}
-      platform: managed
-      region: us-central1
-      image:
-        repository: gcr.io/deliverybot/deliverybot
-        tag: '{{short_sha}}'
-
-  required_contexts:
-  - "Build (538437845459)"
+    required_contexts:
+    - "Build (538437845459)"
