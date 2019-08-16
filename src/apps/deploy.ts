@@ -3,7 +3,6 @@ import { Response, Application } from "express";
 import { request as ghRequest } from "@octokit/request";
 import { deployCommit, config, Targets } from "./commands";
 import * as pkg from "../package";
-import { writeFileSync } from "fs";
 
 export async function create(req: AuthedRequest, res: Response) {
   const { owner, repo, target, sha } = req.params;
@@ -137,7 +136,6 @@ async function commitQuery(
       `Graphql request failure: ${JSON.stringify(resp.data.errors)}`
     );
   }
-  writeFileSync('query.json', JSON.stringify(resp.data));
   return View(owner, repo, branch, resp.data.data);
 }
 
