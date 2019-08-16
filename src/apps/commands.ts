@@ -3,7 +3,7 @@ import { render } from "../util";
 import yaml from "js-yaml";
 import { validate } from "jsonschema";
 import { ReposListDeploymentsResponseItem } from "@octokit/rest";
-import schema from '../schema.json'
+import schema from "../schema.json";
 
 const previewAnt = "application/vnd.github.ant-man-preview+json";
 const previewFlash = "application/vnd.github.flash-preview+json";
@@ -24,12 +24,12 @@ interface Deployment {
   production_environment: boolean;
 }
 
-interface Target {
+export interface Target {
   auto_deploy_on: string;
   deployments: Deployment[];
 }
 
-type Targets = { [k: string]: Target | undefined }
+export type Targets = { [k: string]: Target | undefined };
 
 export async function config(
   github: Octokit,
@@ -51,10 +51,13 @@ export async function config(
   });
   const conf =
     yaml.safeLoad(Buffer.from(content.data.content, "base64").toString()) || {};
-  const validation = validate(conf, schema, { propertyName: "config", allowUnknownAttributes: true })
+  const validation = validate(conf, schema, {
+    propertyName: "config",
+    allowUnknownAttributes: true
+  });
   if (validation.errors.length > 0) {
     const err = validation.errors[0];
-    throw new Error(`${err.property} ${err.message}`)
+    throw new Error(`${err.property} ${err.message}`);
   }
   for (const key in conf) {
     conf[key].deployments = conf[key].deployments || [];
@@ -71,7 +74,7 @@ function getDeployBody(deployment: Deployment, data: any): Deployment {
     auto_merge: deployment.auto_merge || false,
     required_contexts: deployment.required_contexts || [],
     description: deployment.description,
-    payload: render(deployment.payload, data),
+    payload: render(deployment.payload, data)
   });
 }
 
@@ -171,7 +174,7 @@ async function handleAutoDeploy(context: Context) {
 async function autoDeployTarget(
   context: Context,
   target: string,
-  targetVal: Target,
+  targetVal: Target
 ) {
   const autoDeploy = targetVal.auto_deploy_on;
   if (!autoDeploy) {

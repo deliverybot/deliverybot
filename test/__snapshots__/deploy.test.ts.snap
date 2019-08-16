@@ -1,0 +1,527 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DeployView renders a payload 1`] = `
+Object {
+  "branches": Array [
+    Object {
+      "active": false,
+      "name": "colinjfw-patch-1",
+    },
+    Object {
+      "active": false,
+      "name": "colinjfw-patch-2",
+    },
+    Object {
+      "active": false,
+      "name": "colinjfw-patch-3",
+    },
+    Object {
+      "active": false,
+      "name": "colinjfw-patch-4",
+    },
+    Object {
+      "active": true,
+      "name": "master",
+    },
+  ],
+  "commits": Array [
+    Object {
+      "author": "colinjfw",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+      },
+      "deployment": Object {
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+      },
+      "deployments": Array [],
+      "message": "Update deploy.yml",
+      "oid": "244a445",
+      "owner": "deliverybot",
+      "repo": "example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "success": true,
+        },
+      },
+      "deployment": Object {
+        "status": Object {
+          "color": "green",
+          "success": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "creator": "colinjfw",
+          "environment": "production",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "https://console.cloud.google.com/cloud-build/builds/01ecc3eb-1a88-428a-ba0a-d421c90eb360?project=deliverybot",
+        },
+      ],
+      "message": "Update deploy.yml",
+      "oid": "f28d263",
+      "owner": "deliverybot",
+      "repo": "example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "check": Object {
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployment": Object {
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "creator": "colinjfw",
+          "environment": "production",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "https://console.cloud.google.com/cloud-build/builds/b68f76c5-31f0-47e7-a28d-a1bebec9fc39?project=deliverybot",
+        },
+      ],
+      "message": "Update deploy.yml",
+      "oid": "03938e0",
+      "owner": "deliverybot",
+      "repo": "example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+      },
+      "deployment": Object {
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "creator": "colinjfw",
+          "environment": "production",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "production",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "production",
+          "status": Object {
+            "color": "yellow",
+            "pending": true,
+          },
+          "url": null,
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "production",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": null,
+        },
+      ],
+      "message": "Update deploy.yml",
+      "oid": "266a098",
+      "owner": "deliverybot",
+      "repo": "example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+      },
+      "deployment": Object {
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+      },
+      "deployments": Array [],
+      "message": "Update deploy.yml",
+      "oid": "13b08bb",
+      "owner": "deliverybot",
+      "repo": "example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "success": true,
+        },
+      },
+      "deployment": Object {
+        "status": Object {
+          "color": "green",
+          "success": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "creator": "colinjfw",
+          "environment": "production",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161479032",
+        },
+      ],
+      "message": "Update deploy.yml",
+      "oid": "fc245f7",
+      "owner": "deliverybot",
+      "repo": "example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "success": true,
+        },
+      },
+      "deployment": Object {
+        "status": Object {
+          "color": "green",
+          "success": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "creator": "colinjfw",
+          "environment": "production",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161440765",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "staging",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161440865",
+        },
+      ],
+      "message": "Update deploy.yml",
+      "oid": "67504c8",
+      "owner": "deliverybot",
+      "repo": "example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "success": true,
+        },
+      },
+      "deployment": Object {
+        "status": Object {
+          "color": "green",
+          "success": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "creator": "colinjfw",
+          "environment": "production",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161440458",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "staging",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161440575",
+        },
+      ],
+      "message": "Update deploy.yml",
+      "oid": "fd3d28a",
+      "owner": "deliverybot",
+      "repo": "example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "success": true,
+        },
+      },
+      "deployment": Object {
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/89cf477a-f7d0-4a84-948e-ee8fa535f5b4",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/32ddb9ab-27cb-415c-94ce-461d843cd7d3",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/de3f0b69-cbd5-4f52-a8de-5d73167619d1",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/317ab83f-80ee-474e-8e09-38887ee79194",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/52b74663-c848-497b-b52b-ca5425b035e3",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/63a8cc8c-ed24-4d79-b97f-0c70ce6a8f9e",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/2e9ec0e5-98d9-4b1c-86e7-2086d3764be8",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161324570",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161324837",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161325022",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161325741",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161337388",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161337565",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161338055",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161338198",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161338704",
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/161345711",
+        },
+      ],
+      "message": "Update deploy.yml",
+      "oid": "eb7930e",
+      "owner": "deliverybot",
+      "repo": "example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "check": Object {
+        "status": Object {
+          "color": "yellow",
+          "pending": true,
+        },
+      },
+      "deployment": Object {
+        "status": Object {
+          "color": "yellow",
+          "pending": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "creator": "colinjfw",
+          "environment": "production",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "production",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "creator": "colinjfw",
+          "environment": "k8s",
+          "status": Object {
+            "color": "yellow",
+            "pending": true,
+          },
+          "url": "http://localhost:3000/logs/deliverybot/example/c94697a5-dc47-4c7f-b632-2240ae8b7d34",
+        },
+      ],
+      "message": "Create deploy.yml",
+      "oid": "626285e",
+      "owner": "deliverybot",
+      "repo": "example",
+      "undeployed": false,
+    },
+  ],
+}
+`;

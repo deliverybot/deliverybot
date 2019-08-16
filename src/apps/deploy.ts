@@ -1,8 +1,9 @@
 import { AuthedRequest, authenticate, verifyRepo } from "./auth";
 import { Response, Application } from "express";
 import { request as ghRequest } from "@octokit/request";
-import { deployCommit, config } from "./commands";
+import { deployCommit, config, Targets } from "./commands";
 import * as pkg from "../package";
+import { writeFileSync } from "fs";
 
 export async function create(req: AuthedRequest, res: Response) {
   const { owner, repo, target, sha } = req.params;
@@ -31,7 +32,6 @@ async function tryConfig(req: AuthedRequest) {
       ref: branch ? `refs/heads/${branch}` : `refs/heads/master`
     });
   } catch (err) {
-    console.error(err);
     return null;
   }
 }
@@ -39,34 +39,25 @@ async function tryConfig(req: AuthedRequest) {
 export async function get(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch } = req.params;
   const conf = await tryConfig(req);
-  const deployment = conf && conf[target];
-  const environments = deployment && deployment.deployments.map(d => d.environment) || [];
+  const targets = Targets(target, conf);
 
-  const query = await commitQuery(
+  const { branches, commits } = await commitQuery(
     req.user!.token,
     owner,
     repo,
-    environments,
     branch || "master"
   );
-  res.render("deploy", {
+  const params = {
     target,
-    targets:
-      conf &&
-      Object.keys(conf).map((name: string) => ({
-        name,
-        active: name === target
-      })),
+    targets,
     owner,
     repo,
     pkg,
     branch,
-    branches: query.branches.map(name => ({
-      name,
-      active: branch === name
-    })),
-    commits: query.commits.map(c => commitView(c))
-  });
+    branches,
+    commits
+  };
+  res.render("deploy", params);
 }
 
 export async function redirect(req: AuthedRequest, res: Response) {
@@ -75,13 +66,6 @@ export async function redirect(req: AuthedRequest, res: Response) {
   const target = Object.keys(conf || {})[0] || "none";
   const branch = "master";
   res.redirect(`/deploy/${target}/${owner}/${repo}/${branch}`);
-}
-
-interface Commit {
-  owner: string;
-  repo: string;
-  message: string;
-  state: string;
 }
 
 export function deploy(app: Application) {
@@ -101,35 +85,27 @@ export function deploy(app: Application) {
   );
 }
 
-async function commitQuery(
-  token: string,
-  owner: string,
-  repo: string,
-  environments: string[],
-  branch: string
-): Promise<{ commits: Commit[]; branches: string[] }> {
-  const query = `query commits($owner: String!, $repo: String!, $environments: [String!]!, $branch: String!) {
-    repository(owner:$owner,name:$repo) {
-      refs(refPrefix:"refs/heads/",first:50) { nodes { name } }
-      ref(qualifiedName:$branch) {
-        target {
-          ... on Commit {
-            history(first: 10) {
-              edges {
-                node {
-                  messageHeadline
-                  oid
-                  message
-                  author { user { login } }
-                  deployments(last: 1, environments: $environments) {
-                    nodes {
-                      id
-                      environment
-                      latestStatus {
-                        state
-                        logUrl
-                      }
-                    }
+const query = `
+query commits(
+  $owner: String!, $repo: String!, $branch: String!
+) {
+  repository(owner:$owner,name:$repo) {
+    refs(refPrefix:"refs/heads/",first:50) { nodes { name } }
+    ref(qualifiedName:$branch) {
+      target {
+        ... on Commit {
+          history(first: 10) {
+            edges {
+              node {
+                messageHeadline oid message
+                author { user { login } }
+                status { contexts { state } }
+                checkSuites(last: 50) { nodes { conclusion status } }
+                deployments(last: 50) {
+                  nodes {
+                    id environment
+                    creator { login }
+                    latestStatus { logUrl state }
                   }
                 }
               }
@@ -138,68 +114,137 @@ async function commitQuery(
         }
       }
     }
-  }`;
-  const data = await ghRequest({
-    data: { query, variables: { owner, repo, environments, branch } },
+  }
+}`;
+
+async function commitQuery(
+  token: string,
+  owner: string,
+  repo: string,
+  branch: string
+) {
+  const resp = await ghRequest({
+    data: { query, variables: { owner, repo, branch } },
     method: "POST",
     url: "/graphql",
-    headers: { authorization: `token ${token}` }
+    headers: {
+      authorization: `token ${token}`,
+      accept: "application/vnd.github.antiope-preview+json"
+    }
   });
-  if (data.data.errors && data.data.errors.length > 0) {
+  if (resp.data.errors && resp.data.errors.length > 0) {
     throw new Error(
-      `Graphql request failure: ${JSON.stringify(data.data.errors)}`
+      `Graphql request failure: ${JSON.stringify(resp.data.errors)}`
     );
   }
-  const branches = data.data.data.repository.refs.nodes.map((n: any) => n.name);
-  const commits = data.data.data.repository.ref.target.history.edges.map(
-    (node: any) => {
-      const state = (() => {
-        if (node.node.deployments.nodes.length >= 1) {
-          const deploy = node.node.deployments.nodes[0];
-          if (deploy.latestStatus && deploy.latestStatus.state) {
-            return deploy.latestStatus.state;
-          }
-          return "PENDING";
-        }
-        return "UNDEPLOYED";
-      })();
-      const logUrl = (() => {
-        if (node.node.deployments.nodes.length >= 1) {
-          const deploy = node.node.deployments.nodes[0];
-          if (deploy.latestStatus) {
-            return deploy.latestStatus.logUrl;
-          }
-        }
-      })();
-      return {
-        state,
-        owner,
-        repo,
-        logUrl,
-        message: node.node.messageHeadline,
-        oid: node.node.oid.substr(0, 7),
-        author: node.node.author.user.login
-      };
-    }
+  writeFileSync('query.json', JSON.stringify(resp.data));
+  return View(owner, repo, branch, resp.data.data);
+}
+
+export function View(owner: string, repo: string, branch: string, data: any) {
+  const branches = Branches(branch, data.repository.refs.nodes);
+  const commits = data.repository.ref.target.history.edges.map((edge: any) =>
+    Commit(owner, repo, edge)
   );
   return { commits, branches };
 }
 
-function commitView(commit: any) {
-  switch (commit.state) {
-    case "PENDING":
-      commit.pending = true;
-      commit.color = "yellow";
-      break;
-    case "SUCCESS":
-      commit.color = "green";
-      commit.deployed = true;
-      break;
-    case "INACTIVE":
-    case "FAILURE":
-      commit.color = "red";
-      commit.failure = true;
-      break;
+const failing = ["FAILURE", "FAILING", "ERROR", "CANCELLED", "TIMED_OUT"];
+const pending = ["PENDING", "ACTION_REQUIRED", "QUEUED", "IN_PROGRESS"];
+const success = ["SUCCESS"];
+
+function AggregateStatus(statuses: string[]) {
+  if (statuses.find(s => failing.includes(s.toUpperCase()))) {
+    return "FAILURE";
   }
-  return commit;
+  if (statuses.find(s => pending.includes(s.toUpperCase()))) {
+    return "PENDING";
+  }
+  if (statuses.find(s => success.includes(s.toUpperCase()))) {
+    return "SUCCESS";
+  }
+  return "WAITING";
+}
+
+function Check(node: any) {
+  const statuses: string[] = ((node.status && node.status.contexts) || [])
+    .map((ctx: any) => ctx.state)
+    .concat(
+      node.checkSuites.nodes.map((cs: any) => cs.conclusion || cs.status)
+    );
+  return { status: Status(AggregateStatus(statuses)) };
+}
+
+function Status(status?: string) {
+  const s = [(status || "WAITING").toUpperCase()];
+  switch (AggregateStatus(s)) {
+    case "FAILURE":
+      return { failure: true, color: "red" };
+    case "PENDING":
+      return { pending: true, color: "yellow" };
+    case "SUCCESS":
+      return { success: true, color: "green" };
+    default:
+      return { waiting: true, color: "gray" };
+  }
+}
+
+function Deployment(node: any) {
+  const statuses = (node.deployments || []).nodes.map(
+    (deploy: any) =>
+      (deploy.latestStatus && deploy.latestStatus.state) || "WAITING"
+  );
+  return { status: Status(AggregateStatus(statuses)) };
+}
+
+function Undeployed(node: any) {
+  const deployment = Deployment(node)
+  const check = Check(node)
+  if (check.status.success && deployment.status.waiting) {
+    return true
+  }
+  return false
+}
+
+function Deployments(node: any) {
+  return (node.deployments || []).nodes.map((deploy: any) => ({
+    status: Status(deploy.latestStatus && deploy.latestStatus.state),
+    environment: deploy.environment,
+    creator: deploy.creator.login,
+    url: deploy.latestStatus && deploy.latestStatus.logUrl
+  }));
+}
+
+function Commit(owner: string, repo: string, edge: any) {
+  return {
+    owner,
+    repo,
+    message: edge.node.messageHeadline,
+    oid: edge.node.oid.substr(0, 7),
+    author: edge.node.author.user.login,
+    undeployed: Undeployed(edge.node),
+    deployment: Deployment(edge.node),
+    deployments: Deployments(edge.node),
+    check: Check(edge.node)
+  };
+}
+
+function Branches(
+  active: string,
+  branches: any[]
+): Array<{ name: string; active: boolean }> {
+  return branches.map(n => ({
+    name: n.name,
+    active: active === n.name
+  }));
+}
+
+function Targets(target: string, conf: Targets | null) {
+  return (
+    conf &&
+    Object.keys(conf).map((name: string) => ({
+      name,
+      active: name === target
+    }))
+  );
 }
