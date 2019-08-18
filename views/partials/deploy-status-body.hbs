@@ -1,26 +1,10 @@
 <div class="Box-header bg-white">
-  <h4 class="mb-2 text-{{deployment.status.color}}">
+  <h4 class="mb-2 mt-2 text-{{deployment.status.color}}">
     {{#if deployment.status.success}}All deployments have succeeded{{/if}}
     {{#if deployment.status.pending}}Waiting for an in-progress deployment{{/if}}
     {{#if deployment.status.failure}}Deployments have failed{{/if}}
     {{#if deployment.status.waiting}}Waiting for a deployment to be reported{{/if}}
   </h4>
-
-  <form method="POST" class="text-center mt-3 mb-3" action="/deploy/{{target}}/{{owner}}/{{repo}}/{{branch}}/{{oid}}">
-    {{#if undeployed}}
-    <button type="submit" data-oid="{{oid}}" aria-label="This commit is ready for deployment to {{target}}."
-      class="deploy btn btn-primary tooltipped tooltipped-n"
-      name="button">
-      Deploy
-    </button>
-    {{else}}
-    <button type="submit" data-oid="{{oid}}" aria-label="Deploy this commit to {{target}}."
-      class="deploy btn btn-outline tooltipped tooltipped-n"
-      name="button">
-      Deploy
-    </button>
-    {{/if}}
-  </form>
 </div>
 {{#each deployments}}
 <div class="Box-row">

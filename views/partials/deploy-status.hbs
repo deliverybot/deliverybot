@@ -1,7 +1,10 @@
 <div class="position-relative">
   <div id="deploy-{{oid}}" class="Popover position-absolute d-none" style="right: 100%; bottom: -50%;">
     <div class="Popover-message Popover-message--large Popover-message--right-bottom mr-2 Box box-shadow-large Box--condensed">
-      {{#> deploy_status_body }}{{/deploy_status_body}}
+      {{> deploy_status_body }}
+      <div class="Box-footer p-3">
+        {{> deploy_button}}
+      </div>
     </div>
   </div>
   <div style="margin-right: 16px;">
