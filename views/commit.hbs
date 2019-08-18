@@ -3,7 +3,7 @@
 <nav class="UnderlineNav">
   <div class="content">
     <div class="UnderlineNav-body">
-      <a href="/deploy/{{owner}}/{{repo}}" role="tab" title="Deploy" class="UnderlineNav-item selected">Deploy</a>
+      <a href="/deploy/{{owner}}/{{repo}}" role="tab" title="Deploy" class="UnderlineNav-item">Deploy</a>
     </div>
   </div>
 </nav>
@@ -12,7 +12,12 @@
 <div class="bg-white fill pt-3">
   <div class="content">
     <div class="Box mt-3">
-      <div class="Box-footer pb-5 text-gray-light bg-gray-light">
+      <div class="Box-footer pb-5 bg-gray-light">
+        <div id="syncing"
+          class="tooltipped tooltipped-n float-right"
+          aria-label="Watching deployment statuses. Deployments below will update on change.">
+          {{> icon_clock}}
+        </div>
         <h4>
           <a class="text-gray-dark" target="_blank" href="https://github.com/{{owner}}/{{repo}}/commit/{{oid}}">
             {{message}}
@@ -26,7 +31,7 @@
       <h2>Deployment failed</h2>
       <p id="error" class="text-red">{{error}}</p>
       {{else}}
-      <div>
+      <div id="deploy-status" style="transition: 0.5s;">
         {{> deploy_status_body}}
       </div>
 
@@ -37,20 +42,28 @@
 
 <script>
   (function () {
+    var previous = "{{hash}}";
     function poller() {
-      fetch("/deployments/{{owner}}/{{repo}}/{{deployment.id}}", { method: "GET" })
+      fetch(window.location.href, {
+          method: "GET",
+          headers: { accept: "application/json" },
+        })
         .then(function (resp) { return resp.json() })
         .then(function (data) {
-          if (data.url) {
+          // Don't update the UI if we've already seen this data before.
+          if (data.hash === previous) {
+            setTimeout(poller, 10000);
             return;
           }
-          window.location.href = data.url;
+          previous = data.hash;
+          var el = document.getElementById("deploy-status");
+          el.innerHTML = Handlebars.partials.deploy_status_body(data);
+          setTimeout(poller, 2000);
         }).catch(function (err) {
-          console.error("")
+          console.error(err);
+          setTimeout(poller, 10000);
         });
-
-      setTimeout(poller, 5000);
     }
-    // poller();
+    poller();
   })();
 </script>

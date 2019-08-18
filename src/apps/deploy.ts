@@ -3,6 +3,7 @@ import { Response, Application } from "express";
 import { deployCommit, config } from "./commands";
 import * as pkg from "../package";
 import * as queries from "./queries";
+import hash from "object-hash";
 
 export function deploy(app: Application) {
   app.get("/:owner/:repo", authenticate, verifyRepo, redirect);
@@ -37,8 +38,14 @@ export async function show(req: AuthedRequest, res: Response) {
     branch,
     sha
   );
-
-  res.render("commit", ctx(req, { ...commit }));
+  if (req.headers["accept"] === "application/json") {
+    res.json(ctx(req, {
+      hash: hash(commit),
+      ...commit,
+    }));
+  } else {
+    res.render("commit", ctx(req, commit));
+  }
 }
 
 export async function create(req: AuthedRequest, res: Response) {
