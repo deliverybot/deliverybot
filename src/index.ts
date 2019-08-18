@@ -15,12 +15,14 @@ export = (robot: Application) => {
   // Attach the probot log to the request object.
   app.use((req: Request, res: Response, next: NextFunction) => {
     (req as any).log = robot.log;
+    next();
   });
 
   // Hack for client-sessions. It uses a different field to query whether the
   // connection is secure.
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.secure) (req.connection as any).proxySecure = true;
+    next();
   });
 
   // Cache negotiation options middleware.
