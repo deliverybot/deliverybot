@@ -12,13 +12,30 @@ import "express-async-errors";
 export = (robot: Application) => {
   const app = express();
 
+  // Attach the probot log to the request object.
   app.use((req: Request, res: Response, next: NextFunction) => {
     (req as any).log = robot.log;
+  });
+
+  // Hack for client-sessions. It uses a different field to query whether the
+  // connection is secure.
+  app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.secure) (req.connection as any).proxySecure = true;
+  });
+
+  // Cache negotiation options middleware.
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    // Ensure that cache-control private is set so firebase or intermediate
+    // CDN's don't store these pages in a global cache. Vary on the
     res.setHeader("cache-control", "private");
+    // Vary on the accept header since we use accept in places to return json
+    // with specific endpoints.
+    res.setHeader("vary", "accept");
     next();
   });
 
+  // Initialize the client-sessions. For deployment to firebase the cookie must
+  // be __session.
   app.use(
     session({
       requestKey: "session",
@@ -56,7 +73,7 @@ export = (robot: Application) => {
   handlers.forEach(register => register(robot));
 
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error(err);
+    (req as any).log.error({ error: err.message }, "request failed");
     res.status(500).sendFile(error5xx);
   });
   app.use((req: Request, res: Response) => {

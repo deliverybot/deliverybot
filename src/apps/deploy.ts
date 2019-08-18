@@ -39,10 +39,12 @@ export async function show(req: AuthedRequest, res: Response) {
     sha
   );
   if (req.headers["accept"] === "application/json") {
-    res.json(ctx(req, {
-      hash: hash(commit),
-      ...commit,
-    }));
+    res.json(
+      ctx(req, {
+        hash: hash(commit),
+        ...commit
+      })
+    );
   } else {
     res.render("commit", ctx(req, commit));
   }
