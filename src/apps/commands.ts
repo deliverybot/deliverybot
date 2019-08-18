@@ -2,7 +2,10 @@ import { Application, Context, Octokit, Logger } from "probot";
 import { render } from "../util";
 import yaml from "js-yaml";
 import { validate } from "jsonschema";
-import { ReposListDeploymentsResponseItem } from "@octokit/rest";
+import {
+  ReposListDeploymentsResponseItem,
+  ReposGetDeploymentResponse
+} from "@octokit/rest";
 import schema from "../schema.json";
 
 const previewAnt = "application/vnd.github.ant-man-preview+json";
@@ -140,6 +143,10 @@ export async function deployCommit(
     log.error({ owner, repo, target, ref, pr }, "deploying failed - no target");
     throw new Error(`Deployment target "${target}" does not exist`);
   }
+  if (targetVal.deployments.length === 0) {
+    throw new Error(`Deployment target "${target}" has no deployments`);
+  }
+  const deployed = [];
   for (const deployment of targetVal.deployments) {
     const params = { ref, sha: sha, short_sha: sha.substr(0, 7), pr };
     const body = {
@@ -154,12 +161,13 @@ export async function deployCommit(
       // https://developer.github.com/v3/repos/deployments/#merged-branch-response
       const deploy = await github.repos.createDeployment(body);
       log.info({ body, id: deploy.data.id }, "deploy successful");
-      return deploy.data;
+      deployed.push(deploy.data as ReposGetDeploymentResponse);
     } catch (error) {
       log.error({ error, body }, "deploying failed");
       throw error;
     }
   }
+  return deployed;
 }
 
 async function handleAutoDeploy(context: Context) {
