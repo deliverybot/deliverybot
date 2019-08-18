@@ -1,0 +1,55 @@
+<div class="position-relative">
+  <div id="deploy-{{oid}}" class="Popover position-absolute d-none" style="right: 100%; bottom: -50%;">
+    <div class="Popover-message Popover-message--large Popover-message--right-bottom mr-2 Box box-shadow-large Box--condensed">
+      <div class="Box-header bg-white">
+        <h5 class="mb-2 mt-2 text-{{deployment.status.color}}">
+          {{#if deployment.status.success}}All deployments have succeeded{{/if}}
+          {{#if deployment.status.pending}}Waiting for an in-progress deployment{{/if}}
+          {{#if deployment.status.failure}}Deployments have failed{{/if}}
+          {{#if deployment.status.waiting}}Waiting for a deployment to be reported{{/if}}
+        </h5>
+
+        <form method="POST" class="text-center mt-3 mb-3" action="/deploy/{{../target}}/{{owner}}/{{repo}}/{{../branch}}/{{oid}}">
+          {{#if undeployed}}
+          <button type="submit" data-oid="{{oid}}" aria-label="This commit is ready for deployment to {{../target}}."
+            class="deploy btn btn-primary tooltipped tooltipped-n"
+            name="button">
+            Deploy
+          </button>
+          {{else}}
+          <button type="submit" data-oid="{{oid}}" aria-label="Deploy this commit to {{../target}}."
+            class="deploy btn btn-outline tooltipped tooltipped-n"
+            name="button">
+            Deploy
+          </button>
+          {{/if}}
+        </form>
+      </div>
+      {{#each deployments}}
+      <div class="Box-row">
+        <span class="text-{{status.color}} mr-2">
+          {{#if status.success}}{{> icon_check}}{{/if}}
+          {{#if status.pending}}{{> icon_dot}}{{/if}}
+          {{#if status.failure}}{{> icon_x}}{{/if}}
+          {{#if status.waiting}}{{> icon_clock}}{{/if}}
+        </span>
+        <strong>{{environment}}</strong>
+        by {{creator}}
+        {{#if url}}
+        <a href="{{url}}" class="float-right">Details</a>
+        {{/if}}
+      </div>
+      {{/each}}
+
+    </div>
+  </div>
+  <div style="margin-right: 16px;">
+    <a href="#deploy-{{oid}}" role="button" class="btn text-{{deployment.status.color}}" data-toggle="deploy-{{oid}}">
+      Deploy
+      {{#if deployment.status.success}}{{> icon_check}}{{/if}}
+      {{#if deployment.status.pending}}{{> icon_dot}}{{/if}}
+      {{#if deployment.status.failure}}{{> icon_x}}{{/if}}
+      {{#if deployment.status.waiting}}{{> icon_clock}}{{/if}}
+    </a>
+  </div>
+</div>

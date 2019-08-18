@@ -1,0 +1,27 @@
+<div id="commit-{{oid}}" class="Popover position-absolute d-none" style="left: 110%; bottom: -50%;">
+  <div class="Popover-message Popover-message--large Popover-message--left-bottom mr-2 Box box-shadow-large Box--condensed">
+    <div class="Box-header bg-white">
+      <h5 class="text-{{check.status.color}} mb-1 mt-2">
+        {{#if check.status.success}}All checks have succeeded{{/if}}
+        {{#if check.status.pending}}Waiting for an in-progress check{{/if}}
+        {{#if check.status.failure}}Checks have failed{{/if}}
+        {{#if check.status.waiting}}Waiting for a check to be reported{{/if}}
+      </h5>
+      {{#if check.status.success}}
+        <p class="text-gray-light">Commit is ready for deployment</p>
+      {{/if}}
+      <div class="mt-4 mb-2">
+        <a target="_blank" href="https://github.com/{{owner}}/{{repo}}/commits/{{oid}}">
+          View commit status checks on GitHub
+        </a>
+
+      </div>
+   </div>
+  </div>
+</div>
+<a href="#commit-{{oid}}" class="text-{{check.status.color}}" data-toggle="commit-{{oid}}">
+  {{#if check.status.success}}{{> icon_check}}{{/if}}
+  {{#if check.status.pending}}{{> icon_dot}}{{/if}}
+  {{#if check.status.failure}}{{> icon_x}}{{/if}}
+  {{#if check.status.waiting}}{{> icon_clock}}{{/if}}
+</a>

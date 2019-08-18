@@ -11,7 +11,6 @@
 
 <div class="bg-white fill">
   <div class="content">
-    <div id="error-container"></div>
     <details class="details-reset details-overlay pt-3" style="display: inline-block;">
       <summary class="btn btn-sm" type="button" aria-haspopup="true" aria-expanded="true">
         Target: <b>{{target}}</b>
@@ -50,101 +49,19 @@
       {{#each commits}}
       <div class="Box-row d-flex flex-items-center Box-row--hover-blue">
         <div class="flex-auto">
-          <a class="text-gray-dark" target="_blank" href="https://github.com/{{owner}}/{{repo}}/commit/{{oid}}">
-            {{message}}
-          </a>
+          <div class="position-relative" style="display: inline-block;">
+            <a class="text-gray-dark" target="_blank" href="https://github.com/{{owner}}/{{repo}}/commit/{{oid}}">
+              {{message}}
+            </a>
+            {{> commit_status}}
+          </div>
+
           <div class="text-gray-light">
             <strong><code>{{oid}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
           </div>
         </div>
-
-        <div class="position-relative">
-          <div id="commit-{{oid}}" class="Popover position-absolute d-none" style="right: 100%; bottom: -50%;">
-            <div class="Popover-message Popover-message--large Popover-message--right-bottom mr-2 Box box-shadow-large Box--condensed">
-              <div class="Box-header bg-white">
-                <h5 class="text-{{check.status.color}} mb-1 mt-2">
-                  {{#if check.status.success}}All checks have succeeded{{/if}}
-                  {{#if check.status.pending}}Waiting for an in-progress check{{/if}}
-                  {{#if check.status.failure}}Checks have failed{{/if}}
-                  {{#if check.status.waiting}}Waiting for a check to be reported{{/if}}
-                </h5>
-                {{#if check.status.success}}
-                  <p class="text-gray-light">Commit is ready for deployment</p>
-                {{/if}}
-                <div class="mt-4 mb-2">
-                  <a target="_blank" href="https://github.com/{{owner}}/{{repo}}/commits/{{oid}}">
-                    View commit status checks on GitHub
-                  </a>
-
-                </div>
-             </div>
-            </div>
-          </div>
-          <div style="margin-right: 16px;">
-            <a href="#commit-{{oid}}" class="text-{{check.status.color}}" data-toggle="commit-{{oid}}">
-              Commit
-              {{#if check.status.success}}{{> icon_check}}{{/if}}
-              {{#if check.status.pending}}{{> icon_dot}}{{/if}}
-              {{#if check.status.failure}}{{> icon_x}}{{/if}}
-              {{#if check.status.waiting}}{{> icon_clock}}{{/if}}
-            </a>
-          </div>
-        </div>
-
-        <div class="position-relative">
-          <div id="deploy-{{oid}}" class="Popover position-absolute d-none" style="right: 100%; bottom: -50%;">
-            <div class="Popover-message Popover-message--large Popover-message--right-bottom mr-2 Box box-shadow-large Box--condensed">
-              <div class="Box-header bg-white">
-                <h5 class="mb-2 mt-2 text-{{deployment.status.color}}">
-                  {{#if deployment.status.success}}All deployments have succeeded{{/if}}
-                  {{#if deployment.status.pending}}Waiting for an in-progress deployment{{/if}}
-                  {{#if deployment.status.failure}}Deployments have failed{{/if}}
-                  {{#if deployment.status.waiting}}Waiting for a deployment to be reported{{/if}}
-                </h5>
-              </div>
-              {{#each deployments}}
-              <div class="Box-row">
-                <span class="text-{{status.color}} mr-2">
-                  {{#if status.success}}{{> icon_check}}{{/if}}
-                  {{#if status.pending}}{{> icon_dot}}{{/if}}
-                  {{#if status.failure}}{{> icon_x}}{{/if}}
-                  {{#if status.waiting}}{{> icon_clock}}{{/if}}
-                </span>
-                <strong>{{environment}}</strong>
-                by {{creator}}
-                {{#if url}}
-                <a href="{{url}}" class="float-right">Details</a>
-                {{/if}}
-              </div>
-              {{/each}}
-            </div>
-          </div>
-          <div style="margin-right: 16px;">
-            <a href="#deploy-{{oid}}" class="text-{{deployment.status.color}}" data-toggle="deploy-{{oid}}">
-              Deploy
-              {{#if deployment.status.success}}{{> icon_check}}{{/if}}
-              {{#if deployment.status.pending}}{{> icon_dot}}{{/if}}
-              {{#if deployment.status.failure}}{{> icon_x}}{{/if}}
-              {{#if deployment.status.waiting}}{{> icon_clock}}{{/if}}
-            </a>
-          </div>
-        </div>
-
-
         {{#if ../target}}
-        {{#if undeployed}}
-        <button type="button" data-oid="{{oid}}" aria-label="This commit is ready for deployment to {{../target}}."
-          class="deploy btn btn-primary tooltipped tooltipped-n"
-          name="button">
-          {{> icon_play}}
-        </button>
-        {{else}}
-        <button type="button" data-oid="{{oid}}" aria-label="Deploy this commit to {{../target}}."
-          class="deploy btn btn-outline tooltipped tooltipped-n"
-          name="button">
-          {{> icon_play}}
-        </button>
-        {{/if}}
+          {{> deploy_status}}
         {{/if}}
       </div>
       {{/each}}
@@ -153,39 +70,6 @@
 </div>
 
 <script>
-  (function () {
-    var deploys = document.getElementsByClassName("deploy")
-    for (var i = 0; i < deploys.length; i++) {
-      deploys[i].onclick = function (e) {
-        var sha = this.dataset.oid;
-        e.preventDefault();
-        fetch("/deploy/{{target}}/{{owner}}/{{repo}}/" + sha, { method: "POST" })
-          .then(function (resp) { return resp.json() })
-          .then(function (data) {
-            if (data.error) {
-              error(data.error);
-              return;
-            }
-            window.location.href = "/logs/{{owner}}/{{repo}}/" + data.id;
-          }).catch(function (err) {
-            error("Failed to create deployment.");
-          });
-      }
-    }
-  })()
-
-  function error(message) {
-    var container = document.getElementById("error-container");
-    var div = document.createElement("div");
-    div.className = "flash flash-error";
-    div.innerText = message;
-    container.appendChild(div);
-
-    setTimeout(function() {
-      div.remove();
-    }, 5000);
-  }
-
   (function () {
     var active;
     function toggle(id) {
@@ -216,4 +100,7 @@
   })();
 </script>
 
+<script id="deployment" type="text/x-handlebars-template">
+Hello
+</script>
 {{> footer}}
