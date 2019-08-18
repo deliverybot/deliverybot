@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DeployView renders a payload 1`] = `
+exports[`Queries renders a payload 1`] = `
 Object {
   "branches": Array [
     Object {
@@ -27,6 +27,7 @@ Object {
   "commits": Array [
     Object {
       "author": "colinjfw",
+      "branch": "master",
       "check": Object {
         "status": Object {
           "color": "gray",
@@ -41,13 +42,16 @@ Object {
       },
       "deployments": Array [],
       "message": "Update deploy.yml",
-      "oid": "244a445",
+      "oid": "244a4459e999bae6730f12a6203f35df32c41a32",
+      "oidShort": "244a445",
       "owner": "deliverybot",
       "repo": "example",
+      "target": "production",
       "undeployed": false,
     },
     Object {
       "author": "colinjfw",
+      "branch": "master",
       "check": Object {
         "status": Object {
           "color": "green",
@@ -72,13 +76,16 @@ Object {
         },
       ],
       "message": "Update deploy.yml",
-      "oid": "f28d263",
+      "oid": "f28d26327642e6ec54f9af6a46a2ef18ca6313dd",
+      "oidShort": "f28d263",
       "owner": "deliverybot",
       "repo": "example",
+      "target": "production",
       "undeployed": false,
     },
     Object {
       "author": "colinjfw",
+      "branch": "master",
       "check": Object {
         "status": Object {
           "color": "red",
@@ -103,13 +110,16 @@ Object {
         },
       ],
       "message": "Update deploy.yml",
-      "oid": "03938e0",
+      "oid": "03938e013a96875a18b5fdedf4bc98178b01b37b",
+      "oidShort": "03938e0",
       "owner": "deliverybot",
       "repo": "example",
+      "target": "production",
       "undeployed": false,
     },
     Object {
       "author": "colinjfw",
+      "branch": "master",
       "check": Object {
         "status": Object {
           "color": "gray",
@@ -161,13 +171,16 @@ Object {
         },
       ],
       "message": "Update deploy.yml",
-      "oid": "266a098",
+      "oid": "266a09824a55b13d3f0e75313e637aaff12c6468",
+      "oidShort": "266a098",
       "owner": "deliverybot",
       "repo": "example",
+      "target": "production",
       "undeployed": false,
     },
     Object {
       "author": "colinjfw",
+      "branch": "master",
       "check": Object {
         "status": Object {
           "color": "gray",
@@ -182,13 +195,16 @@ Object {
       },
       "deployments": Array [],
       "message": "Update deploy.yml",
-      "oid": "13b08bb",
+      "oid": "13b08bb27476b7062cd2554dcc925816c4e69e0c",
+      "oidShort": "13b08bb",
       "owner": "deliverybot",
       "repo": "example",
+      "target": "production",
       "undeployed": false,
     },
     Object {
       "author": "colinjfw",
+      "branch": "master",
       "check": Object {
         "status": Object {
           "color": "green",
@@ -213,13 +229,16 @@ Object {
         },
       ],
       "message": "Update deploy.yml",
-      "oid": "fc245f7",
+      "oid": "fc245f759c563fc6fe119837d7fb7d1c09f1b944",
+      "oidShort": "fc245f7",
       "owner": "deliverybot",
       "repo": "example",
+      "target": "production",
       "undeployed": false,
     },
     Object {
       "author": "colinjfw",
+      "branch": "master",
       "check": Object {
         "status": Object {
           "color": "green",
@@ -253,13 +272,16 @@ Object {
         },
       ],
       "message": "Update deploy.yml",
-      "oid": "67504c8",
+      "oid": "67504c8be5ee318eb1e1514fb5601b6250935839",
+      "oidShort": "67504c8",
       "owner": "deliverybot",
       "repo": "example",
+      "target": "production",
       "undeployed": false,
     },
     Object {
       "author": "colinjfw",
+      "branch": "master",
       "check": Object {
         "status": Object {
           "color": "green",
@@ -293,13 +315,16 @@ Object {
         },
       ],
       "message": "Update deploy.yml",
-      "oid": "fd3d28a",
+      "oid": "fd3d28ad40d3dd5b6f5a553f3c287cec32dd87b7",
+      "oidShort": "fd3d28a",
       "owner": "deliverybot",
       "repo": "example",
+      "target": "production",
       "undeployed": false,
     },
     Object {
       "author": "colinjfw",
+      "branch": "master",
       "check": Object {
         "status": Object {
           "color": "green",
@@ -468,13 +493,16 @@ Object {
         },
       ],
       "message": "Update deploy.yml",
-      "oid": "eb7930e",
+      "oid": "eb7930eef65f379b9c6a91f7ff790bcda91b245e",
+      "oidShort": "eb7930e",
       "owner": "deliverybot",
       "repo": "example",
+      "target": "production",
       "undeployed": false,
     },
     Object {
       "author": "colinjfw",
+      "branch": "master",
       "check": Object {
         "status": Object {
           "color": "yellow",
@@ -517,9 +545,11 @@ Object {
         },
       ],
       "message": "Create deploy.yml",
-      "oid": "626285e",
+      "oid": "626285ee3f420e0c7a03f36ef01080a60224d13a",
+      "oidShort": "626285e",
       "owner": "deliverybot",
       "repo": "example",
+      "target": "production",
       "undeployed": false,
     },
   ],

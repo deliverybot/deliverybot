@@ -1,0 +1,56 @@
+{{> repo_header}}
+
+<nav class="UnderlineNav">
+  <div class="content">
+    <div class="UnderlineNav-body">
+      <a href="/deploy/{{owner}}/{{repo}}" role="tab" title="Deploy" class="UnderlineNav-item selected">Deploy</a>
+    </div>
+  </div>
+</nav>
+</header>
+
+<div class="bg-white fill pt-3">
+  <div class="content">
+    <div class="Box mt-3">
+      <div class="Box-footer pb-5 text-gray-light bg-gray-light">
+        <h4>
+          <a class="text-gray-dark" target="_blank" href="https://github.com/{{owner}}/{{repo}}/commit/{{oid}}">
+            {{message}}
+          </a>
+        </h4>
+        <div class="text-gray-light">
+          <strong><code>{{oidShort}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
+        </div>
+      </div>
+      {{#if error}}
+      <h2>Deployment failed</h2>
+      <p id="error" class="text-red">{{error}}</p>
+      {{else}}
+      <div>
+        {{> deploy_status_body}}
+      </div>
+
+      {{/if}}
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    function poller() {
+      fetch("/deployments/{{owner}}/{{repo}}/{{deployment.id}}", { method: "GET" })
+        .then(function (resp) { return resp.json() })
+        .then(function (data) {
+          if (data.url) {
+            return;
+          }
+          window.location.href = data.url;
+        }).catch(function (err) {
+          console.error("")
+        });
+
+      setTimeout(poller, 5000);
+    }
+    // poller();
+  })();
+</script>
