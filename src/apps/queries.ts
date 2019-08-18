@@ -100,6 +100,7 @@ export function View(
 const failing = ["FAILURE", "FAILING", "ERROR", "CANCELLED", "TIMED_OUT"];
 const pending = ["PENDING", "ACTION_REQUIRED", "QUEUED", "IN_PROGRESS"];
 const success = ["SUCCESS"];
+const waiting = ["WAITING"];
 
 export function AggregateStatus(statuses: string[]) {
   if (statuses.find(s => failing.includes(s.toUpperCase()))) {
@@ -107,6 +108,9 @@ export function AggregateStatus(statuses: string[]) {
   }
   if (statuses.find(s => pending.includes(s.toUpperCase()))) {
     return "PENDING";
+  }
+  if (statuses.find(s => waiting.includes(s.toUpperCase()))) {
+    return "WAITING";
   }
   if (statuses.find(s => success.includes(s.toUpperCase()))) {
     return "SUCCESS";
