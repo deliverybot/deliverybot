@@ -1,6 +1,6 @@
 {
   "name": "deliverybot",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Controls and configures deployments using the GitHub API.",
   "author": "Colin Walker <me@colinjfw.com> (https://github.com/deliverybot/deliverybot)",
   "license": "ISC",
@@ -21,7 +21,8 @@
     "start": "npm run build && probot run ./lib/index.js",
     "format": "prettier --write \"src/**/*.ts\"",
     "test": "LOG_LEVEL=fatal jest",
-    "test:watch": "jest --watch --notify --notifyMode=change --coverage"
+    "test:watch": "jest --watch --notify --notifyMode=change --coverage",
+    "release": "standard-version"
   },
   "dependencies": {
     "@google-cloud/logging-bunyan": "^1.2.1",
