@@ -16,6 +16,19 @@ Deploying:
 - Deploy using simple container executors.
 - Pre built integrations for Helm, Google Cloud run.
 
+## Setup
+
+```sh
+# Install dependencies
+npm install
+
+# Run typescript
+npm run build
+
+# Run the bot
+npm start
+```
+
 ## Contributing
 
 If you have suggestions for how deliverybot could be improved, or want to report
