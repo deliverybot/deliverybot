@@ -4,15 +4,15 @@ steps:
     args:
     - "--bucket=gs://$PROJECT_ID-cache/"
     - "--key=node_modules"
-  - name: "gcr.io/cloud-builders/npm"
+  - name: "gcr.io/cloud-builders/npm:node-10.10.0"
     id: "install"
     args: ["install"]
     waitFor: ["cache"]
-  - name: "gcr.io/cloud-builders/npm"
+  - name: "gcr.io/cloud-builders/npm:node-10.10.0"
     id: "test"
     args: ["test"]
     waitFor: ["install"]
-  - name: "gcr.io/cloud-builders/npm"
+  - name: "gcr.io/cloud-builders/npm:node-10.10.0"
     id: "package"
     args: ["run", "package"]
     waitFor: ["test"]

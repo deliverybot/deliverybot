@@ -46,7 +46,7 @@
 <script>
   (function () {
     var previous = "{{hash}}";
-    function poller() {
+    function refresh() {
       fetch(window.location.href, {
           method: "GET",
           headers: { accept: "application/json" },
@@ -55,18 +55,29 @@
         .then(function (data) {
           // Don't update the UI if we've already seen this data before.
           if (data.hash === previous) {
-            setTimeout(poller, 10000);
             return;
           }
           previous = data.hash;
           var el = document.getElementById("deploy-status");
           el.innerHTML = Handlebars.partials.deploy_status_body(data);
-          setTimeout(poller, 2000);
         }).catch(function (err) {
           console.error(err);
-          setTimeout(poller, 10000);
         });
     }
-    poller();
+
+    document.addEventListener("repo-update", function() {
+      refresh();
+    });
+
+    document.addEventListener("watch-loaded", function() {
+      document.dispatchEvent(
+        new CustomEvent("repo-listen", { detail: {
+          owner: "{{owner}}",
+          repo: "{{repo}}",
+          repoId: "{{repoId}}",
+        }})
+      );
+    });
   })();
 </script>
+{{> footer}}
