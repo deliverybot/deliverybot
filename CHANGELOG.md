@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/deliverybot/deliverybot/compare/v0.0.1...v0.0.2) (2019-08-22)
+
+
+### Features
+
+* Dynamic loading on commits page ([55aefa8](https://github.com/deliverybot/deliverybot/commit/55aefa8))
+* Move to library distribution ([86ef59f](https://github.com/deliverybot/deliverybot/commit/86ef59f))
+* Realtime capabilities using external source ([08424b0](https://github.com/deliverybot/deliverybot/commit/08424b0))
+
 ### 0.0.1 (2019-08-19)
 
 
