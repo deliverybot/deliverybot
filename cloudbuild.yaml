@@ -16,10 +16,6 @@ steps:
     id: "package"
     args: ["run", "package"]
     waitFor: ["test"]
-  - name: "gcr.io/cloud-builders/docker"
-    id: "build"
-    args: ["build", "-t", "gcr.io/$PROJECT_ID/deliverybot:$SHORT_SHA", "."]
-    waitFor: ["package"]
   - name: "gcr.io/$PROJECT_ID/save_cache"
     id: "save"
     waitFor: ["install"]
@@ -36,5 +32,3 @@ steps:
     id: "upload"
     waitFor: ["package-zip"]
     args: ["cp", "dist.zip", "gs://$PROJECT_ID-cache/deliverybot-$SHORT_SHA.zip"]
-images:
-  - "gcr.io/$PROJECT_ID/deliverybot:$SHORT_SHA"

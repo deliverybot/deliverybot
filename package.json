@@ -1,6 +1,8 @@
 {
   "name": "deliverybot",
   "version": "0.0.1",
+  "main": "lib/index.js",
+  "files": ["lib/*", "views/*", "static/*", "app.yml"],
   "description": "Controls and configures deployments using the GitHub API.",
   "author": "Colin Walker <me@colinjfw.com> (https://github.com/deliverybot/deliverybot)",
   "license": "ISC",
@@ -14,18 +16,16 @@
     "probot-app"
   ],
   "scripts": {
-    "package": "npm run build && npm run dist && npm install --prefix dist --production",
-    "dist": "mkdir -p dist/node_modules && rm -r dist/* && cp -r static views lib package* LICENSE entrypoint.sh app.yml function.js dist/",
     "build": "tsc -p tsconfig.json && node src/partials.js > static/partials.js",
     "dev": "nodemon --watch src --exec \"npm start\"",
     "start": "npm run build && probot run ./lib/index.js",
     "format": "prettier --write \"src/**/*.ts\"",
     "test": "LOG_LEVEL=fatal jest",
     "test:watch": "jest --watch --notify --notifyMode=change --coverage",
+    "prepack": "npm run build",
     "release": "standard-version"
   },
   "dependencies": {
-    "@google-cloud/logging-bunyan": "^1.2.1",
     "@google-cloud/pubsub": "^0.31.0",
     "@octokit/graphql": "^3.0.1",
     "body-parser": "1.19.0",
