@@ -39,12 +39,7 @@ export async function show(req: AuthedRequest, res: Response) {
     sha
   );
   if (req.headers["accept"] === "application/json") {
-    res.json(
-      ctx(req, {
-        hash: hash(commit),
-        ...commit
-      })
-    );
+    res.json(ctx(req, commit));
   } else {
     res.render("commit", ctx(req, commit));
   }
@@ -89,7 +84,11 @@ export async function index(req: AuthedRequest, res: Response) {
     target,
     branch || "master"
   );
-  res.render("deploy", ctx(req, { branches, commits, targets }));
+  if (req.headers["accept"] === "application/json") {
+    res.json(ctx(req, ctx(req, { branches, commits, targets })));
+  } else {
+    res.render("deploy", ctx(req, { branches, commits, targets }));
+  }
 }
 
 export async function redirect(req: AuthedRequest, res: Response) {
@@ -103,7 +102,8 @@ export async function redirect(req: AuthedRequest, res: Response) {
 function ctx(req: AuthedRequest, data: any) {
   const { owner, repo, target, branch, sha } = req.params;
   const repoId = req.user!.repo!.id;
-  return { repoId, owner, repo, target, branch, sha, oid: sha, pkg, ...data };
+  const out = { repoId, owner, repo, target, branch, sha, oid: sha, pkg, ...data };
+  return { hash: hash(out), ...out }
 }
 
 async function tryConfig(req: AuthedRequest) {

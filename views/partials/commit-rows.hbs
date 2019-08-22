@@ -1,0 +1,19 @@
+{{#each commits}}
+<div class="Box-row d-flex flex-items-center Box-row--hover-blue">
+  <div class="flex-auto">
+    <div class="position-relative" style="display: inline-block;">
+      <a class="text-gray-dark" href="/deploy/{{target}}/{{owner}}/{{repo}}/{{branch}}/{{oid}}">
+        {{message}}
+      </a>
+      {{> commit_status}}
+    </div>
+
+    <div class="text-gray-light">
+      <strong><code>{{oidShort}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
+    </div>
+  </div>
+  {{#if ../target}}
+    {{> deploy_status}}
+  {{/if}}
+</div>
+{{/each}}
