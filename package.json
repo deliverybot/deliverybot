@@ -28,7 +28,8 @@
     "test": "LOG_LEVEL=fatal jest",
     "test:watch": "jest --watch --notify --notifyMode=change --coverage",
     "prepack": "npm run build",
-    "release": "standard-version"
+    "release": "standard-version",
+    "finish": "git push --follow-tags origin master && npm publish"
   },
   "dependencies": {
     "@google-cloud/pubsub": "^0.31.0",

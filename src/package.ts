@@ -1,6 +1,6 @@
 import path from "path";
 
-const pkg = require(path.join(process.cwd(), "package.json"));
+const pkg = require(path.join(__dirname, "..", "package.json"));
 
 export const name = pkg.name as string;
 export const version = pkg.version as string;
