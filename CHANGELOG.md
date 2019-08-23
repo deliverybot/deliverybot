@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/deliverybot/deliverybot/compare/v0.0.3...v0.0.4) (2019-08-23)
+
+
+### Bug Fixes
+
+* Remove dotenv don't need this ([63710f6](https://github.com/deliverybot/deliverybot/commit/63710f6))
+* Remove pubsub app ([16f57cc](https://github.com/deliverybot/deliverybot/commit/16f57cc))
+
 ### [0.0.3](https://github.com/deliverybot/deliverybot/compare/v0.0.2...v0.0.3) (2019-08-23)
 
 
