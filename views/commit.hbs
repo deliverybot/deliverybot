@@ -9,8 +9,25 @@
 </nav>
 </header>
 
-<div class="bg-white fill pt-3">
+<div class="bg-white fill">
   <div class="content">
+    <details class="details-reset details-overlay pt-3" style="display: inline-block;">
+      <summary class="btn btn-sm" type="button" aria-haspopup="true" aria-expanded="true">
+        Target: <b>{{target}}</b>
+      </summary>
+      <div class="SelectMenu">
+        <div class="SelectMenu-modal">
+          <menu class="SelectMenu-list">
+            {{#each targets}}
+            <a href="/deploy/{{name}}/{{../owner}}/{{../repo}}/{{../branch}}/{{../sha}}" class="SelectMenu-item" role="menuitem">
+              {{name}}
+            </a>
+            {{/each}}
+          </menu>
+        </div>
+      </div>
+    </details>
+
     <div class="Box mt-3">
       <div class="Box-footer pb-5 bg-gray-light">
         <div id="syncing"

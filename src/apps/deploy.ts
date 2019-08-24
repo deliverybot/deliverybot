@@ -29,6 +29,9 @@ export function deploy(app: Application) {
 
 export async function show(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch, sha } = req.params;
+  const conf = await tryConfig(req);
+  const targets = queries.Targets(target, conf);
+
   const commit = await queries.commit(
     req.user!.token,
     owner,
@@ -40,12 +43,14 @@ export async function show(req: AuthedRequest, res: Response) {
   if (req.headers["accept"] === "application/json") {
     res.json(ctx(req, commit));
   } else {
-    res.render("commit", ctx(req, commit));
+    res.render("commit", ctx(req, { targets, ...commit }));
   }
 }
 
 export async function create(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch, sha } = req.params;
+  const conf = await tryConfig(req);
+  const targets = queries.Targets(target, conf);
 
   let error: Error | undefined;
   try {
@@ -68,7 +73,7 @@ export async function create(req: AuthedRequest, res: Response) {
     branch,
     sha
   );
-  res.render("commit", ctx(req, { error, ...commit }));
+  res.render("commit", ctx(req, { error, targets, ...commit }));
 }
 
 export async function index(req: AuthedRequest, res: Response) {
