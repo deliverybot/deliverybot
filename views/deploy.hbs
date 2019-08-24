@@ -53,37 +53,35 @@
 
 <script>
   (function () {
-    var active;
-    function toggle(id) {
-      if (active) {
-        dismiss(active);
+    function bindToggles() {
+      var active;
+      function toggle(id) {
+        if (active) {
+          dismiss(active);
+        }
+        if (active === id) {
+          active = null;
+          return;
+        }
+        active = id;
+        var el = document.getElementById(id);
+        el.classList.add("d-block");
+        el.classList.remove("d-none");
       }
-      if (active === id) {
-        active = null;
-        return;
+      function dismiss(id) {
+        var el = document.getElementById(id);
+        el.classList.add("d-none");
+        el.classList.remove("d-block");
       }
-      active = id;
-      var el = document.getElementById(id);
-      el.classList.add("d-block");
-      el.classList.remove("d-none");
+      var toggles = document.querySelectorAll('[data-toggle]');
+      for (var i = 0; i < toggles.length; i++) {
+        toggles[i].addEventListener('click', function(e) {
+          e.preventDefault();
+          toggle(this.dataset.toggle);
+        });
+      }
     }
-    function dismiss(id) {
-      var el = document.getElementById(id);
-      el.classList.add("d-none");
-      el.classList.remove("d-block");
-    }
-    var toggles = document.querySelectorAll('[data-toggle]');
-    for (var i = 0; i < toggles.length; i++) {
-      toggles[i].addEventListener('click', function(e) {
-        e.preventDefault();
-        toggle(this.dataset.toggle);
-      });
-    }
-  })();
-</script>
 
-<script>
-  (function () {
     var previous = "{{hash}}";
     function refresh() {
       fetch(window.location.href, {
@@ -99,6 +97,7 @@
           previous = data.hash;
           var el = document.getElementById("commits");
           el.innerHTML = Handlebars.partials.commit_rows(data);
+          bindToggles();
         }).catch(function (err) {
           console.error(err);
         });
@@ -117,6 +116,8 @@
         }})
       );
     });
+
+    bindToggles();
   })();
 </script>
 {{> footer}}
