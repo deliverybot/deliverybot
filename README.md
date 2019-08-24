@@ -11,11 +11,6 @@ Deployment automation:
 - Review environments using `/deploy` commands in pull requests.
 - Validate a deploy has succeeded before merging.
 
-Deploying:
-
-- Deploy using simple container executors.
-- Pre built integrations for Helm, Google Cloud run.
-
 ## Setup
 
 ```sh
