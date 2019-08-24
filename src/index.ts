@@ -75,7 +75,7 @@ export = (robot: Application) => {
   handlers.forEach(register => register(robot));
 
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    (req as any).log.error({ error: err.message }, "request failed");
+    (req as any).log.error({ error: err }, "request failed");
     res.status(500).sendFile(error5xx);
   });
   app.use((req: Request, res: Response) => {
