@@ -18,6 +18,15 @@
           <a href="/{{owner}}/{{repo}}"><strong>{{owner}} / {{repo}}</strong></a>
         </div>
       </div>
+      {{else}}
+      <div class="text-center">
+        <p class="lead">
+          You don't have deliverybot installed on any repositories.
+        </p>
+        <a class="btn btn-outline" role="button" href="https://github.com/apps/{{ pkg.name }}">
+          Install now
+        </a>
+      </div>
       {{/each}}
     </div>
   </div>
