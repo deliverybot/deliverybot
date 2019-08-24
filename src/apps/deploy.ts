@@ -6,7 +6,6 @@ import * as queries from "./queries";
 import hash from "object-hash";
 
 export function deploy(app: Application) {
-  app.get("/:owner/:repo", authenticate, verifyRepo, redirect);
   app.get("/deploy/:owner/:repo", authenticate, verifyRepo, redirect);
   app.get(
     "/deploy/:target/:owner/:repo/:branch",
