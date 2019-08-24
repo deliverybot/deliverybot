@@ -117,7 +117,7 @@ function ctx(req: AuthedRequest, data: any) {
     pkg,
     ...data
   };
-  return { hash: hash(out), ...out };
+  return { csrf: req.csrfToken(), hash: hash(out), ...out };
 }
 
 async function tryConfig(req: AuthedRequest) {

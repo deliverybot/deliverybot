@@ -1,4 +1,6 @@
 <form method="POST" action="/deploy/{{target}}/{{owner}}/{{repo}}/{{branch}}/{{oid}}">
+  <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+
   {{#if undeployed}}
   <button type="submit" data-oid="{{oid}}" aria-label="This commit is ready for deployment to {{target}}."
     class="deploy btn btn-primary tooltipped tooltipped-n"
