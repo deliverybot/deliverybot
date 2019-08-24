@@ -7,8 +7,8 @@
     ".*": {
       "type": "object",
       "properties": {
-        "auto_deploy": {
-          "type": "boolean"
+        "auto_deploy_on": {
+          "type": "string"
         },
         "deployments": {
           "type": "array",
