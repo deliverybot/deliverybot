@@ -36,6 +36,7 @@ export function authenticate(
 ) {
   const token = req.session && req.session.token;
   if (!token) {
+    (req as any).log.info("unauthenticated access redirecting");
     res.redirect("/login");
     return;
   }
@@ -75,8 +76,9 @@ export async function verifyRepo(
 
   const repoData = await octokit.repos.get({ owner, repo });
   const id = `${repoData.data.id}`;
-  const write = canWrite(octokit, { owner, repo, username });
-  if (write) {
+  const write = await canWrite(octokit, { owner, repo, username });
+  if (!write) {
+    (req as any).log.info({ owner, repo }, "no write access");
     res.redirect("/login");
     return;
   }
@@ -86,41 +88,41 @@ export async function verifyRepo(
   next();
 }
 
-export function callback(req: Request, res: Response) {
-  request.post(
-    {
-      headers: {
-        accept: "application/json"
+function accessToken(code: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    request.post(
+      {
+        headers: {
+          accept: "application/json"
+        },
+        url: "https://github.com/login/oauth/access_token",
+        form: {
+          client_id: CLIENT_ID,
+          client_secret: CLIENT_SECRET,
+          code
+        }
       },
-      url: "https://github.com/login/oauth/access_token",
-      form: {
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
-        code: req.query.code
-      }
-    },
-    (err: Error, _: request.Response, body: any) => {
-      if (err) {
-        res.write("error");
-        return;
-      }
+      (err: Error, _: request.Response, body: any) => {
+        if (err) {
+          return reject(err);
+        }
 
-      const data = JSON.parse(body);
-      const token = data["access_token"];
-      const octokit = new Octokit();
-      octokit.authenticate({ type: "token", token });
-      octokit.users
-        .getAuthenticated({})
-        .then(user => {
-          req.session!.token = token;
-          req.session!.login = user.data.login;
-          res.redirect("/");
-        })
-        .catch(err => {
-          res.write("ERROR");
-        });
-    }
-  );
+        const data = JSON.parse(body);
+        const token = data["access_token"];
+        resolve(token);
+      }
+    );
+  });
+}
+
+export async function callback(req: Request, res: Response) {
+  const token = await accessToken(req.query.code);
+  const octokit = new Octokit({ auth: token });
+  const user = await octokit.users.getAuthenticated({});
+
+  req.session!.token = token;
+  req.session!.login = user.data.login;
+  res.redirect("/");
 }
 
 const loginUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${BASE_URL}/login/cb`;
