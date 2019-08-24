@@ -102,8 +102,18 @@ export async function redirect(req: AuthedRequest, res: Response) {
 function ctx(req: AuthedRequest, data: any) {
   const { owner, repo, target, branch, sha } = req.params;
   const repoId = req.user!.repo!.id;
-  const out = { repoId, owner, repo, target, branch, sha, oid: sha, pkg, ...data };
-  return { hash: hash(out), ...out }
+  const out = {
+    repoId,
+    owner,
+    repo,
+    target,
+    branch,
+    sha,
+    oid: sha,
+    pkg,
+    ...data
+  };
+  return { hash: hash(out), ...out };
 }
 
 async function tryConfig(req: AuthedRequest) {

@@ -42,6 +42,18 @@ export function authenticate(
   setUser(req, res, next);
 }
 
+export async function canWrite(
+  gh: Octokit,
+  { owner, repo, username }: { owner: string; repo: string; username: string }
+): Promise<boolean> {
+  const perms = await gh.repos.getCollaboratorPermissionLevel({
+    owner,
+    repo,
+    username
+  });
+  return ["admin", "write"].includes(perms.data.permission);
+}
+
 export async function verifyRepo(
   req: AuthedRequest,
   res: Response,
@@ -63,12 +75,8 @@ export async function verifyRepo(
 
   const repoData = await octokit.repos.get({ owner, repo });
   const id = `${repoData.data.id}`;
-  const perms = await octokit.repos.getCollaboratorPermissionLevel({
-    owner,
-    repo,
-    username
-  });
-  if (perms.data.permission !== "admin") {
+  const write = canWrite(octokit, { owner, repo, username });
+  if (write) {
     res.redirect("/login");
     return;
   }

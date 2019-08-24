@@ -7,6 +7,7 @@ import {
   ReposGetDeploymentResponse
 } from "@octokit/rest";
 import schema from "../schema.json";
+import { canWrite } from "./auth";
 
 const previewAnt = "application/vnd.github.ant-man-preview+json";
 const previewFlash = "application/vnd.github.flash-preview+json";
@@ -83,15 +84,26 @@ function getDeployBody(deployment: Deployment, data: any): Deployment {
 
 async function handlePRDeploy(context: Context, command: string) {
   context.log.info({ command }, "Deploy: handling command");
-  const target = command.split(" ")[1];
-  const pr = await context.github.pulls.get({
-    owner: context.payload.repository.owner.login,
-    repo: context.payload.repository.name,
-    pull_number: context.payload.issue.number
-  });
-
   try {
-    // TODO: Ensure that the creator has deploy access to the repository.
+    const target = command.split(" ")[1];
+    const pr = await context.github.pulls.get({
+      owner: context.payload.repository.owner.login,
+      repo: context.payload.repository.name,
+      pull_number: context.payload.issue.number
+    });
+
+    const write = await canWrite(
+      context.github,
+      context.repo({ username: context.payload.comment.user.login })
+    );
+    if (!write) {
+      context.log.info(
+        context.repo({ command }),
+        "Deploy: no write priviledges"
+      );
+      return;
+    }
+
     await deployCommit(
       context.github,
       context.log,

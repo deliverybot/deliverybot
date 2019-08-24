@@ -26,11 +26,13 @@ nock.disableNetConnect();
 const mockDeploy = ({
   pr,
   deploy,
-  valid
+  valid,
+  nonAdmin
 }: {
   pr?: boolean;
   deploy?: boolean;
   valid?: boolean;
+  nonAdmin?: boolean;
 }) => {
   nock("https://api.github.com")
     .post("/app/installations/2/access_tokens")
@@ -44,6 +46,9 @@ const mockDeploy = ({
   nock("https://api.github.com")
     .post("/repos/Codertocat/Hello-World/deployments/1/statuses")
     .reply(200);
+  nock("https://api.github.com")
+    .get("/repos/Codertocat/Hello-World/collaborators/Codertocat/permission")
+    .reply(200, { permission: nonAdmin ? "read" : "admin" });
   nock("https://api.github.com")
     .persist()
     .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
@@ -92,10 +97,24 @@ describe("Deployments", () => {
     done();
   });
 
+  test("no deployment with read access", async done => {
+    const payload = {
+      ...fixtures.commentCreated,
+      comment: { ...fixtures.commentCreated.comment, body: "/deploy review" }
+    };
+    const deployCall = mockDeploy({ pr: true, valid: true, deploy: true, nonAdmin: true });
+    await probot.receive({
+      name: "issue_comment",
+      payload
+    });
+    expect(deployCall!.isDone()).toBeFalsy();
+    done();
+  });
+
   test("puts an error when the target is invalid", async done => {
     const payload = {
       ...fixtures.commentCreated,
-      comment: { ...fixtures.commentCreated.body, body: "/deploy invalid" }
+      comment: { ...fixtures.commentCreated.comment, body: "/deploy invalid" }
     };
     mockDeploy({ pr: true, valid: true, deploy: false });
     const commentCall = nock("https://api.github.com")
