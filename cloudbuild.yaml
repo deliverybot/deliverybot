@@ -12,10 +12,6 @@ steps:
     id: "test"
     args: ["test"]
     waitFor: ["install"]
-  - name: "gcr.io/cloud-builders/npm:node-10.10.0"
-    id: "package"
-    args: ["run", "package"]
-    waitFor: ["test"]
   - name: "gcr.io/$PROJECT_ID/save_cache"
     id: "save"
     waitFor: ["install"]
@@ -23,12 +19,3 @@ steps:
     - "--bucket=gs://$PROJECT_ID-cache/"
     - "--key=node_modules"
     - "--path=node_modules"
-  - name: gcr.io/$PROJECT_ID/zip
-    id: "package-zip"
-    waitFor: ["package"]
-    dir: dist
-    args: ["-qr", "../dist.zip", "."]
-  - name: gcr.io/cloud-builders/gsutil
-    id: "upload"
-    waitFor: ["package-zip"]
-    args: ["cp", "dist.zip", "gs://$PROJECT_ID-cache/deliverybot-$SHORT_SHA.zip"]
