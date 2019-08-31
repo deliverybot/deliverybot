@@ -6,6 +6,7 @@ import { CLIENT_ID, CLIENT_SECRET, BASE_URL } from "../config";
 
 export interface AuthedRequest extends Request {
   user?: {
+    id: string;
     username: string;
     token: string;
     github: Octokit;
@@ -16,16 +17,15 @@ export interface AuthedRequest extends Request {
 export function setUser(req: AuthedRequest, res: Response, next: NextFunction) {
   const token = req.session && req.session.token;
   if (!token) {
-    next();
-    return;
+    return next();
   }
   const username = req.session!.login;
-  const octokit = new Octokit({ auth: token });
-  req.user = {
-    github: octokit,
-    token,
-    username
-  };
+  const id = req.session!.id;
+  if (!id || !username) {
+    return next();
+  }
+  const github = new Octokit({ auth: token });
+  req.user = { id, github, token, username };
   next();
 }
 
@@ -121,6 +121,7 @@ export async function callback(req: Request, res: Response) {
   const user = await octokit.users.getAuthenticated({});
 
   req.session!.token = token;
+  req.session!.id = user.data.id;
   req.session!.login = user.data.login;
   res.redirect("/");
 }
