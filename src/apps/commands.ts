@@ -71,7 +71,7 @@ export async function config(
 
 function getDeployBody(deployment: Deployment, data: any): Deployment {
   return withPreview({
-    task: "deploy",
+    task: deployment.task || "deploy",
     transient_environment: deployment.transient_environment || false,
     production_environment: deployment.production_environment || false,
     environment: render(deployment.environment || "production", data),
