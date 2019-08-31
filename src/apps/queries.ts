@@ -26,7 +26,7 @@ status { contexts { state } }
 checkSuites(last: 50) { nodes { conclusion status } }
 deployments(last: 50) {
   nodes {
-    id environment
+    id environment description
     creator { login }
     latestStatus { logUrl state }
   }
@@ -161,10 +161,21 @@ export function Undeployed(node: any) {
 export function Deployments(node: any) {
   return (node.deployments || []).nodes.map((deploy: any) => ({
     status: Status(deploy.latestStatus && deploy.latestStatus.state),
+    description: truncate(deploy.description, 20),
     environment: deploy.environment,
     creator: deploy.creator.login,
     url: deploy.latestStatus && deploy.latestStatus.logUrl
   }));
+}
+
+function truncate(s: string | undefined | null, t: number) {
+  if (!s) {
+    return ""
+  }
+  if (s.length > t) {
+    return s.substr(0, t) + "..."
+  }
+  return s
 }
 
 export function Commit(
