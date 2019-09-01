@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/deliverybot/deliverybot/compare/v0.0.4...v0.0.5) (2019-09-01)
+
+
+### Bug Fixes
+
+* Allow deployments to set task ([83f82e5](https://github.com/deliverybot/deliverybot/commit/83f82e5))
+* Bind toggles on page refresh ([fff6b0e](https://github.com/deliverybot/deliverybot/commit/fff6b0e))
+* Empty state when no repos ([51f9eba](https://github.com/deliverybot/deliverybot/commit/51f9eba))
+* Home should link to deploys ([2496fb9](https://github.com/deliverybot/deliverybot/commit/2496fb9))
+* Log entire error message ([a0a8165](https://github.com/deliverybot/deliverybot/commit/a0a8165))
+* Redirect after commit ([e661bbe](https://github.com/deliverybot/deliverybot/commit/e661bbe))
+* Remove base owner/repo route ([5d3a7e7](https://github.com/deliverybot/deliverybot/commit/5d3a7e7))
+* Schema property invalid ([2e5010a](https://github.com/deliverybot/deliverybot/commit/2e5010a))
+
+
+### Features
+
+* Add commit status to commit page ([c606498](https://github.com/deliverybot/deliverybot/commit/c606498))
+* Add csrf protection for deployment forms ([ae93492](https://github.com/deliverybot/deliverybot/commit/ae93492))
+* Add deployment descriptions ([e48b4f0](https://github.com/deliverybot/deliverybot/commit/e48b4f0))
+* Add target selector to commit page ([9e716f0](https://github.com/deliverybot/deliverybot/commit/9e716f0))
+* Ensure correct permission on pr deploy ([8bd07f3](https://github.com/deliverybot/deliverybot/commit/8bd07f3))
+* Success status wins over waiting ([7e781da](https://github.com/deliverybot/deliverybot/commit/7e781da))
+
 ### [0.0.4](https://github.com/deliverybot/deliverybot/compare/v0.0.3...v0.0.4) (2019-08-23)
 
 
