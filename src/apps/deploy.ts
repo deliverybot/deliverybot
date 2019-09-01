@@ -58,7 +58,9 @@ export async function create(req: AuthedRequest, res: Response) {
       repo,
       target,
       sha,
-      ref: branch
+      // Don't want to specify the branch here otherwise we'll deploy the head
+      // instead of the current commit.
+      ref: sha,
     });
     res.redirect(`/deploy/${target}/${owner}/${repo}/${branch}/${sha}`)
   } catch (error) {
