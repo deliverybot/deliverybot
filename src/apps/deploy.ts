@@ -52,7 +52,6 @@ export async function create(req: AuthedRequest, res: Response) {
   const conf = await tryConfig(req);
   const targets = queries.Targets(target, conf);
 
-  let error: Error | undefined;
   try {
     await deployCommit(req.user!.github, (req as any).log, {
       owner,
@@ -61,19 +60,18 @@ export async function create(req: AuthedRequest, res: Response) {
       sha,
       ref: branch
     });
-  } catch (e) {
-    error = e;
+    res.redirect(`/deploy/${target}/${owner}/${repo}/${branch}/${sha}`)
+  } catch (error) {
+    const commit = await queries.commit(
+      req.user!.token,
+      owner,
+      repo,
+      target,
+      branch,
+      sha
+    );
+    res.render("commit", ctx(req, { error, targets, ...commit }));
   }
-
-  const commit = await queries.commit(
-    req.user!.token,
-    owner,
-    repo,
-    target,
-    branch,
-    sha
-  );
-  res.render("commit", ctx(req, { error, targets, ...commit }));
 }
 
 export async function index(req: AuthedRequest, res: Response) {
