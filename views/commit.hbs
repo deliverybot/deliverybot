@@ -61,7 +61,7 @@
   </div>
 </div>
 
-{{#if ok}}
+{{#unless error}}
 <script>
   (function () {
     var previous = "{{hash}}";
@@ -99,5 +99,5 @@
     });
   })();
 </script>
-{{/if}}
+{{/unless}}
 {{> footer}}
