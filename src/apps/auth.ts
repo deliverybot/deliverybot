@@ -131,4 +131,8 @@ const loginUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID
 export function auth(app: Application) {
   app.get("/login", (req: Request, res: Response) => res.redirect(loginUrl));
   app.get("/login/cb", callback);
+  app.get("/logout", (req: Request, res: Response) => {
+    req.session = {};
+    res.redirect("/");
+  });
 }

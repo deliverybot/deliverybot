@@ -4,7 +4,6 @@ import * as pkg from "../package";
 
 export async function index(req: AuthedRequest, res: Response) {
   if (!req.user) {
-    req.session!.started = Date.now();
     res.render("probot", { ...pkg, anonymous: true });
     return;
   }
