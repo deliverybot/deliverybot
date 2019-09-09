@@ -9,7 +9,7 @@
     "app.yml"
   ],
   "description": "Controls and configures deployments using the GitHub API.",
-  "author": "Colin Walker <me@colinjfw.com> (https://github.com/deliverybot/deliverybot)",
+  "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",
   "license": "MIT",
   "repository": "https://github.com/deliverybot/deliverybot.git",
   "homepage": "https://deliverybot.dev",
