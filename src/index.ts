@@ -3,7 +3,7 @@ import session from "client-sessions";
 import bodyParser from "body-parser";
 import express, { Request, Response, NextFunction } from "express";
 import path from "path";
-import csurf from 'csurf';
+import csurf from "csurf";
 
 import { APP_SECRET, PRODUCTION } from "./config";
 import { apps, handlers } from "./apps";
@@ -79,7 +79,10 @@ export = (robot: Application) => {
   handlers.forEach(register => register(robot));
 
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    (req as any).log.error({ error: err.message, errorObj: err }, "request failed");
+    (req as any).log.error(
+      { error: err.message, errorObj: err },
+      "request failed"
+    );
     res.status(500).sendFile(error5xx);
   });
   app.use((req: Request, res: Response) => {

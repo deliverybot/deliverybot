@@ -170,12 +170,12 @@ export function Deployments(node: any) {
 
 function truncate(s: string | undefined | null, t: number) {
   if (!s) {
-    return ""
+    return "";
   }
   if (s.length > t) {
-    return s.substr(0, t) + "..."
+    return s.substr(0, t) + "...";
   }
-  return s
+  return s;
 }
 
 export function Commit(
