@@ -12,8 +12,8 @@
   "author": "Colin Walker <me@colinjfw.com> (https://github.com/deliverybot/deliverybot)",
   "license": "ISC",
   "repository": "https://github.com/deliverybot/deliverybot.git",
-  "homepage": "https://deliverybot.github.io",
-  "documentation": "https://deliverybot.github.io/docs/",
+  "homepage": "https://deliverybot.dev",
+  "documentation": "https://deliverybot.dev/docs/",
   "bugs": "https://github.com/deliverybot/deliverybot/issues",
   "keywords": [
     "probot",

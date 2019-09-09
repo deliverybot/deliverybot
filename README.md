@@ -1,6 +1,6 @@
 # deliverybot
 
-Complete deployment automation for GitHub. https://deliverybot.github.io
+Complete deployment automation for GitHub. https://deliverybot.dev
 
 ## Features
 
