@@ -10,7 +10,7 @@
   ],
   "description": "Controls and configures deployments using the GitHub API.",
   "author": "Colin Walker <me@colinjfw.com> (https://github.com/deliverybot/deliverybot)",
-  "license": "ISC",
+  "license": "MIT",
   "repository": "https://github.com/deliverybot/deliverybot.git",
   "homepage": "https://deliverybot.dev",
   "documentation": "https://deliverybot.dev/docs/",
