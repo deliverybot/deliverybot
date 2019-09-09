@@ -32,7 +32,7 @@ export async function show(req: AuthedRequest, res: Response) {
   if (req.headers["accept"] === "application/json") {
     res.json(ctx(req, commit));
   } else {
-    res.render("commit", ctx(req, { targets, ...commit }));
+    res.render("commit", ctx(req, { page: "commit", targets, ...commit }));
   }
 }
 
@@ -63,7 +63,10 @@ export async function create(req: AuthedRequest, res: Response) {
       branch,
       sha
     );
-    res.render("commit", ctx(req, { error, targets, ...commit }));
+    res.render(
+      "commit",
+      ctx(req, { page: "commit", error, targets, ...commit })
+    );
   }
 }
 
@@ -82,7 +85,10 @@ export async function index(req: AuthedRequest, res: Response) {
   if (req.headers["accept"] === "application/json") {
     res.json(ctx(req, ctx(req, { branches, commits, targets })));
   } else {
-    res.render("deploy", ctx(req, { branches, commits, targets }));
+    res.render(
+      "commits",
+      ctx(req, { page: "commits", branches, commits, targets })
+    );
   }
 }
 

@@ -77,10 +77,10 @@ function watcher(id, partial) {
 }
 
 (function() {
-  if (page === "deploy") {
+  if (config.page === "commits") {
     watcher("deploy-status", "deploy_status_body");
   }
-  if (page === "commit") {
+  if (config.page === "commit") {
     watcher("commits", "commit_rows");
   }
 })();
