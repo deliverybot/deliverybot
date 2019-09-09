@@ -3,7 +3,7 @@
 <nav class="UnderlineNav">
   <div class="content">
     <div class="UnderlineNav-body">
-      <a href="/deploy/{{owner}}/{{repo}}" role="tab" title="Deploy" class="UnderlineNav-item selected">Deploy</a>
+      <a href="/{{owner}}/{{repo}}" role="tab" title="Deploy" class="UnderlineNav-item selected">Deploy</a>
     </div>
   </div>
 </nav>
@@ -19,7 +19,7 @@
         <div class="SelectMenu-modal">
           <menu class="SelectMenu-list">
             {{#each targets}}
-            <a href="/deploy/{{name}}/{{../owner}}/{{../repo}}/{{../branch}}" class="SelectMenu-item" role="menuitem">
+            <a href="/{{../owner}}/{{../repo}}/target/{{name}}/branch/{{../branch}}" class="SelectMenu-item" role="menuitem">
               {{name}}
             </a>
             {{/each}}
@@ -36,7 +36,7 @@
         <div class="SelectMenu-modal">
           <menu class="SelectMenu-list">
             {{#each branches}}
-            <a href="/deploy/{{../target}}/{{../owner}}/{{../repo}}/{{name}}" class="SelectMenu-item" role="menuitem">
+            <a href="/{{../owner}}/{{../repo}}/target/{{../target}}/branch/{{name}}" class="SelectMenu-item" role="menuitem">
               {{name}}
             </a>
             {{/each}}

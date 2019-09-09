@@ -6,25 +6,14 @@ import * as queries from "./queries";
 import hash from "object-hash";
 
 export function deploy(app: Application) {
-  app.get("/deploy/:owner/:repo", authenticate, verifyRepo, redirect);
-  app.get(
-    "/deploy/:target/:owner/:repo/:branch",
-    authenticate,
-    verifyRepo,
-    index
-  );
-  app.get(
-    "/deploy/:target/:owner/:repo/:branch/:sha",
-    authenticate,
-    verifyRepo,
-    show
-  );
-  app.post(
-    "/deploy/:target/:owner/:repo/:branch/:sha",
-    authenticate,
-    verifyRepo,
-    create
-  );
+  const baseUrl = "/:owner/:repo";
+  const indexUrl = `${baseUrl}/target/:target/branch/:branch`;
+  const commitUrl = `${indexUrl}/o/:sha`;
+
+  app.get(baseUrl, authenticate, verifyRepo, redirect);
+  app.get(indexUrl, authenticate, verifyRepo, index);
+  app.get(commitUrl, authenticate, verifyRepo, show);
+  app.post(commitUrl, authenticate, verifyRepo, create);
 }
 
 export async function show(req: AuthedRequest, res: Response) {
@@ -60,9 +49,9 @@ export async function create(req: AuthedRequest, res: Response) {
       sha,
       // Don't want to specify the branch here otherwise we'll deploy the head
       // instead of the current commit.
-      ref: sha,
+      ref: sha
     });
-    res.redirect(`/deploy/${target}/${owner}/${repo}/${branch}/${sha}`)
+    res.redirect(`/${owner}/${repo}/target/${target}/branch/${branch}/o/${sha}`);
   } catch (error) {
     const commit = await queries.commit(
       req.user!.token,
@@ -100,7 +89,7 @@ export async function redirect(req: AuthedRequest, res: Response) {
   const conf = await tryConfig(req);
   const target = Object.keys(conf || {})[0] || "none";
   const branch = "master";
-  res.redirect(`/deploy/${target}/${owner}/${repo}/${branch}`);
+  res.redirect(`/${owner}/${repo}/target/${target}/branch/${branch}`);
 }
 
 function ctx(req: AuthedRequest, data: any) {
