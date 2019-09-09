@@ -63,6 +63,12 @@ export = (robot: Application) => {
     express.static(path.join(__dirname, "..", "static"))
   );
 
+  // Can override this file in production environments to load javascript.
+  app.get("/app/init.js", (req: Request, res: Response) => {
+    res.contentType("text/javascript");
+    res.send("");
+  });
+
   const error5xx = path.join(__dirname, "..", "static", "5xx.html");
   const error404 = path.join(__dirname, "..", "static", "404.html");
 
