@@ -58,16 +58,7 @@ export = (robot: Application) => {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(csurf());
 
-  app.use(
-    "/probot/static/",
-    express.static(path.join(__dirname, "..", "static"))
-  );
-
-  // Can override this file in production environments to load javascript.
-  app.get("/app/init.js", (req: Request, res: Response) => {
-    res.contentType("text/javascript");
-    res.send("");
-  });
+  app.use("/static/", express.static(path.join(__dirname, "..", "static")));
 
   const error5xx = path.join(__dirname, "..", "static", "5xx.html");
   const error404 = path.join(__dirname, "..", "static", "404.html");
