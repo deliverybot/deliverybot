@@ -51,7 +51,9 @@ export async function create(req: AuthedRequest, res: Response) {
       // instead of the current commit.
       ref: sha
     });
-    res.redirect(`/${owner}/${repo}/target/${target}/branch/${branch}/o/${sha}`);
+    res.redirect(
+      `/${owner}/${repo}/target/${target}/branch/${branch}/o/${sha}`
+    );
   } catch (error) {
     const commit = await queries.commit(
       req.user!.token,
@@ -87,7 +89,10 @@ export async function index(req: AuthedRequest, res: Response) {
 export async function redirect(req: AuthedRequest, res: Response) {
   const { owner, repo } = req.params;
   const conf = await tryConfig(req);
-  const target = Object.keys(conf || {})[0] || "none";
+  const target =
+    conf && conf.production
+      ? "production"
+      : Object.keys(conf || {})[0] || "none";
   const branch = "master";
   res.redirect(`/${owner}/${repo}/target/${target}/branch/${branch}`);
 }
