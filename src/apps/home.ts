@@ -8,7 +8,7 @@ export async function index(req: AuthedRequest, res: Response) {
     return;
   }
 
-  const repoList: Array<{ repo: string; owner: string }> = [];
+  const installs: any[] = [];
   const installations = await req.user!.github.apps.listInstallationsForAuthenticatedUser(
     {}
   );
@@ -16,12 +16,13 @@ export async function index(req: AuthedRequest, res: Response) {
     const repos = await req.user!.github.apps.listInstallationReposForAuthenticatedUser(
       { installation_id: install.id }
     );
-    for (const repo of repos.data.repositories) {
-      repoList.push({ repo: repo.name, owner: repo.owner.login });
-    }
+    installs.push({
+      htmlUrl: install.html_url,
+      repos: repos.data.repositories
+    });
   }
 
-  res.render("home", { repos: repoList, pkg });
+  res.render("home", { installs, pkg });
 }
 
 export function home(app: Application) {

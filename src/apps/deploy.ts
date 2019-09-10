@@ -4,6 +4,7 @@ import { deployCommit, config } from "./commands";
 import * as pkg from "../package";
 import * as queries from "./queries";
 import hash from "object-hash";
+import { newDeployFileUrl } from "../util";
 
 export function deploy(app: Application) {
   const baseUrl = "/:owner/:repo";
@@ -82,12 +83,20 @@ export async function index(req: AuthedRequest, res: Response) {
     target,
     branch || "master"
   );
+  const fileUrl = newDeployFileUrl(owner, repo);
   if (req.headers["accept"] === "application/json") {
     res.json(ctx(req, ctx(req, { branches, commits, targets })));
   } else {
     res.render(
       "commits",
-      ctx(req, { page: "commits", branches, commits, targets })
+      ctx(req, {
+        page: "commits",
+        noConfig: !conf,
+        fileUrl,
+        branches,
+        commits,
+        targets
+      })
     );
   }
 }

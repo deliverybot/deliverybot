@@ -45,6 +45,16 @@
       </div>
     </details>
 
+    {{#if noConfig}}
+    <div class="flash mt-3">
+      <p>
+        You haven't setup a <code>.github/deploy.yml</code> file yet.
+        Deliverybot can't deploy without this configuration file.
+      </p>
+        <a class="btn btn-outline" role="button" target="_blank" href="{{fileUrl}}">Create a config file</a>
+    </div>
+    {{/if}}
+
     <div class="Box mt-3" id="commit_rows">
       {{> commit_rows}}
     </div>

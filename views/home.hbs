@@ -12,22 +12,25 @@
     </div>
 
     <div id="list" class="Box mt-5" style="border: none; margin: 0;">
+      {{#each installs}}
       {{#each repos}}
-      <div class="Box-row d-flex flex-items-center">
-        <div class="flex-auto">
-          <a href="/{{owner}}/{{repo}}"><strong>{{owner}} / {{repo}}</strong></a>
-        </div>
+      <div class="Box-row d-flex flex-justify-between">
+        <a href="/{{owner.login}}/{{name}}"><strong>{{owner.login}} / {{name}}</strong></a>
+        <a target="_blank" href="{{../htmlUrl}}">Manage installation</a>
       </div>
+      {{/each}}
       {{else}}
       <div class="text-center">
         <p class="lead">
           You don't have deliverybot installed on any repositories.
         </p>
-        <a class="btn btn-outline" role="button" href="https://github.com/apps/{{ pkg.name }}">
-          Install now
-        </a>
       </div>
       {{/each}}
+      <div class="text-center mt-5">
+        <a class="btn btn-outline" role="button" target="_blank" href="https://github.com/apps/{{ pkg.name }}">
+          Install
+        </a>
+      </div>
     </div>
   </div>
 </div>
