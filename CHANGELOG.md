@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/deliverybot/deliverybot/compare/v0.0.6...v0.0.7) (2019-09-10)
+
+
+### Bug Fixes
+
+* Cleanup page naming ([6aff4a9](https://github.com/deliverybot/deliverybot/commit/6aff4a9))
+* Development 404 with app init ([b5d9da0](https://github.com/deliverybot/deliverybot/commit/b5d9da0))
+* Refactor js to a file ([88cde4d](https://github.com/deliverybot/deliverybot/commit/88cde4d))
+
+
+### Features
+
+* Add logout ([0f0fc8c](https://github.com/deliverybot/deliverybot/commit/0f0fc8c))
+* Change routes ([c99f6da](https://github.com/deliverybot/deliverybot/commit/c99f6da))
+* Move to static path ([7c7aee7](https://github.com/deliverybot/deliverybot/commit/7c7aee7))
+* Smarter redirect ([4e63d61](https://github.com/deliverybot/deliverybot/commit/4e63d61))
+
 ### [0.0.6](https://github.com/deliverybot/deliverybot/compare/v0.0.5...v0.0.6) (2019-09-01)
 
 
