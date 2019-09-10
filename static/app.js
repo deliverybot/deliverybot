@@ -53,8 +53,10 @@ function watcher(id, partial) {
       .then(function (data) {
         // Don't update the UI if we've already seen this data before.
         if (data.hash === previous) {
+          console.log("watcher - no update");
           return;
         }
+        console.log("watcher - updating");
         previous = data.hash;
         var el = document.getElementById(id);
         el.innerHTML = Handlebars.partials[partial](data);
@@ -77,11 +79,11 @@ function watcher(id, partial) {
 }
 
 (function() {
-  if (config.page === "commits") {
-    watcher("deploy-status", "deploy_status_body");
-  }
   if (config.page === "commit") {
-    watcher("commits", "commit_rows");
+    watcher("deploy_status_body", "deploy_status_body");
+  }
+  if (config.page === "commits") {
+    watcher("commit_rows", "commit_rows");
   }
 })();
 
