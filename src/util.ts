@@ -1,8 +1,11 @@
-import Handlebars from "handlebars";
+import Mustache from "mustache";
 
 export function render<T>(template: T, data: any) {
+  const tags = ["${{", "}}"];
   try {
-    return JSON.parse(Handlebars.compile(JSON.stringify(template))(data));
+    const content = JSON.stringify(template);
+    const rendered = Mustache.render(content, data, {}, tags);
+    return JSON.parse(rendered);
   } catch (err) {
     return template;
   }

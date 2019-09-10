@@ -4,7 +4,8 @@ import yaml from "js-yaml";
 import { validate } from "jsonschema";
 import {
   ReposListDeploymentsResponseItem,
-  ReposGetDeploymentResponse
+  ReposGetDeploymentResponse,
+  PullsGetResponse
 } from "@octokit/rest";
 import schema from "../schema.json";
 import { canWrite } from "./auth";
@@ -111,7 +112,7 @@ async function handlePRDeploy(context: Context, command: string) {
         target,
         ref: pr.data.head.ref,
         sha: pr.data.head.sha,
-        pr: pr.data.number
+        pr: pr.data
       })
     );
   } catch (error) {
@@ -146,9 +147,24 @@ export async function deployCommit(
     target: string;
     ref: string;
     sha: string;
-    pr?: number;
+    pr?: PullsGetResponse;
   }
 ) {
+  const commit = await github.git.getCommit({ owner, repo, commit_sha: sha });
+
+  // Params are the payload that goes into every deployment - change these in a
+  // backwards compatible way always.
+  const params = {
+    ref,
+    target,
+    owner,
+    repo,
+    short_sha: sha.substr(0, 7),
+    commit: commit.data,
+    pr: pr ? pr.number : undefined,
+    pull_request: pr
+  };
+
   const conf = await config(github, { owner, repo, ref });
   const targetVal = conf[target];
   if (!targetVal) {
@@ -158,9 +174,9 @@ export async function deployCommit(
   if (targetVal.deployments.length === 0) {
     throw new Error(`Deployment target "${target}" has no deployments`);
   }
+
   const deployed = [];
   for (const deployment of targetVal.deployments) {
-    const params = { ref, sha: sha, short_sha: sha.substr(0, 7), pr };
     const body = {
       owner,
       repo,

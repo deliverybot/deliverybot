@@ -1,6 +1,6 @@
 review:
   deployments:
-  - environment: pr{{ pr }}
+  - environment: pr${{ pr }}
     transient_environment: true
     production_environment: false
     description: A test environment based on Docker

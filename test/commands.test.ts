@@ -19,6 +19,7 @@ const fixtures = {
   status: require("./fixtures/status.json"),
   ref: require("./fixtures/ref.json"),
   prClosed: require("./fixtures/pull_request.closed.json"),
+  commit: require("./fixtures/commit.json")
 };
 
 nock.disableNetConnect();
@@ -43,6 +44,9 @@ const mockDeploy = ({
       .post("/repos/Codertocat/Hello-World/deployments")
       .reply(200, { id: 1 });
   }
+  nock("https://api.github.com/")
+    .get(/\/git\/commits\//)
+    .reply(200, fixtures.commit);
   nock("https://api.github.com")
     .post("/repos/Codertocat/Hello-World/deployments/1/statuses")
     .reply(200);
@@ -102,7 +106,12 @@ describe("Deployments", () => {
       ...fixtures.commentCreated,
       comment: { ...fixtures.commentCreated.comment, body: "/deploy review" }
     };
-    const deployCall = mockDeploy({ pr: true, valid: true, deploy: true, nonAdmin: true });
+    const deployCall = mockDeploy({
+      pr: true,
+      valid: true,
+      deploy: true,
+      nonAdmin: true
+    });
     await probot.receive({
       name: "issue_comment",
       payload
@@ -178,7 +187,7 @@ describe("Deployments", () => {
         (body: object) => {
           expect(body).toMatchObject({
             body:
-              ':rotating_light: Failed to trigger deployment. :rotating_light:\nconfig.fake is not of a type(s) object'
+              ":rotating_light: Failed to trigger deployment. :rotating_light:\nconfig.fake is not of a type(s) object"
           });
           return true;
         }
@@ -260,11 +269,13 @@ describe("Deployments", () => {
     nock("https://api.github.com")
       .get("/repos/Codertocat/Hello-World/deployments")
       .query(true)
-      .reply(200, [{ id: 1, environment: "production", transient_environment: true }]);
+      .reply(200, [
+        { id: 1, environment: "production", transient_environment: true }
+      ]);
     await probot.receive({
       name: "pull_request",
-      payload: fixtures.prClosed,
-    })
+      payload: fixtures.prClosed
+    });
     expect(deployCall!.isDone()).toBeTruthy();
   });
 
@@ -273,11 +284,13 @@ describe("Deployments", () => {
     nock("https://api.github.com")
       .get("/repos/Codertocat/Hello-World/deployments")
       .query(true)
-      .reply(200, [{ id: 1, environment: "production", transient_environment: false }]);
+      .reply(200, [
+        { id: 1, environment: "production", transient_environment: false }
+      ]);
     await probot.receive({
       name: "pull_request",
-      payload: fixtures.prClosed,
-    })
+      payload: fixtures.prClosed
+    });
     expect(deployCall!.isDone()).toBeFalsy();
   });
 
@@ -289,12 +302,12 @@ describe("Deployments", () => {
       .query(true)
       .reply(200, [
         { id: 1, environment: "production", transient_environment: false },
-        { id: 2, environment: "production", transient_environment: false },
+        { id: 2, environment: "production", transient_environment: false }
       ]);
     await probot.receive({
       name: "pull_request",
-      payload: fixtures.prClosed,
-    })
+      payload: fixtures.prClosed
+    });
     expect(deployCall!.isDone()).toBeFalsy();
   });
 });
