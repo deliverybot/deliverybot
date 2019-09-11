@@ -1,5 +1,5 @@
 {{#each commits}}
-<div class="Box-row d-flex flex-items-center Box-row--hover-blue">
+<div class="Box-row d-flex flex-items-center Box-row--hover-blue {{#if deployment.latest}}Box-row--unread{{/if}}">
   <div class="flex-auto">
     <div class="position-relative" style="display: inline-block;">
       <a class="text-gray-dark" href="/{{owner}}/{{repo}}/target/{{target}}/branch/{{branch}}/o/{{oid}}">
@@ -12,6 +12,11 @@
       <strong><code>{{oidShort}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
     </div>
   </div>
+  {{#if deployment.lastDeployedAtWords}}
+    <div class="text-gray-light mr-3">
+      Last deployed {{deployment.lastDeployedAtWords}}
+    </div>
+  {{/if}}
   {{#if ../target}}
     {{> deploy_status}}
   {{/if}}

@@ -5,6 +5,9 @@
     {{#if deployment.status.failure}}Deployments have failed{{/if}}
     {{#if deployment.status.waiting}}Waiting for a deployment to be reported{{/if}}
   </h4>
+  {{#if deployment.lastDeployedAtWords}}
+    <p>Last deployed {{deployment.lastDeployedAtWords}}</p>
+  {{/if}}
 </div>
 {{#each deployments}}
 <div class="Box-row">

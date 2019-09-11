@@ -80,6 +80,9 @@ export = (robot: Application) => {
       { error: err.message, errorObj: err },
       "request failed"
     );
+    if (process.env.NODE_ENV === "development") {
+      console.error(err);
+    }
     res.status(500).sendFile(error5xx);
   });
   app.use((req: Request, res: Response) => {

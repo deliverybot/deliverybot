@@ -1,5 +1,6 @@
 import { request as ghRequest } from "@octokit/request";
 import { Targets } from "./commands";
+import moment from "moment";
 
 async function gql(token: string, query: string, variables: any) {
   const resp = await ghRequest({
@@ -26,7 +27,7 @@ status { contexts { state } }
 checkSuites(last: 50) { nodes { conclusion status } }
 deployments(last: 50) {
   nodes {
-    id environment description
+    id environment description createdAt
     creator { login }
     latestStatus { logUrl state }
   }
@@ -91,8 +92,12 @@ export function View(
   data: any
 ) {
   const branches = Branches(branch, data.repository.refs.nodes);
-  const commits = data.repository.ref.target.history.edges.map((edge: any) =>
-    Commit(owner, repo, target, branch, edge)
+  const commits = Commits(
+    owner,
+    repo,
+    target,
+    branch,
+    data.repository.ref.target.history.edges
   );
   return { commits, branches };
 }
@@ -146,7 +151,17 @@ export function Deployment(node: any) {
     (deploy: any) =>
       (deploy.latestStatus && deploy.latestStatus.state) || "WAITING"
   );
-  return { status: Status(AggregateStatus(statuses)) };
+  const lastDeployedAt = (node.deployments || []).nodes
+    .map((deploy: any) => Date.parse(deploy.createdAt))
+    .sort()
+    .pop();
+  const lastDeployedAtWords =
+    lastDeployedAt && moment(lastDeployedAt).fromNow();
+  return {
+    status: Status(AggregateStatus(statuses)),
+    lastDeployedAt,
+    lastDeployedAtWords
+  };
 }
 
 export function Undeployed(node: any) {
@@ -176,6 +191,32 @@ function truncate(s: string | undefined | null, t: number) {
     return s.substr(0, t) + "...";
   }
   return s;
+}
+
+export function Commits(
+  owner: string,
+  repo: string,
+  target: string,
+  branch: string,
+  edges: any
+) {
+  const commits = edges.map((edge: any) =>
+    Commit(owner, repo, target, branch, edge)
+  );
+
+  // Mark the most recently deployed commit with latest.
+  const latest = commits
+    .slice()
+    .filter((c: any) => c.deployment.lastDeployedAt)
+    .sort(
+      (f: any, s: any) =>
+        f.deployment.lastDeployedAt > s.deployment.lastDeployedAt
+    )
+    .pop();
+  if (latest) {
+    latest.deployment.latest = true;
+  }
+  return commits;
 }
 
 export function Commit(
