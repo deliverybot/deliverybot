@@ -99,7 +99,7 @@ export function View(
     branch,
     data.repository.ref.target.history.edges
   );
-  return { commits, branches };
+  return { branches, ...commits };
 }
 
 const failing = ["FAILURE", "FAILING", "ERROR", "CANCELLED", "TIMED_OUT"];
@@ -169,7 +169,7 @@ export function Deployment(node: any) {
 export function Undeployed(node: any) {
   const deployment = Deployment(node);
   const check = Check(node);
-  if (check.status.success && deployment.status.nothing || deployment.status.waiting) {
+  if (check.status.success && (deployment.status.nothing || deployment.status.waiting)) {
     return true;
   }
   return false;
@@ -195,6 +195,28 @@ function truncate(s: string | undefined | null, t: number) {
   return s;
 }
 
+export function Previous(commits: any[]) {
+  const latest = Latest(commits);
+  if (!latest) {
+    return null;
+  }
+  const latestIdx = commits.findIndex(c => c.oid === latest.oid);
+  return commits[latestIdx+1] || null;
+}
+
+export function Latest(commits: any[]) {
+  const latest = commits
+    .slice()
+    .filter((c: any) => c.deployment.lastDeployedAt)
+    .sort(
+      (f: any, s: any) =>
+        f.deployment.lastDeployedAt - s.deployment.lastDeployedAt
+    )
+    .pop();
+  if (latest) latest.deployment.latest = true;
+  return latest;
+}
+
 export function Commits(
   owner: string,
   repo: string,
@@ -205,20 +227,9 @@ export function Commits(
   const commits = edges.map((edge: any) =>
     Commit(owner, repo, target, branch, edge)
   );
-
-  // Mark the most recently deployed commit with latest.
-  const latest = commits
-    .slice()
-    .filter((c: any) => c.deployment.lastDeployedAt)
-    .sort(
-      (f: any, s: any) =>
-        f.deployment.lastDeployedAt > s.deployment.lastDeployedAt
-    )
-    .pop();
-  if (latest) {
-    latest.deployment.latest = true;
-  }
-  return commits;
+  const latest = Latest(commits);
+  const previous = Previous(commits);
+  return { commits, latest, previous };
 }
 
 export function Commit(

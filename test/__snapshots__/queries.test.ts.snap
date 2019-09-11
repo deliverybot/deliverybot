@@ -76,7 +76,7 @@ Object {
       },
       "deployment": Object {
         "lastDeployedAt": 1568002836000,
-        "lastDeployedAtWords": "2 days ago",
+        "lastDeployedAtWords": "3 days ago",
         "status": Object {
           "color": "gray",
           "waiting": true,
@@ -113,7 +113,7 @@ Object {
       },
       "deployment": Object {
         "lastDeployedAt": 1568001078000,
-        "lastDeployedAtWords": "2 days ago",
+        "lastDeployedAtWords": "3 days ago",
         "status": Object {
           "color": "gray",
           "waiting": true,
@@ -264,7 +264,7 @@ Object {
         "lastDeployedAtWords": undefined,
         "status": Object {
           "color": "gray",
-          "waiting": true,
+          "nothing": true,
         },
       },
       "deployments": Array [],
@@ -290,7 +290,7 @@ Object {
         "lastDeployedAtWords": undefined,
         "status": Object {
           "color": "gray",
-          "waiting": true,
+          "nothing": true,
         },
       },
       "deployments": Array [],
@@ -316,7 +316,7 @@ Object {
         "lastDeployedAtWords": undefined,
         "status": Object {
           "color": "gray",
-          "waiting": true,
+          "nothing": true,
         },
       },
       "deployments": Array [],
@@ -342,7 +342,7 @@ Object {
         "lastDeployedAtWords": undefined,
         "status": Object {
           "color": "gray",
-          "waiting": true,
+          "nothing": true,
         },
       },
       "deployments": Array [],
@@ -355,5 +355,90 @@ Object {
       "undeployed": true,
     },
   ],
+  "latest": Object {
+    "author": "colinjfw",
+    "branch": "master",
+    "check": Object {
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+    },
+    "deployment": Object {
+      "lastDeployedAt": 1568126490000,
+      "lastDeployedAtWords": "a day ago",
+      "latest": true,
+      "status": Object {
+        "color": "gray",
+        "waiting": true,
+      },
+    },
+    "deployments": Array [
+      Object {
+        "creator": "deliverybot",
+        "description": "Staging",
+        "environment": "staging",
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+        "url": null,
+      },
+      Object {
+        "creator": "colinjfw",
+        "description": "Production",
+        "environment": "production",
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+        "url": null,
+      },
+    ],
+    "message": "Update syntax",
+    "oid": "eb4e2e58dbe2ac54ee07b6703bf33be0cd463eb0",
+    "oidShort": "eb4e2e5",
+    "owner": "colinjfw",
+    "repo": "deliverybot-example",
+    "target": "production",
+    "undeployed": false,
+  },
+  "previous": Object {
+    "author": "colinjfw",
+    "branch": "master",
+    "check": Object {
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+    },
+    "deployment": Object {
+      "lastDeployedAt": 1568002836000,
+      "lastDeployedAtWords": "3 days ago",
+      "status": Object {
+        "color": "gray",
+        "waiting": true,
+      },
+    },
+    "deployments": Array [
+      Object {
+        "creator": "deliverybot",
+        "description": "Staging",
+        "environment": "staging",
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+        "url": null,
+      },
+    ],
+    "message": "trigger",
+    "oid": "eeada946eff96e2e640626e5a6c70b1472ed8b2c",
+    "oidShort": "eeada94",
+    "owner": "colinjfw",
+    "repo": "deliverybot-example",
+    "target": "production",
+    "undeployed": false,
+  },
 }
 `;

@@ -45,6 +45,10 @@
       </div>
     </details>
 
+    {{#with previous}}
+      {{> deploy_rollback}}
+    {{/with}}
+
     {{#if noConfig}}
     <div class="flash mt-3">
       <p>

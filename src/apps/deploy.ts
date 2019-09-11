@@ -76,7 +76,7 @@ export async function index(req: AuthedRequest, res: Response) {
   const conf = await tryConfig(req);
   const targets = queries.Targets(target, conf);
 
-  const { branches, commits } = await queries.commits(
+  const result = await queries.commits(
     req.user!.token,
     owner,
     repo,
@@ -85,7 +85,7 @@ export async function index(req: AuthedRequest, res: Response) {
   );
   const fileUrl = newDeployFileUrl(owner, repo);
   if (req.headers["accept"] === "application/json") {
-    res.json(ctx(req, ctx(req, { branches, commits, targets })));
+    res.json(ctx(req, ctx(req, { targets, ...result })));
   } else {
     res.render(
       "commits",
@@ -93,9 +93,8 @@ export async function index(req: AuthedRequest, res: Response) {
         page: "commits",
         noConfig: !conf,
         fileUrl,
-        branches,
-        commits,
-        targets
+        targets,
+        ...result
       })
     );
   }
