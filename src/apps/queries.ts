@@ -120,7 +120,7 @@ export function AggregateStatus(statuses: string[]) {
   if (statuses.find(s => waiting.includes(s.toUpperCase()))) {
     return "WAITING";
   }
-  return "WAITING";
+  return "NOTHING";
 }
 
 export function Check(node: any) {
@@ -141,8 +141,10 @@ export function Status(status?: string) {
       return { pending: true, color: "yellow" };
     case "SUCCESS":
       return { success: true, color: "green" };
-    default:
+    case "WAITING":
       return { waiting: true, color: "gray" };
+    default:
+      return { nothing: true, color: "gray" };
   }
 }
 
@@ -167,7 +169,7 @@ export function Deployment(node: any) {
 export function Undeployed(node: any) {
   const deployment = Deployment(node);
   const check = Check(node);
-  if (check.status.success && deployment.status.waiting) {
+  if (check.status.success && deployment.status.nothing || deployment.status.waiting) {
     return true;
   }
   return false;

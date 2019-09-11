@@ -4,6 +4,7 @@
     {{#if deployment.status.pending}}Waiting for an in-progress deployment{{/if}}
     {{#if deployment.status.failure}}Deployments have failed{{/if}}
     {{#if deployment.status.waiting}}Waiting for a deployment to be reported{{/if}}
+    {{#if deployment.status.nothing}}No deployments{{/if}}
   </h4>
   {{#if deployment.lastDeployedAtWords}}
     <p>Last deployed {{deployment.lastDeployedAtWords}}</p>
