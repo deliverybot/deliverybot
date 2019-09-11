@@ -35,12 +35,14 @@
           aria-label="Watching deployment statuses. Deployments below will update on change.">
           {{> icon_clock}}
         </div>
-        <h4 class="position-relative" style="display: inline-block;">
-          <a class="text-gray-dark" target="_blank" href="https://github.com/{{owner}}/{{repo}}/commit/{{oid}}">
-            {{message}}
-          </a>
+        <div class="position-relative" style="display: inline-block;">
+          <h4 style="display: inline;">
+            <a class="text-gray-dark" target="_blank" href="https://github.com/{{owner}}/{{repo}}/commit/{{oid}}">
+              {{message}}
+            </a>
+          </h4>
           {{> commit_status}}
-        </h4>
+        </div>
         <div class="text-gray-light">
           <strong><code>{{oidShort}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
         </div>
