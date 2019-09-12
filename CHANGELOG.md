@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0](https://github.com/deliverybot/deliverybot/compare/v0.0.7...v0.1.0) (2019-09-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* Match GitHub actions template syntax using the ${{ }}
+style parameters. Additionally adds more parameters into the template
+logic:
+
+* pull_request with full PR data.
+* commit with full commit information.
+* owner, target, repo parameters.
+* Keeps pr and short_sha parameters for compatibility.
+
+### Bug Fixes
+
+* Fix commit status ids ([265a888](https://github.com/deliverybot/deliverybot/commit/265a888))
+* Larger commit status popover ([3f2e4c6](https://github.com/deliverybot/deliverybot/commit/3f2e4c6))
+* Use popover instead of detail ([efd4ba8](https://github.com/deliverybot/deliverybot/commit/efd4ba8))
+
+
+### Features
+
+* Add a nothing status to deploys and commits ([0336bc8](https://github.com/deliverybot/deliverybot/commit/0336bc8))
+* Add back link to repo header ([a367e92](https://github.com/deliverybot/deliverybot/commit/a367e92))
+* Add last deployed along with latest marker ([690c86f](https://github.com/deliverybot/deliverybot/commit/690c86f))
+* Add repositories link to header ([67d979d](https://github.com/deliverybot/deliverybot/commit/67d979d))
+* Add timing to individual deployments ([2648a5e](https://github.com/deliverybot/deliverybot/commit/2648a5e))
+* Clean up empty states and links ([cfb4e2f](https://github.com/deliverybot/deliverybot/commit/cfb4e2f))
+* Match actions template syntax ([adc387f](https://github.com/deliverybot/deliverybot/commit/adc387f))
+* Move location of required contexts ([87d8f37](https://github.com/deliverybot/deliverybot/commit/87d8f37))
+* Provide a rollback button ([078cb45](https://github.com/deliverybot/deliverybot/commit/078cb45))
+
 ### [0.0.7](https://github.com/deliverybot/deliverybot/compare/v0.0.6...v0.0.7) (2019-09-10)
 
 
