@@ -11,22 +11,19 @@
 
 <div class="bg-white fill">
   <div class="content">
-    <details class="details-reset details-overlay pt-3" style="display: inline-block;">
-      <summary class="btn btn-sm" type="button" aria-haspopup="true" aria-expanded="true">
-        Target: <b>{{target}}</b>
-      </summary>
-      <div class="SelectMenu">
-        <div class="SelectMenu-modal">
-          <menu class="SelectMenu-list">
-            {{#each targets}}
-            <a href="/{{../owner}}/{{../repo}}/target/{{name}}/branch/{{../branch}}/o/{{../sha}}" class="SelectMenu-item" role="menuitem">
-              {{name}}
+
+    <div class="position-relative mt-3">
+      <div id="targets" class="Popover position-absolute d-none" style="top: 130%; left: 0;">
+        <div class="Popover-message Popover-message--top-left mx-auto mb-2 text-left Box Box-condensed box-shadow-large">
+          {{#each targets}}
+            <a href="/{{../owner}}/{{../repo}}/target/{{name}}/branch/{{../branch}}/o/{{../oid}}" class="SelectMenu-item" role="menuitem">
+              <code>{{name}}</code>
             </a>
-            {{/each}}
-          </menu>
+          {{/each}}
         </div>
       </div>
-    </details>
+      <button class="btn btn-sm" data-toggle="targets">Target: {{target}}</button>
+    </div>
 
     <div class="Box mt-3">
       <div class="Box-footer pb-5 bg-gray-light position-relative">
