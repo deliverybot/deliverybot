@@ -10,6 +10,18 @@
         "auto_deploy_on": {
           "type": "string"
         },
+        "transient_environment": {
+          "type": "boolean"
+        },
+        "production_environment": {
+          "type": "boolean"
+        },
+        "required_contexts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "deployments": {
           "type": "array",
           "items": {
@@ -27,19 +39,7 @@
               "payload": {
                 "type": "object"
               },
-              "required_contexts": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
               "auto_merge": {
-                "type": "boolean"
-              },
-              "transient_environment": {
-                "type": "boolean"
-              },
-              "production_environment": {
                 "type": "boolean"
               }
             }

@@ -24,13 +24,22 @@ interface Deployment {
   environment: string;
   description: string;
   auto_merge: boolean;
-  required_contexts: string[];
-  transient_environment: boolean;
-  production_environment: boolean;
 }
 
 export interface Target {
+  name: string;
   auto_deploy_on: string;
+
+  // Required contexts  are required to be matched across all deployments in the
+  // target set. This is so that one deployment does not succeed before another
+  // causing the set to fail.
+  required_contexts: string[];
+
+  // Environment information must be copied into all deployments.
+  transient_environment: boolean;
+  production_environment: boolean;
+
+  // Deployments are the list of deployments to trigger.
   deployments: Deployment[];
 }
 
@@ -65,21 +74,25 @@ export async function config(
     throw new Error(`${err.property} ${err.message}`);
   }
   for (const key in conf) {
+    conf[key].name = key;
     conf[key].deployments = conf[key].deployments || [];
   }
   return conf;
 }
 
-function getDeployBody(deployment: Deployment, data: any): Deployment {
+function getDeployBody(target: Target, deployment: Deployment, data: any): Deployment {
   return withPreview({
     task: deployment.task || "deploy",
-    transient_environment: deployment.transient_environment || false,
-    production_environment: deployment.production_environment || false,
+    transient_environment: target.transient_environment || false,
+    production_environment: target.production_environment || false,
     environment: render(deployment.environment || "production", data),
     auto_merge: deployment.auto_merge || false,
-    required_contexts: deployment.required_contexts || [],
-    description: deployment.description,
-    payload: render(deployment.payload, data)
+    required_contexts: target.required_contexts || [],
+    description: render(deployment.description, data),
+    payload: {
+      target: target.name,
+      ...render(deployment.payload, data)
+    }
   });
 }
 
@@ -181,7 +194,7 @@ export async function deployCommit(
       owner,
       repo,
       ref,
-      ...getDeployBody(deployment, params)
+      ...getDeployBody(targetVal, deployment, params)
     };
     try {
       log.info({ body }, "deploying");
