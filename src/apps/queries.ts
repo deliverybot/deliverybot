@@ -181,6 +181,8 @@ export function Deployments(node: any) {
     description: truncate(deploy.description, 20),
     environment: deploy.environment,
     creator: deploy.creator.login,
+    createdAt: Date.parse(deploy.createdAt),
+    createdAtWords: moment(Date.parse(deploy.createdAt)).fromNow(),
     url: deploy.latestStatus && deploy.latestStatus.logUrl
   }));
 }
