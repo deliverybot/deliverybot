@@ -169,7 +169,10 @@ export function Deployment(node: any) {
 export function Undeployed(node: any) {
   const deployment = Deployment(node);
   const check = Check(node);
-  if (check.status.success && (deployment.status.nothing || deployment.status.waiting)) {
+  if (
+    check.status.success &&
+    (deployment.status.nothing || deployment.status.waiting)
+  ) {
     return true;
   }
   return false;
@@ -203,7 +206,7 @@ export function Previous(commits: any[]) {
     return null;
   }
   const latestIdx = commits.findIndex(c => c.oid === latest.oid);
-  return commits[latestIdx+1] || null;
+  return commits[latestIdx + 1] || null;
 }
 
 export function Latest(commits: any[]) {

@@ -80,7 +80,11 @@ export async function config(
   return conf;
 }
 
-function getDeployBody(target: Target, deployment: Deployment, data: any): Deployment {
+function getDeployBody(
+  target: Target,
+  deployment: Deployment,
+  data: any
+): Deployment {
   return withPreview({
     task: deployment.task || "deploy",
     transient_environment: target.transient_environment || false,
