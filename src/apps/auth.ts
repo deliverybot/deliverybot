@@ -37,6 +37,7 @@ export function authenticate(
   const token = req.session && req.session.token;
   if (!token) {
     (req as any).log.info("unauthenticated access redirecting");
+    req.session.next = req.url;
     res.redirect("/login");
     return;
   }
@@ -120,10 +121,11 @@ export async function callback(req: Request, res: Response) {
   const octokit = new Octokit({ auth: token });
   const user = await octokit.users.getAuthenticated({});
 
-  req.session!.token = token;
-  req.session!.id = user.data.id;
-  req.session!.login = user.data.login;
-  res.redirect("/");
+  req.session.token = token;
+  req.session.id = user.data.id;
+  req.session.login = user.data.login;
+  const url = req.session.next ? req.session.next : "/"
+  res.redirect(url);
 }
 
 const loginUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${BASE_URL}/login/cb`;
