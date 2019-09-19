@@ -131,7 +131,7 @@ export async function callback(req: Request, res: Response) {
   res.redirect(url);
 }
 
-const loginUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${BASE_URL}/login/cb`;
+const loginUrl = `https://github.com/login/oauth/authorize?scope=user&client_id=${CLIENT_ID}&redirect_uri=${BASE_URL}/login/cb`;
 
 export function auth(app: Application) {
   app.get("/login", (req: Request, res: Response) => res.redirect(loginUrl));
