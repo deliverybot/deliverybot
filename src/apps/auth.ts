@@ -125,6 +125,9 @@ export async function callback(req: Request, res: Response) {
   req.session.id = user.data.id;
   req.session.login = user.data.login;
   const url = req.session.next ? req.session.next : "/"
+  if (req.session.next) {
+    delete req.session.next;
+  }
   res.redirect(url);
 }
 
