@@ -14,7 +14,7 @@ describe("Queries", () => {
     // writeFileSync("test/query.json", JSON.stringify(result));
     const query = require("./fixtures/query.json");
     expect(
-      View("colinjfw", "deliverybot-example", "production", "master", query)
+      View("colinjfw", "deliverybot-example", "production", "master", undefined, query)
     ).toMatchSnapshot();
   });
 });

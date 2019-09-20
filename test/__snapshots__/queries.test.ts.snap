@@ -421,6 +421,7 @@ Object {
     "target": "production",
     "undeployed": false,
   },
+  "lock": undefined,
   "previous": Object {
     "author": "colinjfw",
     "branch": "master",

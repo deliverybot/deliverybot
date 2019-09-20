@@ -1,4 +1,4 @@
-<form style="display: inline-block;" method="POST" action="/{{owner}}/{{repo}}/target/{{target}}/branch/{{branch}}/o/{{oid}}">
+<form class="mr-2" style="display: inline-block;" method="POST" action="/{{owner}}/{{repo}}/target/{{target}}/branch/{{branch}}/o/{{oid}}">
   <input type="hidden" name="_csrf" value="{{@root.csrf}}">
 
   <button type="submit" data-oid="{{oid}}" aria-label="Rollback to the previous commit '{{oidShort}}' on {{target}}."
@@ -7,4 +7,3 @@
     Rollback
   </button>
 </form>
-

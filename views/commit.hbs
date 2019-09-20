@@ -45,8 +45,10 @@
         </div>
       </div>
       {{#if error}}
-      <h2>Deployment failed</h2>
-      <p id="error" class="text-red">{{error}}</p>
+      <div class="p-4">
+        <h2 class="text-red">Deployment failed</h2>
+        <p id="error" class="text-red">{{error}}</p>
+      </div>
       {{else}}
       <div id="deploy_status_body" style="transition: 0.5s;">
         {{> deploy_status_body}}

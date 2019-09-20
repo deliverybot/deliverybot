@@ -1,6 +1,7 @@
 import { request as ghRequest } from "@octokit/request";
 import { Targets } from "./commands";
 import moment from "moment";
+import { LockStore } from "../store";
 
 async function gql(token: string, query: string, variables: any) {
   const resp = await ghRequest({
@@ -65,11 +66,13 @@ export async function commits(
   token: string,
   owner: string,
   repo: string,
+  repoId: string,
   target: string,
   branch: string
 ) {
   const result = await gql(token, CommitsQuery, { owner, repo, branch });
-  return View(owner, repo, target, branch, result);
+  const lock = await LockStore.get(`repos/${repoId}/lock`);
+  return View(owner, repo, target, branch, lock, result);
 }
 
 export async function commit(
@@ -89,6 +92,7 @@ export function View(
   repo: string,
   target: string,
   branch: string,
+  lock: string | undefined,
   data: any
 ) {
   const branches = Branches(branch, data.repository.refs.nodes);
@@ -99,7 +103,7 @@ export function View(
     branch,
     data.repository.ref.target.history.edges
   );
-  return { branches, ...commits };
+  return { branches, lock, ...commits };
 }
 
 const failing = ["FAILURE", "FAILING", "ERROR", "CANCELLED", "TIMED_OUT"];
