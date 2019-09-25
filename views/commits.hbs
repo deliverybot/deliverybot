@@ -42,7 +42,6 @@
       {{#with previous}}
         {{> deploy_rollback}}
       {{/with}}
-      {{> deploy_lock}}
     </div>
 
     {{#if noConfig}}
@@ -52,13 +51,6 @@
         Deliverybot can't deploy without this configuration file.
       </p>
         <a class="btn btn-outline" role="button" target="_blank" href="{{fileUrl}}">Create a config file</a>
-    </div>
-    {{/if}}
-
-    {{#if lock}}
-    <div class="flash mt-3 flash-warn">
-      {{> icon_alert}} Deployments are locked.<br>
-      <small>Automatic deployments will be paused, you can click "Unlock" when you are ready to continue.</small>
     </div>
     {{/if}}
 

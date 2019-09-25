@@ -9,7 +9,6 @@ import {
 } from "@octokit/rest";
 import schema from "../schema.json";
 import { canWrite } from "./auth";
-import { LockStore } from "../store";
 
 const previewAnt = "application/vnd.github.ant-man-preview+json";
 const previewFlash = "application/vnd.github.flash-preview+json";
@@ -128,7 +127,6 @@ async function handlePRDeploy(context: Context, command: string) {
       context.log,
       context.repo({
         target,
-        repoId: context.payload.repository.id,
         ref: pr.data.head.ref,
         sha: pr.data.head.sha,
         pr: pr.data
@@ -156,7 +154,6 @@ export async function deployCommit(
   {
     owner,
     repo,
-    repoId,
     target,
     ref,
     sha,
@@ -164,18 +161,12 @@ export async function deployCommit(
   }: {
     owner: string;
     repo: string;
-    repoId: string;
     target: string;
     ref: string;
     sha: string;
     pr?: PullsGetResponse;
   }
 ) {
-  const lock = await LockStore.get(`repos/${repoId}/lock`);
-  if (lock) {
-    throw new Error(`Repository ${owner}/${repo} is locked: "${lock}"`)
-  }
-
   const commit = await github.git.getCommit({ owner, repo, commit_sha: sha });
 
   // Params are the payload that goes into every deployment - change these in a
@@ -262,7 +253,6 @@ async function autoDeployTarget(
       context.github,
       context.log,
       context.repo({
-        repoId: context.payload.repository.id,
         ref,
         sha,
         target

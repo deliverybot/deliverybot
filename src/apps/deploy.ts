@@ -5,33 +5,16 @@ import * as pkg from "../package";
 import * as queries from "./queries";
 import hash from "object-hash";
 import { newDeployFileUrl } from "../util";
-import { LockStore } from "../store";
 
 export function deploy(app: Application) {
   const baseUrl = "/:owner/:repo";
   const indexUrl = `${baseUrl}/target/:target/branch/:branch`;
   const commitUrl = `${indexUrl}/o/:sha`;
-  const lockUrl = `${baseUrl}/lock`;
-  const unlockUrl = `${baseUrl}/unlock`;
 
   app.get(baseUrl, authenticate, verifyRepo, redirect);
   app.get(indexUrl, authenticate, verifyRepo, index);
   app.get(commitUrl, authenticate, verifyRepo, show);
   app.post(commitUrl, authenticate, verifyRepo, create);
-  app.post(lockUrl, authenticate, verifyRepo,  lock);
-  app.post(unlockUrl, authenticate, verifyRepo,  unlock);
-}
-
-export async function lock(req: AuthedRequest, res: Response) {
-  const { id, owner, repo } = req.user!.repo!;
-  LockStore.set(`repos/${id}/lock`, req.body.message || "Locked");
-  res.redirect(`/${owner}/${repo}`)
-}
-
-export async function unlock(req: AuthedRequest, res: Response) {
-  const { id, owner, repo } = req.user!.repo!;
-  LockStore.del(`repos/${id}/lock`);
-  res.redirect(`/${owner}/${repo}`)
 }
 
 export async function show(req: AuthedRequest, res: Response) {
@@ -56,7 +39,6 @@ export async function show(req: AuthedRequest, res: Response) {
 
 export async function create(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch, sha } = req.params;
-  const { id: repoId } = req.user!.repo!
   const conf = await tryConfig(req);
   const targets = queries.Targets(target, conf);
 
@@ -64,7 +46,6 @@ export async function create(req: AuthedRequest, res: Response) {
     await deployCommit(req.user!.github, (req as any).log, {
       owner,
       repo,
-      repoId,
       target,
       sha,
       // Don't want to specify the branch here otherwise we'll deploy the head
@@ -92,7 +73,6 @@ export async function create(req: AuthedRequest, res: Response) {
 
 export async function index(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch } = req.params;
-  const { id: repoId } = req.user!.repo!
   const conf = await tryConfig(req);
   const targets = queries.Targets(target, conf);
 
@@ -100,7 +80,6 @@ export async function index(req: AuthedRequest, res: Response) {
     req.user!.token,
     owner,
     repo,
-    repoId,
     target,
     branch || "master"
   );
