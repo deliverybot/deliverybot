@@ -1,3 +1,4 @@
+// Configures javascript toggle behaviour.
 (function() {
   function bindToggles() {
     var active;
@@ -34,6 +35,9 @@
     });
   }
 
+  document.addEventListener("turbolinks:load", function() {
+    bindToggles();
+  });
   document.addEventListener("page-refresh", function() {
     bindToggles();
   });
@@ -42,53 +46,75 @@
   });
 })();
 
-function watcher(id, partial) {
-  var previous = config.hash;
-  function refresh() {
-    fetch(window.location.href, {
-        method: "GET",
-        headers: { accept: "application/json" },
-      })
-      .then(function (resp) { return resp.json() })
-      .then(function (data) {
-        // Don't update the UI if we've already seen this data before.
-        if (data.hash === previous) {
-          console.log("watcher - no update");
-          return;
-        }
-        console.log("watcher - updating");
-        previous = data.hash;
-        var el = document.getElementById(id);
-        el.innerHTML = Handlebars.partials[partial](data);
-        document.dispatchEvent(
-          new CustomEvent("page-refresh", { detail: {} })
-        );
-      }).catch(function (err) {
-        console.error(err);
-      });
-  }
-
-  document.addEventListener("repo-update", function() {
-    refresh();
-  });
-  document.addEventListener("watch-loaded", function() {
-    document.dispatchEvent(
-      new CustomEvent("repo-listen", { detail: config.repo })
-    );
-  });
-}
-
 (function() {
-  if (config.page === "commit") {
-    watcher("deploy_status_body", "deploy_status_body");
+  function watcher(id, partial, repo) {
+    console.log("watching", id, partial, repo);
+    var previous = "";
+    function handleUpdate() {
+      fetch(window.location.href, {
+          method: "GET",
+          headers: { accept: "application/json" },
+        })
+        .then(function (resp) { return resp.json() })
+        .then(function (data) {
+          // Don't update the UI if we've already seen this data before.
+          if (data.hash === previous) {
+            console.log("watcher - no update");
+            return;
+          }
+          console.log("watcher - updating");
+          previous = data.hash;
+          var el = document.getElementById(id);
+          el.innerHTML = Handlebars.partials[partial](data);
+          document.dispatchEvent(
+            new CustomEvent("page-refresh", { detail: {} })
+          );
+        }).catch(function (err) {
+          console.error(err);
+        });
+    }
+
+    function handleLoad() {
+      document.dispatchEvent(
+        new CustomEvent("repo-listen", { detail: repo })
+      );
+    }
+
+    document.addEventListener("repo-update", handleUpdate);
+    document.addEventListener("watch-loaded", handleLoad);
+    return function() {
+      document.removeEventListener("repo-update", handleUpdate);
+      document.removeEventListener("watch-loaded", handleLoad);
+    }
   }
-  if (config.page === "commits") {
-    watcher("commit_rows", "commit_rows");
+
+  function getWatcher(watch) {
+    if (watch.page === "commit") {
+      return watcher("deploy_status_body", "deploy_status_body", watch.repo);
+    }
+    if (watch.page === "commits") {
+      return watcher("commit_rows", "commit_rows", watch.repo);
+    }
   }
+
+  var active;
+  document.addEventListener("turbolinks:load", function() {
+    fetch(window.location.href + "?watch=true")
+      .then(function(resp) { return resp.json(); })
+      .then(function(watch) {
+        if (watch.watch) {
+          console.log("fetching watch", watch);
+          // Close off the active watcher.
+          if (active) active();
+          active = getWatcher(watch);
+        }
+      })
+      .catch(function(err) { console.error(err); })
+  });
 })();
 
 function repoUpdated() {
   document.dispatchEvent(
-    new CustomEvent("repo-update", { detail: config.repo })
+    new CustomEvent("repo-update", { detail: {} })
   );
 }

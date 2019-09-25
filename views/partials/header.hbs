@@ -9,6 +9,23 @@
   <link rel="icon" href="/static/probot-head.png">
   <link rel="stylesheet" href="https://unpkg.com/@primer/css@12.5.0/dist/primer.css">
   <link rel="stylesheet" href="/static/main.css">
+
+  <script>
+    var config = {
+      page: "{{page}}",
+      hash: "{{hash}}",
+      repo: {
+        owner: "{{owner}}",
+        repo: "{{repo}}",
+        repoId: "{{repoId}}",
+      },
+    };
+  </script>
+  <script defer src="https://unpkg.com/turbolinks@5.2.0/dist/turbolinks.js"></script>
+  <script defer src="https://unpkg.com/handlebars@4.1.2/dist/handlebars.runtime.min.js"></script>
+  <script defer src="/static/partials.js"></script>
+  <script defer src="/static/init.js"></script>
+  <script defer src="/static/app.js"></script>
 </head>
 
 <body class="height-full bg-gray-light">

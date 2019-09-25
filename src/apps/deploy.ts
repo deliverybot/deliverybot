@@ -17,8 +17,25 @@ export function deploy(app: Application) {
   app.post(commitUrl, authenticate, verifyRepo, create);
 }
 
+function watch(req: AuthedRequest, page: string) {
+  return {
+    watch: true,
+    page,
+    repo: {
+      owner: req.user!.repo!.owner,
+      repo: req.user!.repo!.owner,
+      repoId: req.user!.repo!.id
+    }
+  };
+}
+
 export async function show(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch, sha } = req.params;
+  if (req.query.watch) {
+    res.json(watch(req, "commit"));
+    return;
+  }
+
   const conf = await tryConfig(req);
   const targets = queries.Targets(target, conf);
 
@@ -30,10 +47,11 @@ export async function show(req: AuthedRequest, res: Response) {
     branch,
     sha
   );
+  const data = { targets, ...commit };
   if (req.headers["accept"] === "application/json") {
-    res.json(ctx(req, commit));
+    res.json(ctx(req, data));
   } else {
-    res.render("commit", ctx(req, { page: "commit", targets, ...commit }));
+    res.render("commit", ctx(req, data));
   }
 }
 
@@ -75,6 +93,10 @@ export async function index(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch } = req.params;
   const conf = await tryConfig(req);
   const targets = queries.Targets(target, conf);
+  if (req.query.watch) {
+    res.json(watch(req, "commits"));
+    return;
+  }
 
   const result = await queries.commits(
     req.user!.token,
@@ -84,19 +106,17 @@ export async function index(req: AuthedRequest, res: Response) {
     branch || "master"
   );
   const fileUrl = newDeployFileUrl(owner, repo);
+  const data = {
+    page: "commits",
+    noConfig: !conf,
+    fileUrl,
+    targets,
+    ...result
+  };
   if (req.headers["accept"] === "application/json") {
-    res.json(ctx(req, ctx(req, { targets, ...result })));
+    res.json(ctx(req, ctx(req, data)));
   } else {
-    res.render(
-      "commits",
-      ctx(req, {
-        page: "commits",
-        noConfig: !conf,
-        fileUrl,
-        targets,
-        ...result
-      })
-    );
+    res.render("commits", ctx(req, data));
   }
 }
 

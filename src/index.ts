@@ -7,6 +7,7 @@ import csurf from "csurf";
 
 import { APP_SECRET, PRODUCTION } from "./config";
 import { apps, handlers } from "./apps";
+import * as turbolinks from "turbolinks-express";
 
 import "express-async-errors";
 
@@ -72,6 +73,9 @@ export = (robot: Application) => {
   const hbs = require("hbs");
   hbs.registerPartials(path.join(__dirname, "..", "views", "partials"));
   hbs.registerHelper("json", (arg: object) => JSON.stringify(arg, null, 2));
+
+  app.use(turbolinks.redirect);
+  app.use(turbolinks.location);
 
   // Register applications.
   apps.forEach(register => register(app));

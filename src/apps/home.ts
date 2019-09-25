@@ -3,6 +3,10 @@ import { Response, Application } from "express";
 import * as pkg from "../package";
 
 export async function index(req: AuthedRequest, res: Response) {
+  if (req.query.watch) {
+    res.json({ watch: false });
+    return;
+  }
   if (!req.user) {
     res.render("probot", { ...pkg, anonymous: true });
     return;
