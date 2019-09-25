@@ -18,6 +18,16 @@ function withPreview<T>(arg: T): T {
   return arg as T;
 }
 
+function logCtx(context: Context, params: any) {
+  return {
+    context: {
+      installation: context.payload.installation,
+      repo: context.payload.repository ? context.repo() : undefined
+    },
+    ...params
+  };
+}
+
 interface Deployment {
   task: string;
   payload: any;
@@ -101,7 +111,7 @@ function getDeployBody(
 }
 
 async function handlePRDeploy(context: Context, command: string) {
-  context.log.info({ command }, "Deploy: handling command");
+  context.log.info(logCtx(context, { command }), "pr deploy: handling command");
   try {
     const target = command.split(" ")[1];
     const pr = await context.github.pulls.get({
@@ -115,10 +125,7 @@ async function handlePRDeploy(context: Context, command: string) {
       context.repo({ username: context.payload.comment.user.login })
     );
     if (!write) {
-      context.log.info(
-        context.repo({ command }),
-        "Deploy: no write priviledges"
-      );
+      context.log.info(logCtx(context, {}), "pr deploy: no write priviledges");
       return;
     }
 
@@ -167,6 +174,10 @@ export async function deployCommit(
     pr?: PullsGetResponse;
   }
 ) {
+  const logCtx = {
+    deploy: { target, ref, pr },
+    context: { repo: { owner, repo } }
+  };
   const commit = await github.git.getCommit({ owner, repo, commit_sha: sha });
 
   // Params are the payload that goes into every deployment - change these in a
@@ -185,10 +196,11 @@ export async function deployCommit(
   const conf = await config(github, { owner, repo, ref });
   const targetVal = conf[target];
   if (!targetVal) {
-    log.error({ owner, repo, target, ref, pr }, "deploying failed - no target");
+    log.info(logCtx, "deploy: failed - no target");
     throw new Error(`Deployment target "${target}" does not exist`);
   }
   if (targetVal.deployments.length === 0) {
+    log.info(logCtx, "deploy: failed - no deployments");
     throw new Error(`Deployment target "${target}" has no deployments`);
   }
 
@@ -201,14 +213,14 @@ export async function deployCommit(
       ...getDeployBody(targetVal, deployment, params)
     };
     try {
-      log.info({ body }, "deploying");
+      log.info({ ...logCtx, body }, "deploy: deploying");
       // TODO: Handle auto_merge case correctly here.
       // https://developer.github.com/v3/repos/deployments/#merged-branch-response
       const deploy = await github.repos.createDeployment(body);
-      log.info({ body, id: deploy.data.id }, "deploy successful");
+      log.info({ ...logCtx, body }, "deploy: successful");
       deployed.push(deploy.data as ReposGetDeploymentResponse);
     } catch (error) {
-      log.error({ error, body }, "deploying failed");
+      log.error({ ...logCtx, error, body }, "deploy: failed");
       throw error;
     }
   }
@@ -234,7 +246,7 @@ async function autoDeployTarget(
     return;
   }
   const ref = autoDeploy.replace("refs/", "");
-  context.log.info(context.repo({ ref }), "auto deploy: verifying");
+  context.log.info(logCtx(context, { ref }), "auto deploy: verifying");
   const refData = await context.github.git.getRef(context.repo({ ref }));
   const sha = refData.data.object.sha;
 
@@ -243,11 +255,11 @@ async function autoDeployTarget(
   );
   const environments = targetVal.deployments.map(d => d.environment);
   if (deploys.data.find(d => environments.includes(d.environment))) {
-    context.log.info(context.repo({ ref }), "auto deploy: already deployed");
+    context.log.info(logCtx(context, { ref }), "auto deploy: already deployed");
     return;
   }
 
-  context.log.info(context.repo({ ref, target }), "auto deploy: deploying");
+  context.log.info(logCtx(context, { ref }), "auto deploy: deploying");
   try {
     await deployCommit(
       context.github,
@@ -258,7 +270,7 @@ async function autoDeployTarget(
         target
       })
     );
-    context.log.info(context.repo({ ref, target }), "auto deploy: done");
+    context.log.info(logCtx(context, { ref }), "auto deploy: done");
   } catch (error) {
     context.log.error(
       context.repo({ error, ref, target }),
@@ -272,10 +284,7 @@ async function handlePRClose(context: Context) {
   const deployments = await context.github.repos.listDeployments(
     withPreview({ ...context.repo(), ref })
   );
-  context.log.info(
-    context.repo({ count: deployments.data.length }),
-    "pr close: listed deploys"
-  );
+  context.log.info(logCtx(context, { ref }), "pr close: listed deploys");
 
   // List all deployments for this pull request by environment to undeploy the
   // last deployment for every environment.
@@ -284,14 +293,14 @@ async function handlePRClose(context: Context) {
     // Only terminate transient environments.
     if (!deployment.transient_environment) {
       context.log.info(
-        context.repo({ id: deployment.id }),
+        logCtx(context, { ref, deployment: deployment.id }),
         "pr close: not transient"
       );
       continue;
     }
     try {
       context.log.info(
-        context.repo({ id: deployment.id }),
+        logCtx(context, { ref, deployment: deployment.id }),
         "pr close: removing"
       );
       await context.github.repos.createDeploymentStatus(
@@ -303,7 +312,7 @@ async function handlePRClose(context: Context) {
       );
     } catch (error) {
       context.log.info(
-        context.repo({ id: deployment.id, error: error.message }),
+        logCtx(context, { error, ref, deployment: deployment.id }),
         "pr close: marking inactive failed"
       );
     }
@@ -329,7 +338,7 @@ async function handlePRClose(context: Context) {
       );
     } catch (error) {
       context.log.error(
-        context.repo({ id: deployment.id, error: error.message, ref }),
+        logCtx(context, { error, ref, deployment: deployment.id }),
         "pr close: failed to undeploy"
       );
     }

@@ -15,7 +15,9 @@ export = (robot: Application) => {
 
   // Attach the probot log to the request object.
   app.use((req: Request, res: Response, next: NextFunction) => {
-    (req as any).log = robot.log;
+    if (!req.log) {
+      req.log = robot.log;
+    }
     next();
   });
 
@@ -76,10 +78,7 @@ export = (robot: Application) => {
   handlers.forEach(register => register(robot));
 
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    (req as any).log.error(
-      { error: err.message, errorObj: err },
-      "request failed"
-    );
+    req.log.error({ error: err.message, errorObj: err }, "request failed");
     if (process.env.NODE_ENV === "development") {
       console.error(err);
     }
