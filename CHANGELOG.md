@@ -16,7 +16,6 @@ All notable changes to this project will be documented in this file. See [standa
 * Add turbolinks for speed ([2db0a75](https://github.com/deliverybot/deliverybot/commit/2db0a75))
 * Add user scope for email ([a275239](https://github.com/deliverybot/deliverybot/commit/a275239))
 * Dynamically load in deployments and checks ([5c03a07](https://github.com/deliverybot/deliverybot/commit/5c03a07))
-* Lock projects to stop deployments ([20151ed](https://github.com/deliverybot/deliverybot/commit/20151ed))
 
 ### [0.1.2](https://github.com/deliverybot/deliverybot/compare/v0.1.1...v0.1.2) (2019-09-18)
 
