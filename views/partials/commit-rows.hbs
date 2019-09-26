@@ -12,11 +12,11 @@
       <strong><code>{{oidShort}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
     </div>
   </div>
-  {{#if deployment.lastDeployedAtWords}}
-    <div class="text-gray-light mr-3">
+  <div class="text-gray-light mr-3 {{#if @root.minimal}}loader{{/if}}">
+    {{#if deployment.lastDeployedAtWords}}
       Last deployed {{deployment.lastDeployedAtWords}}
-    </div>
-  {{/if}}
+    {{/if}}
+  </div>
   {{#if ../target}}
     {{> deploy_status}}
   {{/if}}

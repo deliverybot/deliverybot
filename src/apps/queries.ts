@@ -1,5 +1,6 @@
 import { request as ghRequest } from "@octokit/request";
 import { Targets } from "./commands";
+import get from "lodash/get";
 import moment from "moment";
 
 async function gql(token: string, query: string, variables: any) {
@@ -20,9 +21,17 @@ async function gql(token: string, query: string, variables: any) {
   return resp.data.data;
 }
 
-const CommitData = `
+interface Options {
+  minimal?: boolean;
+}
+
+const CommitData = ({ minimal }: Options) => `
 messageHeadline oid message
 author { user { login } }
+${
+  minimal
+    ? ""
+    : `
 status { contexts { state } }
 checkSuites(last: 50) { nodes { conclusion status } }
 deployments(last: 50) {
@@ -31,22 +40,23 @@ deployments(last: 50) {
     creator { login }
     latestStatus { logUrl state }
   }
+}`
 }
 `;
 
-const CommitQuery = `
+const CommitQuery = (opts: Options) => `
 query commit(
   $owner: String!, $repo: String!, $oid: GitObjectID
 ) {
   repository(owner:$owner,name:$repo) {
     node: object(oid: $oid) {
-      ... on Commit { ${CommitData} }
+      ... on Commit { ${CommitData(opts)} }
     }
   }
 }
 `;
 
-const CommitsQuery = `
+const CommitsQuery = (opts: Options) => `
 query commits(
   $owner: String!, $repo: String!, $branch: String!
 ) {
@@ -54,7 +64,9 @@ query commits(
     refs(refPrefix:"refs/heads/",first:50) { nodes { name } }
     ref(qualifiedName:$branch) {
       target {
-        ... on Commit { history(first: 10) { edges { node { ${CommitData} }}}}
+        ... on Commit { history(first: 10) { edges { node { ${CommitData(
+          opts
+        )} }}}}
       }
     }
   }
@@ -66,9 +78,10 @@ export async function commits(
   owner: string,
   repo: string,
   target: string,
-  branch: string
+  branch: string,
+  opts: Options
 ) {
-  const result = await gql(token, CommitsQuery, { owner, repo, branch });
+  const result = await gql(token, CommitsQuery(opts), { owner, repo, branch });
   return View(owner, repo, target, branch, result);
 }
 
@@ -78,9 +91,10 @@ export async function commit(
   repo: string,
   target: string,
   branch: string,
-  oid: string
+  oid: string,
+  opts: Options
 ) {
-  const result = await gql(token, CommitQuery, { owner, repo, oid });
+  const result = await gql(token, CommitQuery(opts), { owner, repo, oid });
   return Commit(owner, repo, target, branch, result.repository);
 }
 
@@ -127,7 +141,9 @@ export function Check(node: any) {
   const statuses: string[] = ((node.status && node.status.contexts) || [])
     .map((ctx: any) => ctx.state)
     .concat(
-      node.checkSuites.nodes.map((cs: any) => cs.conclusion || cs.status)
+      get(node, "checkSuites.nodes", []).map(
+        (cs: any) => cs.conclusion || cs.status
+      )
     );
   return { status: Status(AggregateStatus(statuses)) };
 }
@@ -149,11 +165,11 @@ export function Status(status?: string) {
 }
 
 export function Deployment(node: any) {
-  const statuses = (node.deployments || []).nodes.map(
-    (deploy: any) =>
-      (deploy.latestStatus && deploy.latestStatus.state) || "WAITING"
+  const deployments = get(node, "deployments.nodes", []);
+  const statuses = deployments.map((deploy: any) =>
+    get(deploy, "latestStatus.state", "WAITING")
   );
-  const lastDeployedAt = (node.deployments || []).nodes
+  const lastDeployedAt = deployments
     .map((deploy: any) => Date.parse(deploy.createdAt))
     .sort()
     .pop();
@@ -179,7 +195,7 @@ export function Undeployed(node: any) {
 }
 
 export function Deployments(node: any) {
-  return (node.deployments || []).nodes.map((deploy: any) => ({
+  return get(node, "deployments.nodes", []).map((deploy: any) => ({
     status: Status(deploy.latestStatus && deploy.latestStatus.state),
     description: truncate(deploy.description, 20),
     environment: deploy.environment,

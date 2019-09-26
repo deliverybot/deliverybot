@@ -38,6 +38,7 @@ export async function show(req: AuthedRequest, res: Response) {
 
   const conf = await tryConfig(req);
   const targets = queries.Targets(target, conf);
+  const opts = { minimal: req.headers["accept"] !== "application/json" };
 
   const commit = await queries.commit(
     req.user!.token,
@@ -45,9 +46,10 @@ export async function show(req: AuthedRequest, res: Response) {
     repo,
     target,
     branch,
-    sha
+    sha,
+    opts
   );
-  const data = { targets, ...commit };
+  const data = { targets, ...commit, ...opts };
   if (req.headers["accept"] === "application/json") {
     res.json(ctx(req, data));
   } else {
@@ -59,6 +61,7 @@ export async function create(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch, sha } = req.params;
   const conf = await tryConfig(req);
   const targets = queries.Targets(target, conf);
+  const opts = { minimal: req.headers["accept"] !== "application/json" };
 
   try {
     await deployCommit(req.user!.github, (req as any).log, {
@@ -80,30 +83,34 @@ export async function create(req: AuthedRequest, res: Response) {
       repo,
       target,
       branch,
-      sha
+      sha,
+      opts
     );
     res.render(
       "commit",
-      ctx(req, { page: "commit", error, targets, ...commit })
+      ctx(req, { page: "commit", error, targets, ...commit, ...opts })
     );
   }
 }
 
 export async function index(req: AuthedRequest, res: Response) {
   const { owner, repo, target, branch } = req.params;
-  const conf = await tryConfig(req);
-  const targets = queries.Targets(target, conf);
   if (req.query.watch) {
     res.json(watch(req, "commits"));
     return;
   }
+
+  const conf = await tryConfig(req);
+  const targets = queries.Targets(target, conf);
+  const opts = { minimal: req.headers["accept"] !== "application/json" };
 
   const result = await queries.commits(
     req.user!.token,
     owner,
     repo,
     target,
-    branch || "master"
+    branch || "master",
+    opts
   );
   const fileUrl = newDeployFileUrl(owner, repo);
   const data = {
@@ -111,7 +118,8 @@ export async function index(req: AuthedRequest, res: Response) {
     noConfig: !conf,
     fileUrl,
     targets,
-    ...result
+    ...result,
+    ...opts
   };
   if (req.headers["accept"] === "application/json") {
     res.json(ctx(req, ctx(req, data)));

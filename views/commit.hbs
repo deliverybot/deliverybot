@@ -38,7 +38,9 @@
               {{message}}
             </a>
           </h4>
-          {{> commit_status}}
+          <span id="commit_status">
+            {{> commit_status}}
+          </span>
         </div>
         <div class="text-gray-light">
           <strong><code>{{oidShort}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
@@ -49,7 +51,11 @@
       <p id="error" class="text-red">{{error}}</p>
       {{else}}
       <div id="deploy_status_body" style="transition: 0.5s;">
-        {{> deploy_status_body}}
+        {{#if minimal}}
+          <h1 class="p-4 loader text-center"></h1>
+        {{else}}
+          {{> deploy_status_body}}
+        {{/if}}
       </div>
 
       <div class="Box-footer">

@@ -47,8 +47,8 @@
 })();
 
 (function() {
-  function watcher(id, partial, repo) {
-    console.log("watching", id, partial, repo);
+  function watcher(partials, repo) {
+    console.log("watching", partials, repo);
     var previous = "";
     function handleUpdate() {
       fetch(window.location.href, {
@@ -64,8 +64,12 @@
           }
           console.log("watcher - updating");
           previous = data.hash;
-          var el = document.getElementById(id);
-          el.innerHTML = Handlebars.partials[partial](data);
+
+          partials.forEach(function(partial) {
+            var el = document.getElementById(partial);
+            el.innerHTML = Handlebars.partials[partial](data);
+          });
+
           document.dispatchEvent(
             new CustomEvent("page-refresh", { detail: {} })
           );
@@ -90,11 +94,17 @@
 
   function getWatcher(watch) {
     if (watch.page === "commit") {
-      return watcher("deploy_status_body", "deploy_status_body", watch.repo);
+      return watcher(["deploy_status_body", "commit_status"], watch.repo);
     }
     if (watch.page === "commits") {
-      return watcher("commit_rows", "commit_rows", watch.repo);
+      return watcher(["commit_rows"], watch.repo);
     }
+  }
+
+  function repoUpdated() {
+    document.dispatchEvent(
+      new CustomEvent("repo-update", { detail: {} })
+    );
   }
 
   var active;
@@ -107,14 +117,10 @@
           // Close off the active watcher.
           if (active) active();
           active = getWatcher(watch);
+          console.log("triggering first update", watch);
+          repoUpdated();
         }
       })
       .catch(function(err) { console.error(err); })
   });
 })();
-
-function repoUpdated() {
-  document.dispatchEvent(
-    new CustomEvent("repo-update", { detail: {} })
-  );
-}
