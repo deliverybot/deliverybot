@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github.com/deliverybot/deliverybot/compare/v0.1.2...v0.1.3) (2019-09-26)
+
+
+### Bug Fixes
+
+* Clean up logging parameters ([fb895cf](https://github.com/deliverybot/deliverybot/commit/fb895cf))
+* Remove next if used ([c93443c](https://github.com/deliverybot/deliverybot/commit/c93443c))
+
+
+### Features
+
+* Add turbolinks for speed ([2db0a75](https://github.com/deliverybot/deliverybot/commit/2db0a75))
+* Add user scope for email ([a275239](https://github.com/deliverybot/deliverybot/commit/a275239))
+* Dynamically load in deployments and checks ([5c03a07](https://github.com/deliverybot/deliverybot/commit/5c03a07))
+* Lock projects to stop deployments ([20151ed](https://github.com/deliverybot/deliverybot/commit/20151ed))
+
 ### [0.1.2](https://github.com/deliverybot/deliverybot/compare/v0.1.1...v0.1.2) (2019-09-18)
 
 
