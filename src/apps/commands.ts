@@ -281,6 +281,7 @@ async function autoDeployTarget(
 
 async function handlePRClose(context: Context) {
   const ref = context.payload.pull_request.head.ref;
+  const sha = context.payload.pull_request.head.sha;
   const deployments = await context.github.repos.listDeployments(
     withPreview({ ...context.repo(), ref })
   );
@@ -334,7 +335,7 @@ async function handlePRClose(context: Context) {
       // and triggering a deployment with the task "remove".
       await context.github.repos.createDeployment(
         context.repo({
-          ref: deployment.sha,
+          ref: sha,
           task: "remove",
           required_contexts: [],
           payload: deployment.payload as any,
