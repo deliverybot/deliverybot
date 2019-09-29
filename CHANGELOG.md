@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.5](https://github.com/deliverybot/deliverybot/compare/v0.1.4...v0.1.5) (2019-09-29)
+
+
+### Bug Fixes
+
+* Deployment can have undefined sha ([2261c7e](https://github.com/deliverybot/deliverybot/commit/2261c7e))
+
 ### [0.1.4](https://github.com/deliverybot/deliverybot/compare/v0.1.3...v0.1.4) (2019-09-29)
 
 
