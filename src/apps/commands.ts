@@ -301,7 +301,7 @@ async function handlePRClose(context: Context) {
     try {
       context.log.info(
         logCtx(context, { ref, deployment: deployment.id }),
-        "pr close: removing"
+        "pr close: mark inactive"
       );
       await context.github.repos.createDeploymentStatus(
         withPreview({
@@ -311,7 +311,7 @@ async function handlePRClose(context: Context) {
         })
       );
     } catch (error) {
-      context.log.info(
+      context.log.error(
         logCtx(context, { error, ref, deployment: deployment.id }),
         "pr close: marking inactive failed"
       );
@@ -319,14 +319,22 @@ async function handlePRClose(context: Context) {
     environments[deployment.environment] = deployment;
   }
 
+  context.log.info(
+    logCtx(context, { ref, environments: Object.keys(environments).map(e => e) }),
+    "pr close: remove deploys"
+  );
   for (const env in environments) {
     const deployment = environments[env];
     try {
+      context.log.info(
+        logCtx(context, { ref, deployment: deployment.id }),
+        "pr close: remove deploy"
+      );
       // Undeploy for every unique environment by copying the deployment params
       // and triggering a deployment with the task "remove".
       await context.github.repos.createDeployment(
         context.repo({
-          ref,
+          ref: deployment.sha,
           task: "remove",
           required_contexts: [],
           payload: deployment.payload as any,
