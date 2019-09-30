@@ -23,7 +23,7 @@ function watch(req: AuthedRequest, page: string) {
     page,
     repo: {
       owner: req.user!.repo!.owner,
-      repo: req.user!.repo!.owner,
+      repo: req.user!.repo!.repo,
       repoId: req.user!.repo!.id
     }
   };
