@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.6](https://github.com/deliverybot/deliverybot/compare/v0.1.5...v0.1.6) (2019-09-30)
+
+
+### Bug Fixes
+
+* Ensure repo is correct on watch ([22fc544](https://github.com/deliverybot/deliverybot/commit/22fc544))
+
+
+### Features
+
+* Use latest status as deployment state ([b50e494](https://github.com/deliverybot/deliverybot/commit/b50e494))
+
 ### [0.1.5](https://github.com/deliverybot/deliverybot/compare/v0.1.4...v0.1.5) (2019-09-29)
 
 
