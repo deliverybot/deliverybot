@@ -176,7 +176,8 @@ export function Deployment(node: any) {
   const lastDeployedAtWords =
     lastDeployedAt && moment(lastDeployedAt).fromNow();
   return {
-    status: Status(AggregateStatus(statuses)),
+    // Use the latest status to make a decision:
+    status: Status(AggregateStatus([statuses[0] || "NOTHING"])),
     lastDeployedAt,
     lastDeployedAtWords
   };
