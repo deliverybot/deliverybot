@@ -7,3 +7,4 @@ export const version = pkg.version as string;
 export const homepage = pkg.homepage as string;
 export const description = pkg.description as string;
 export const documentation = pkg.documentation as string;
+export const community = pkg.community as string;
