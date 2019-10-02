@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/deliverybot/deliverybot/compare/v0.1.7...v0.1.8) (2019-10-02)
+
+
+### Bug Fixes
+
+* Change name of deployment list ([c07c4c5](https://github.com/deliverybot/deliverybot/commit/c07c4c5))
+* Fix failure if dom element removed ([de3fd69](https://github.com/deliverybot/deliverybot/commit/de3fd69))
+
+
+### Features
+
+* Add link to spectrum ([83aa6ba](https://github.com/deliverybot/deliverybot/commit/83aa6ba))
+
 ### [0.1.7](https://github.com/deliverybot/deliverybot/compare/v0.1.6...v0.1.7) (2019-09-30)
 
 
