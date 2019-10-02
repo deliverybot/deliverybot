@@ -67,7 +67,10 @@
 
           partials.forEach(function(partial) {
             var el = document.getElementById(partial);
-            el.innerHTML = Handlebars.partials[partial](data);
+            // If the element doesn't exist just continue:
+            if (el) {
+              el.innerHTML = Handlebars.partials[partial](data);
+            }
           });
 
           document.dispatchEvent(
