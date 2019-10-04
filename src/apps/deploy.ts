@@ -6,7 +6,7 @@ import * as queries from "./queries";
 import hash from "object-hash";
 import { newDeployFileUrl } from "../util";
 
-export function deploy(app: Application) {
+export function deploy({ app }: { app: Application }) {
   const baseUrl = "/:owner/:repo";
   const indexUrl = `${baseUrl}/target/:target/branch/:branch`;
   const commitUrl = `${indexUrl}/o/:sha`;

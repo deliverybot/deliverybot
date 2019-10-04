@@ -29,6 +29,6 @@ export async function index(req: AuthedRequest, res: Response) {
   res.render("home", { installs, pkg });
 }
 
-export function home(app: Application) {
+export function home({ app }: { app: Application }) {
   app.get("/", setUser, index);
 }

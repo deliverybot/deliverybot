@@ -321,7 +321,10 @@ async function handlePRClose(context: Context) {
   }
 
   context.log.info(
-    logCtx(context, { ref, environments: Object.keys(environments).map(e => e) }),
+    logCtx(context, {
+      ref,
+      environments: Object.keys(environments).map(e => e)
+    }),
     "pr close: remove deploys"
   );
   for (const env in environments) {
@@ -354,7 +357,7 @@ async function handlePRClose(context: Context) {
   }
 }
 
-export function commands(app: Application) {
+export function commands({ robot: app }: { robot: Application }) {
   app.on("push", async context => {
     await handleAutoDeploy(context);
   });
