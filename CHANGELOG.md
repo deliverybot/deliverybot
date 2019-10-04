@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.9](https://github.com/deliverybot/deliverybot/compare/v0.1.8...v0.1.9) (2019-10-04)
+
+
+### Features
+
+* Inject store interface into load ([709e4ef](https://github.com/deliverybot/deliverybot/commit/709e4ef))
+
 ### [0.1.8](https://github.com/deliverybot/deliverybot/compare/v0.1.7...v0.1.8) (2019-10-02)
 
 
