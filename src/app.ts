@@ -1,6 +1,6 @@
 import { Application } from "probot";
 import { Express } from "express";
-import { KVStore } from "./store";
+import { KVStore, LockStore } from "./store";
 import session from "client-sessions";
 import bodyParser from "body-parser";
 import express, { Request, Response, NextFunction } from "express";
@@ -14,6 +14,7 @@ import "express-async-errors";
 
 interface Services {
   kvStore: <T>() => KVStore<T>;
+  lockStore: () => LockStore;
 }
 
 export interface Dependencies extends Services {

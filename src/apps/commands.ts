@@ -9,6 +9,7 @@ import {
 } from "@octokit/rest";
 import schema from "../schema.json";
 import { canWrite } from "./auth";
+import { LockStore } from "../store";
 
 const previewAnt = "application/vnd.github.ant-man-preview+json";
 const previewFlash = "application/vnd.github.flash-preview+json";
@@ -357,15 +358,23 @@ async function handlePRClose(context: Context) {
   }
 }
 
-export function commands({ robot: app }: { robot: Application }) {
+export function commands({ robot: app, lockStore }: { robot: Application, lockStore: () => LockStore }) {
+  const locker = lockStore();
+
+  const doAutoDeploy = (context: Context) => {
+    return locker.lock(`${context.payload.repository.id}-autodeploy`, () => {
+      return handleAutoDeploy(context)
+    });
+  }
+
   app.on("push", async context => {
-    await handleAutoDeploy(context);
+    await doAutoDeploy(context);
   });
   app.on("status", async context => {
-    await handleAutoDeploy(context);
+    await doAutoDeploy(context);
   });
   app.on("check_run", async context => {
-    await handleAutoDeploy(context);
+    await doAutoDeploy(context);
   });
   app.on("issue_comment.created", async context => {
     if (context.payload.comment.body.startsWith("/deploy")) {
