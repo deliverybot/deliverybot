@@ -38,8 +38,8 @@ export class InMemStore<T> implements KVStore<T>, LockStore {
           reject(err);
         }
         this.locks[key] = false;
-      }
+      };
       run();
-    })
+    });
   }
 }

@@ -14,9 +14,8 @@ export function render<T>(template: T, data: any) {
 
 const example = `# View examples and documentation at ${pkg.documentation}
 production:
-  deployments:
-  - environment: production
-    production_environment: true
+  environment: production
+  production_environment: true
 `;
 
 export function newDeployFileUrl(owner: string, repo: string) {

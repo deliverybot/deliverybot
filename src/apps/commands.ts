@@ -4,8 +4,7 @@ import yaml from "js-yaml";
 import { validate } from "jsonschema";
 import {
   ReposListDeploymentsResponseItem,
-  ReposGetDeploymentResponse,
-  PullsGetResponse,
+  PullsGetResponse
 } from "@octokit/rest";
 import schema from "../schema.json";
 import { canWrite } from "./auth";
@@ -82,14 +81,20 @@ export async function config(
   const conf =
     yaml.safeLoad(Buffer.from(content.data.content, "base64").toString()) || {};
 
-  const fields = ["task", "auto_merge", "payload", "environment", "description"]
+  const fields = [
+    "task",
+    "auto_merge",
+    "payload",
+    "environment",
+    "description"
+  ];
   for (const key in conf) {
     if (conf[key].deployments && conf[key].deployments.length > 0) {
       const dep = conf[key].deployments[0];
       const tar = conf[key];
       fields.forEach(field => {
         tar[field] = tar[field] || dep[field];
-      })
+      });
       delete conf[key].deployments;
     }
   }
@@ -108,10 +113,7 @@ export async function config(
   return conf;
 }
 
-function getDeployBody(
-  target: Target,
-  data: any
-): DeployBody {
+function getDeployBody(target: Target, data: any): DeployBody {
   return withPreview({
     task: target.task || "deploy",
     transient_environment: target.transient_environment || false,
@@ -365,14 +367,20 @@ async function handlePRClose(context: Context) {
   }
 }
 
-export function commands({ robot: app, lockStore }: { robot: Application, lockStore: () => LockStore }) {
+export function commands({
+  robot: app,
+  lockStore
+}: {
+  robot: Application;
+  lockStore: () => LockStore;
+}) {
   const locker = lockStore();
 
   const doAutoDeploy = (context: Context) => {
     return locker.lock(`${context.payload.repository.id}-autodeploy`, () => {
-      return handleAutoDeploy(context)
+      return handleAutoDeploy(context);
     });
-  }
+  };
 
   app.on("push", async context => {
     await doAutoDeploy(context);
