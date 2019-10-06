@@ -22,28 +22,20 @@
             "type": "string"
           }
         },
-        "deployments": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "environment": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "task": {
-                "type": "string"
-              },
-              "payload": {
-                "type": "object"
-              },
-              "auto_merge": {
-                "type": "boolean"
-              }
-            }
-          }
+        "environment": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "task": {
+          "type": "string"
+        },
+        "payload": {
+          "type": "object"
+        },
+        "auto_merge": {
+          "type": "boolean"
         }
       }
     }

@@ -5,7 +5,7 @@ import { validate } from "jsonschema";
 import {
   ReposListDeploymentsResponseItem,
   ReposGetDeploymentResponse,
-  PullsGetResponse
+  PullsGetResponse,
 } from "@octokit/rest";
 import schema from "../schema.json";
 import { canWrite } from "./auth";
@@ -29,17 +29,25 @@ function logCtx(context: Context, params: any) {
   };
 }
 
-interface Deployment {
+interface DeployBody {
+  auto_merge: boolean;
   task: string;
   payload: any;
   environment: string;
   description: string;
-  auto_merge: boolean;
+  transient_environment: boolean;
+  production_environment: boolean;
+  required_contexts: string[];
 }
 
 export interface Target {
   name: string;
   auto_deploy_on: string;
+  auto_merge: boolean;
+  task: string;
+  payload: any;
+  environment: string;
+  description: string;
 
   // Required contexts  are required to be matched across all deployments in the
   // target set. This is so that one deployment does not succeed before another
@@ -49,9 +57,6 @@ export interface Target {
   // Environment information must be copied into all deployments.
   transient_environment: boolean;
   production_environment: boolean;
-
-  // Deployments are the list of deployments to trigger.
-  deployments: Deployment[];
 }
 
 export type Targets = { [k: string]: Target | undefined };
@@ -65,7 +70,7 @@ export async function config(
   }: {
     owner: string;
     repo: string;
-    ref: string;
+    ref?: string;
   }
 ): Promise<Targets> {
   const content = await github.repos.getContents({
@@ -76,6 +81,19 @@ export async function config(
   });
   const conf =
     yaml.safeLoad(Buffer.from(content.data.content, "base64").toString()) || {};
+
+  const fields = ["task", "auto_merge", "payload", "environment", "description"]
+  for (const key in conf) {
+    if (conf[key].deployments && conf[key].deployments.length > 0) {
+      const dep = conf[key].deployments[0];
+      const tar = conf[key];
+      fields.forEach(field => {
+        tar[field] = tar[field] || dep[field];
+      })
+      delete conf[key].deployments;
+    }
+  }
+
   const validation = validate(conf, schema, {
     propertyName: "config",
     allowUnknownAttributes: true
@@ -86,27 +104,25 @@ export async function config(
   }
   for (const key in conf) {
     conf[key].name = key;
-    conf[key].deployments = conf[key].deployments || [];
   }
   return conf;
 }
 
 function getDeployBody(
   target: Target,
-  deployment: Deployment,
   data: any
-): Deployment {
+): DeployBody {
   return withPreview({
-    task: deployment.task || "deploy",
+    task: target.task || "deploy",
     transient_environment: target.transient_environment || false,
     production_environment: target.production_environment || false,
-    environment: render(deployment.environment || "production", data),
-    auto_merge: deployment.auto_merge || false,
+    environment: render(target.environment || "production", data),
+    auto_merge: target.auto_merge || false,
     required_contexts: target.required_contexts || [],
-    description: render(deployment.description, data),
+    description: render(target.description, data),
     payload: {
       target: target.name,
-      ...render(deployment.payload, data)
+      ...render(target.payload, data)
     }
   });
 }
@@ -200,39 +216,31 @@ export async function deployCommit(
     log.info(logCtx, "deploy: failed - no target");
     throw new Error(`Deployment target "${target}" does not exist`);
   }
-  if (targetVal.deployments.length === 0) {
-    log.info(logCtx, "deploy: failed - no deployments");
-    throw new Error(`Deployment target "${target}" has no deployments`);
-  }
 
-  const deployed = [];
-  for (const deployment of targetVal.deployments) {
-    const body = {
-      owner,
-      repo,
-      ref,
-      ...getDeployBody(targetVal, deployment, params)
-    };
-    try {
-      log.info({ ...logCtx, body }, "deploy: deploying");
-      // TODO: Handle auto_merge case correctly here.
-      // https://developer.github.com/v3/repos/deployments/#merged-branch-response
-      const deploy = await github.repos.createDeployment(body);
-      log.info({ ...logCtx, body }, "deploy: successful");
-      deployed.push(deploy.data as ReposGetDeploymentResponse);
-    } catch (error) {
-      log.error({ ...logCtx, error, body }, "deploy: failed");
-      throw error;
-    }
+  const body = {
+    owner,
+    repo,
+    ref,
+    ...getDeployBody(targetVal, params)
+  };
+  try {
+    log.info({ ...logCtx, body }, "deploy: deploying");
+    // TODO: Handle auto_merge case correctly here.
+    // https://developer.github.com/v3/repos/deployments/#merged-branch-response
+    const deploy = await github.repos.createDeployment(body);
+    log.info({ ...logCtx, body }, "deploy: successful");
+    return deploy.data;
+  } catch (error) {
+    log.error({ ...logCtx, error, body }, "deploy: failed");
+    throw error;
   }
-  return deployed;
 }
 
 async function handleAutoDeploy(context: Context) {
   context.log.info("auto deploy: checking deployments");
-  const config = await context.config("deploy.yml");
-  for (const key in config) {
-    const deployment = config[key];
+  const conf = await config(context.github, context.repo());
+  for (const key in conf) {
+    const deployment = conf[key]!;
     await autoDeployTarget(context, key, deployment);
   }
 }
@@ -254,8 +262,7 @@ async function autoDeployTarget(
   const deploys = await context.github.repos.listDeployments(
     context.repo({ sha })
   );
-  const environments = targetVal.deployments.map(d => d.environment);
-  if (deploys.data.find(d => environments.includes(d.environment))) {
+  if (deploys.data.find(d => d.environment === targetVal.environment)) {
     context.log.info(logCtx(context, { ref }), "auto deploy: already deployed");
     return;
   }
