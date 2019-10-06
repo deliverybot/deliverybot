@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/deliverybot/deliverybot/compare/v0.2.0...v0.3.0) (2019-10-06)
+
+
+### Features
+
+* Move to a single deployment per target ([80956bf](https://github.com/deliverybot/deliverybot/commit/80956bf)), closes [#19](https://github.com/deliverybot/deliverybot/issues/19)
+
 ## [0.2.0](https://github.com/deliverybot/deliverybot/compare/v0.1.9...v0.2.0) (2019-10-05)
 
 
