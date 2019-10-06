@@ -240,7 +240,9 @@ export async function deployCommit(
 
 async function handleAutoDeploy(context: Context) {
   context.log.info("auto deploy: checking deployments");
-  const conf = await config(context.github, context.repo());
+  const conf = await config(context.github, context.repo({
+    ref: "master",
+  }));
   for (const key in conf) {
     const deployment = conf[key]!;
     await autoDeployTarget(context, key, deployment);
