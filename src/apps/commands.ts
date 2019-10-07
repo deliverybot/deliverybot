@@ -4,7 +4,8 @@ import yaml from "js-yaml";
 import { validate } from "jsonschema";
 import {
   ReposListDeploymentsResponseItem,
-  PullsGetResponse
+  PullsGetResponse,
+  ReposGetContentsParams
 } from "@octokit/rest";
 import schema from "../schema.json";
 import { canWrite } from "./auth";
@@ -72,12 +73,13 @@ export async function config(
     ref?: string;
   }
 ): Promise<Targets> {
-  const content = await github.repos.getContents({
+  const params: ReposGetContentsParams = {
     owner,
     repo,
-    ref,
     path: `.github/deploy.yml`
-  });
+  };
+  if (ref) params.ref = ref;
+  const content = await github.repos.getContents(params);
   const conf =
     yaml.safeLoad(Buffer.from(content.data.content, "base64").toString()) || {};
 
@@ -240,12 +242,18 @@ export async function deployCommit(
 
 async function handleAutoDeploy(context: Context) {
   context.log.info("auto deploy: checking deployments");
-  const conf = await config(context.github, context.repo({
-    ref: "master",
-  }));
-  for (const key in conf) {
-    const deployment = conf[key]!;
-    await autoDeployTarget(context, key, deployment);
+  try {
+    const conf = await config(context.github, context.repo());
+    for (const key in conf) {
+      const deployment = conf[key]!;
+      await autoDeployTarget(context, key, deployment);
+    }
+  } catch (error) {
+    if (error.code === 404) {
+      context.log.info(logCtx(context, { error }), "auto deploy: no config");
+    } else {
+      context.log.error(logCtx(context, { error }), "auto deploy: failed");
+    }
   }
 }
 
