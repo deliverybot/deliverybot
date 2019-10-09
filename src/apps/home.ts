@@ -1,14 +1,10 @@
-import { AuthedRequest, setUser } from "./auth";
+import { AuthedRequest, authenticate } from "./auth";
 import { Response, Application } from "express";
 import * as pkg from "../package";
 
 export async function index(req: AuthedRequest, res: Response) {
   if (req.query.watch) {
     res.json({ watch: false });
-    return;
-  }
-  if (!req.user) {
-    res.render("probot", { ...pkg, anonymous: true });
     return;
   }
 
@@ -26,9 +22,9 @@ export async function index(req: AuthedRequest, res: Response) {
     });
   }
 
-  res.render("home", { installs, pkg });
+  res.render("home", { hasInstalls: installs.length >= 1, installs, pkg });
 }
 
 export function home({ app }: { app: Application }) {
-  app.get("/", setUser, index);
+  app.get("/", authenticate, index);
 }
