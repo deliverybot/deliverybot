@@ -4,10 +4,13 @@
 <div class="content">
   <div class="box-shadow rounded-2 border p-6 bg-white">
     <div class="text-center">
-      <h3>Welcome to {{pkg.name}}</h3>
+      <h1 class="f1-light">Welcome to Deliverybot</h1>
       <p>
-        Below are all the installed repositories that you can manage.
+        If you have any questions <a href="{{site.spectrum_url}}">join the community</a>
+        or <a href="mailto:{{site.support_email}}">send us an email</a>. We're
+        happy to chat!
       </p>
+
       <hr>
     </div>
 
@@ -24,13 +27,20 @@
         <p class="lead">
           You don't have deliverybot installed on any repositories.
         </p>
-      </div>
-      {{/each}}
-      <div class="text-center mt-5">
         <a class="btn btn-outline" role="button" target="_blank" href="https://github.com/apps/{{ pkg.name }}/installations/new">
-          Install
+          Install now
         </a>
       </div>
+      {{/each}}
+      {{#if hasInstalls}}
+      <div class="text-center mt-5">
+        <p>
+          Above are all the installed repositories that you can manage. You can
+          <a href="https://github.com/apps/{{ pkg.name }}/installations/new">install</a>
+          Deliverybot on a new repository or click on a repository to start deploying.
+        </p>
+      </div>
+      {{/if}}
     </div>
   </div>
 </div>

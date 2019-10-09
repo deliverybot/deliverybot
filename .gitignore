@@ -4,3 +4,4 @@ lib
 dist*
 tmp
 static/partials.js
+/coverage

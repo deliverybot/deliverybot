@@ -11,11 +11,13 @@
   "description": "Controls and configures deployments using the GitHub API.",
   "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",
   "license": "MIT",
+  "support": "support@deliverybot.dev",
   "repository": "https://github.com/deliverybot/deliverybot.git",
   "homepage": "https://deliverybot.dev",
   "documentation": "https://deliverybot.dev/docs/",
   "bugs": "https://github.com/deliverybot/deliverybot/issues",
   "community": "https://spectrum.chat/deliverybot/general",
+  "github": "https://github.com/deliverybot",
   "keywords": [
     "probot",
     "github",
