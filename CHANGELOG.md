@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.3](https://github.com/deliverybot/deliverybot/compare/v0.3.2...v0.3.3) (2019-10-09)
+
+
+### Bug Fixes
+
+* Correct deploy error reporting for conflicts ([1820fdb](https://github.com/deliverybot/deliverybot/commit/1820fdb))
+
+
+### Features
+
+* Log in automatically on home ([1d74316](https://github.com/deliverybot/deliverybot/commit/1d74316))
+
 ### [0.3.2](https://github.com/deliverybot/deliverybot/compare/v0.3.1...v0.3.2) (2019-10-07)
 
 
