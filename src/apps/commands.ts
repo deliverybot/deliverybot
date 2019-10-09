@@ -235,7 +235,11 @@ export async function deployCommit(
     log.info({ ...logCtx, body }, "deploy: successful");
     return deploy.data;
   } catch (error) {
-    log.error({ ...logCtx, error, body }, "deploy: failed");
+    if (error.status === 409) {
+      log.info({ ...logCtx, error, body }, "deploy: checks not ready");
+    } else {
+      log.error({ ...logCtx, error, body }, "deploy: failed");
+    }
     throw error;
   }
 }
@@ -292,10 +296,17 @@ async function autoDeployTarget(
     );
     context.log.info(logCtx(context, { ref }), "auto deploy: done");
   } catch (error) {
-    context.log.error(
-      context.repo({ error, ref, target }),
-      "auto deploy: failed"
-    );
+    if (error.status === 409) {
+      context.log.info(
+        logCtx(context, { target, ref, error }),
+        "auto deploy: checks not ready"
+      );
+    } else {
+      context.log.error(
+        logCtx(context, { target, ref, error }),
+        "auto deploy: deploy attempt failed"
+      );
+    }
   }
 }
 
