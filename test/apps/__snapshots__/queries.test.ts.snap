@@ -1,0 +1,1337 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Queries runs commit full 1`] = `
+Object {
+  "author": "colinjfw",
+  "branch": "master",
+  "check": Object {
+    "status": Object {
+      "color": "red",
+      "failure": true,
+    },
+  },
+  "deployment": Object {
+    "lastDeployedAt": 1570402594000,
+    "lastDeployedAtWords": "a few seconds ago",
+    "status": Object {
+      "color": "red",
+      "failure": true,
+    },
+  },
+  "deployments": Array [
+    Object {
+      "createdAt": 1568991962000,
+      "createdAtWords": "a few seconds ago",
+      "creator": "deliverybot",
+      "description": "Staging",
+      "environment": "staging",
+      "status": Object {
+        "color": "gray",
+        "waiting": true,
+      },
+      "url": null,
+    },
+    Object {
+      "createdAt": 1569029862000,
+      "createdAtWords": "a few seconds ago",
+      "creator": "colinjfw",
+      "description": "Production",
+      "environment": "production",
+      "status": Object {
+        "color": "gray",
+        "waiting": true,
+      },
+      "url": null,
+    },
+    Object {
+      "createdAt": 1569371403000,
+      "createdAtWords": "a few seconds ago",
+      "creator": "colinjfw",
+      "description": "Production",
+      "environment": "production",
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+      "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+    },
+    Object {
+      "createdAt": 1569373938000,
+      "createdAtWords": "a few seconds ago",
+      "creator": "colinjfw",
+      "description": "Production",
+      "environment": "production",
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+      "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+    },
+    Object {
+      "createdAt": 1569375030000,
+      "createdAtWords": "a few seconds ago",
+      "creator": "colinjfw",
+      "description": "Production",
+      "environment": "production",
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+      "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+    },
+    Object {
+      "createdAt": 1569376501000,
+      "createdAtWords": "a few seconds ago",
+      "creator": "colinjfw",
+      "description": "Production",
+      "environment": "production",
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+      "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+    },
+    Object {
+      "createdAt": 1569376916000,
+      "createdAtWords": "a few seconds ago",
+      "creator": "colinjfw",
+      "description": "Production",
+      "environment": "production",
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+      "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+    },
+    Object {
+      "createdAt": 1569376990000,
+      "createdAtWords": "a few seconds ago",
+      "creator": "colinjfw",
+      "description": "Production",
+      "environment": "production",
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+      "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+    },
+    Object {
+      "createdAt": 1569423917000,
+      "createdAtWords": "a few seconds ago",
+      "creator": "colinjfw",
+      "description": "Production",
+      "environment": "production",
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+      "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+    },
+    Object {
+      "createdAt": 1569630306000,
+      "createdAtWords": "a few seconds ago",
+      "creator": "colinjfw",
+      "description": "Production",
+      "environment": "production",
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+      "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+    },
+    Object {
+      "createdAt": 1570402594000,
+      "createdAtWords": "a few seconds ago",
+      "creator": "colinjfw",
+      "description": "Production",
+      "environment": "production",
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+      "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+    },
+  ],
+  "message": "Update test.yml",
+  "oid": "7665fbf10ae537da98a2f98c3960d7a42e765d9b",
+  "oidShort": "7665fbf",
+  "owner": "colinjfw",
+  "repo": "deliverybot-example",
+  "target": "production",
+  "undeployed": false,
+}
+`;
+
+exports[`Queries runs commit minimal 1`] = `
+Object {
+  "author": "colinjfw",
+  "branch": "master",
+  "check": Object {
+    "status": Object {
+      "color": "gray",
+      "nothing": true,
+    },
+  },
+  "deployment": Object {
+    "lastDeployedAt": undefined,
+    "lastDeployedAtWords": undefined,
+    "status": Object {
+      "color": "gray",
+      "nothing": true,
+    },
+  },
+  "deployments": Array [],
+  "message": "Update test.yml",
+  "oid": "7665fbf10ae537da98a2f98c3960d7a42e765d9b",
+  "oidShort": "7665fbf",
+  "owner": "colinjfw",
+  "repo": "deliverybot-example",
+  "target": "production",
+  "undeployed": false,
+}
+`;
+
+exports[`Queries runs commits full 1`] = `
+Object {
+  "branches": Array [
+    Object {
+      "active": false,
+      "name": "colinjfw-patch-1",
+    },
+    Object {
+      "active": false,
+      "name": "colinjfw-patch-2",
+    },
+    Object {
+      "active": true,
+      "name": "master",
+    },
+  ],
+  "commits": Array [
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": 1570402694000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "latest": true,
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1570402694000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example/commit/aa945ff74491086031760d646f99c93092c6c2db/checks",
+        },
+      ],
+      "message": "Update deploy.yml",
+      "oid": "aa945ff74491086031760d646f99c93092c6c2db",
+      "oidShort": "aa945ff",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": 1570402594000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1568991962000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot",
+          "description": "Staging",
+          "environment": "staging",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "createdAt": 1569029862000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "createdAt": 1569371403000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+        },
+        Object {
+          "createdAt": 1569373938000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+        },
+        Object {
+          "createdAt": 1569375030000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+        },
+        Object {
+          "createdAt": 1569376501000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+        },
+        Object {
+          "createdAt": 1569376916000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+        },
+        Object {
+          "createdAt": 1569376990000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+        },
+        Object {
+          "createdAt": 1569423917000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+        },
+        Object {
+          "createdAt": 1569630306000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+        },
+        Object {
+          "createdAt": 1570402594000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+        },
+      ],
+      "message": "Update test.yml",
+      "oid": "7665fbf10ae537da98a2f98c3960d7a42e765d9b",
+      "oidShort": "7665fbf",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": 1568854077000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1568252953000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot",
+          "description": "Staging",
+          "environment": "staging",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "createdAt": 1568252953000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot-dev",
+          "description": "Staging",
+          "environment": "staging",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "createdAt": 1568253581000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "createdAt": 1568297635000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "createdAt": 1568343850000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "createdAt": 1568344606000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Staging",
+          "environment": "staging",
+          "status": Object {
+            "color": "red",
+            "failure": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example/commit/ecbb08acd312258e9bc3996c5e0375aab6e9e3f8/checks",
+        },
+        Object {
+          "createdAt": 1568344752000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Staging",
+          "environment": "staging",
+          "status": Object {
+            "color": "green",
+            "success": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example/commit/ecbb08acd312258e9bc3996c5e0375aab6e9e3f8/checks",
+        },
+        Object {
+          "createdAt": 1568731388000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "createdAt": 1568854077000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Staging",
+          "environment": "staging",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+      ],
+      "message": "Update deploy.yml",
+      "oid": "ecbb08acd312258e9bc3996c5e0375aab6e9e3f8",
+      "oidShort": "ecbb08a",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": 1568484845000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1568126278000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot",
+          "description": "Staging",
+          "environment": "staging",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "createdAt": 1568126490000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "createdAt": 1568253236000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "createdAt": 1568484845000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+      ],
+      "message": "Update syntax",
+      "oid": "eb4e2e58dbe2ac54ee07b6703bf33be0cd463eb0",
+      "oidShort": "eb4e2e5",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": 1568252487000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1568002836000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot",
+          "description": "Staging",
+          "environment": "staging",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+        Object {
+          "createdAt": 1568252487000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "Production",
+          "environment": "production",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+      ],
+      "message": "trigger",
+      "oid": "eeada946eff96e2e640626e5a6c70b1472ed8b2c",
+      "oidShort": "eeada94",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": 1568001078000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1568001078000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot",
+          "description": "Staging",
+          "environment": "staging",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+      ],
+      "message": "Use helm version 3",
+      "oid": "cf1e4266ff8d74161aa68e8926b328ae74f2cf2b",
+      "oidShort": "cf1e426",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": 1567995589000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1567995589000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot",
+          "description": "Staging",
+          "environment": "staging",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+      ],
+      "message": "Fix build arg",
+      "oid": "f834faf0fd828e17a312ace5ec976fa48a00148b",
+      "oidShort": "f834faf",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": 1567995438000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1567995438000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot",
+          "description": "Staging",
+          "environment": "staging",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+      ],
+      "message": "Trigger",
+      "oid": "b99e1ac89476953a330e302f2a8b79ebe9db44c5",
+      "oidShort": "b99e1ac",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": 1567985724000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1567985724000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot",
+          "description": "Staging",
+          "environment": "staging",
+          "status": Object {
+            "color": "gray",
+            "waiting": true,
+          },
+          "url": null,
+        },
+      ],
+      "message": "Resync with cloudbuild",
+      "oid": "3fbbdf4c2f9750e745bae8351502df7b41736038",
+      "oidShort": "3fbbdf4",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "success": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "message": "Add version",
+      "oid": "bc347063ed2ea8db869e00b7292c7956b8fc4064",
+      "oidShort": "bc34706",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": true,
+    },
+  ],
+  "latest": Object {
+    "author": "colinjfw",
+    "branch": "master",
+    "check": Object {
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+    },
+    "deployment": Object {
+      "lastDeployedAt": 1570402694000,
+      "lastDeployedAtWords": "a few seconds ago",
+      "latest": true,
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+    },
+    "deployments": Array [
+      Object {
+        "createdAt": 1570402694000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "colinjfw",
+        "description": "Production",
+        "environment": "production",
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+        "url": "https://github.com/colinjfw/deliverybot-example/commit/aa945ff74491086031760d646f99c93092c6c2db/checks",
+      },
+    ],
+    "message": "Update deploy.yml",
+    "oid": "aa945ff74491086031760d646f99c93092c6c2db",
+    "oidShort": "aa945ff",
+    "owner": "colinjfw",
+    "repo": "deliverybot-example",
+    "target": "production",
+    "undeployed": false,
+  },
+  "previous": Object {
+    "author": "colinjfw",
+    "branch": "master",
+    "check": Object {
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+    },
+    "deployment": Object {
+      "lastDeployedAt": 1570402594000,
+      "lastDeployedAtWords": "a few seconds ago",
+      "status": Object {
+        "color": "red",
+        "failure": true,
+      },
+    },
+    "deployments": Array [
+      Object {
+        "createdAt": 1568991962000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "deliverybot",
+        "description": "Staging",
+        "environment": "staging",
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+        "url": null,
+      },
+      Object {
+        "createdAt": 1569029862000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "colinjfw",
+        "description": "Production",
+        "environment": "production",
+        "status": Object {
+          "color": "gray",
+          "waiting": true,
+        },
+        "url": null,
+      },
+      Object {
+        "createdAt": 1569371403000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "colinjfw",
+        "description": "Production",
+        "environment": "production",
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+        "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+      },
+      Object {
+        "createdAt": 1569373938000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "colinjfw",
+        "description": "Production",
+        "environment": "production",
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+        "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+      },
+      Object {
+        "createdAt": 1569375030000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "colinjfw",
+        "description": "Production",
+        "environment": "production",
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+        "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+      },
+      Object {
+        "createdAt": 1569376501000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "colinjfw",
+        "description": "Production",
+        "environment": "production",
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+        "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+      },
+      Object {
+        "createdAt": 1569376916000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "colinjfw",
+        "description": "Production",
+        "environment": "production",
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+        "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+      },
+      Object {
+        "createdAt": 1569376990000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "colinjfw",
+        "description": "Production",
+        "environment": "production",
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+        "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+      },
+      Object {
+        "createdAt": 1569423917000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "colinjfw",
+        "description": "Production",
+        "environment": "production",
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+        "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+      },
+      Object {
+        "createdAt": 1569630306000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "colinjfw",
+        "description": "Production",
+        "environment": "production",
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+        "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+      },
+      Object {
+        "createdAt": 1570402594000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "colinjfw",
+        "description": "Production",
+        "environment": "production",
+        "status": Object {
+          "color": "red",
+          "failure": true,
+        },
+        "url": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+      },
+    ],
+    "message": "Update test.yml",
+    "oid": "7665fbf10ae537da98a2f98c3960d7a42e765d9b",
+    "oidShort": "7665fbf",
+    "owner": "colinjfw",
+    "repo": "deliverybot-example",
+    "target": "production",
+    "undeployed": false,
+  },
+}
+`;
+
+exports[`Queries runs commits minimal 1`] = `
+Object {
+  "branches": Array [
+    Object {
+      "active": false,
+      "name": "colinjfw-patch-1",
+    },
+    Object {
+      "active": false,
+      "name": "colinjfw-patch-2",
+    },
+    Object {
+      "active": true,
+      "name": "master",
+    },
+  ],
+  "commits": Array [
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "message": "Update deploy.yml",
+      "oid": "aa945ff74491086031760d646f99c93092c6c2db",
+      "oidShort": "aa945ff",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "message": "Update test.yml",
+      "oid": "7665fbf10ae537da98a2f98c3960d7a42e765d9b",
+      "oidShort": "7665fbf",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "message": "Update deploy.yml",
+      "oid": "ecbb08acd312258e9bc3996c5e0375aab6e9e3f8",
+      "oidShort": "ecbb08a",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "message": "Update syntax",
+      "oid": "eb4e2e58dbe2ac54ee07b6703bf33be0cd463eb0",
+      "oidShort": "eb4e2e5",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "message": "trigger",
+      "oid": "eeada946eff96e2e640626e5a6c70b1472ed8b2c",
+      "oidShort": "eeada94",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "message": "Use helm version 3",
+      "oid": "cf1e4266ff8d74161aa68e8926b328ae74f2cf2b",
+      "oidShort": "cf1e426",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "message": "Fix build arg",
+      "oid": "f834faf0fd828e17a312ace5ec976fa48a00148b",
+      "oidShort": "f834faf",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "message": "Trigger",
+      "oid": "b99e1ac89476953a330e302f2a8b79ebe9db44c5",
+      "oidShort": "b99e1ac",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "message": "Resync with cloudbuild",
+      "oid": "3fbbdf4c2f9750e745bae8351502df7b41736038",
+      "oidShort": "3fbbdf4",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "message": "Add version",
+      "oid": "bc347063ed2ea8db869e00b7292c7956b8fc4064",
+      "oidShort": "bc34706",
+      "owner": "colinjfw",
+      "repo": "deliverybot-example",
+      "target": "production",
+      "undeployed": false,
+    },
+  ],
+  "latest": undefined,
+  "previous": null,
+}
+`;

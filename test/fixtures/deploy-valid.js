@@ -1,3 +1,4 @@
+module.exports = `
 review:
   transient_environment: true
   production_environment: false
@@ -5,7 +6,7 @@ review:
     - continuous-integration/travis-ci/push
 
   deployments:
-  - environment: pr${{ pr }}
+  - environment: pr\${{ pr }}
     description: A test environment based on Docker
     auto_merge: false
 
@@ -46,3 +47,4 @@ performance:
     description: A test environment based on Docker
     auto_merge: false
     payload: {}
+`

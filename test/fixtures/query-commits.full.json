@@ -1,0 +1,782 @@
+{
+  "repository": {
+    "refs": {
+      "nodes": [
+        {
+          "name": "colinjfw-patch-1"
+        },
+        {
+          "name": "colinjfw-patch-2"
+        },
+        {
+          "name": "master"
+        }
+      ]
+    },
+    "ref": {
+      "target": {
+        "history": {
+          "edges": [
+            {
+              "node": {
+                "messageHeadline": "Update deploy.yml",
+                "oid": "aa945ff74491086031760d646f99c93092c6c2db",
+                "message": "Update deploy.yml",
+                "author": {
+                  "user": {
+                    "login": "colinjfw"
+                  }
+                },
+                "status": null,
+                "checkSuites": {
+                  "nodes": [
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    }
+                  ]
+                },
+                "deployments": {
+                  "nodes": [
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNzM2MzM3MzA=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-10-06T22:58:14Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": {
+                        "logUrl": "https://github.com/colinjfw/deliverybot-example/commit/aa945ff74491086031760d646f99c93092c6c2db/checks",
+                        "state": "FAILURE"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "node": {
+                "messageHeadline": "Update test.yml",
+                "oid": "7665fbf10ae537da98a2f98c3960d7a42e765d9b",
+                "message": "Update test.yml",
+                "author": {
+                  "user": {
+                    "login": "colinjfw"
+                  }
+                },
+                "status": null,
+                "checkSuites": {
+                  "nodes": [
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    }
+                  ]
+                },
+                "deployments": {
+                  "nodes": [
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNzAzNDAyNDE=",
+                      "environment": "staging",
+                      "description": "Staging",
+                      "createdAt": "2019-09-20T15:06:02Z",
+                      "creator": {
+                        "login": "deliverybot"
+                      },
+                      "latestStatus": null
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNzA0MzI0NDU=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-21T01:37:42Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": null
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNzExOTczOTg=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-25T00:30:03Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": {
+                        "logUrl": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+                        "state": "FAILURE"
+                      }
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNzEyMDI2NTA=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-25T01:12:18Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": {
+                        "logUrl": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+                        "state": "FAILURE"
+                      }
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNzEyMDQ4NTk=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-25T01:30:30Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": {
+                        "logUrl": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+                        "state": "FAILURE"
+                      }
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNzEyMDc4OTE=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-25T01:55:01Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": {
+                        "logUrl": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+                        "state": "FAILURE"
+                      }
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNzEyMDg3NDk=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-25T02:01:56Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": {
+                        "logUrl": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+                        "state": "FAILURE"
+                      }
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNzEyMDg5MDQ=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-25T02:03:10Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": {
+                        "logUrl": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+                        "state": "FAILURE"
+                      }
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNzEzMzgwMDg=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-25T15:05:17Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": {
+                        "logUrl": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+                        "state": "FAILURE"
+                      }
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNzE4OTE3MDI=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-28T00:25:06Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": {
+                        "logUrl": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+                        "state": "FAILURE"
+                      }
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNzM2MzM1ODA=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-10-06T22:56:34Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": {
+                        "logUrl": "https://github.com/colinjfw/deliverybot-example/commit/7665fbf10ae537da98a2f98c3960d7a42e765d9b/checks",
+                        "state": "FAILURE"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "node": {
+                "messageHeadline": "Update deploy.yml",
+                "oid": "ecbb08acd312258e9bc3996c5e0375aab6e9e3f8",
+                "message": "Update deploy.yml",
+                "author": {
+                  "user": {
+                    "login": "colinjfw"
+                  }
+                },
+                "status": {
+                  "contexts": [
+                    {
+                      "state": "SUCCESS"
+                    }
+                  ]
+                },
+                "checkSuites": {
+                  "nodes": [
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    }
+                  ]
+                },
+                "deployments": {
+                  "nodes": [
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjg1MTM4ODA=",
+                      "environment": "staging",
+                      "description": "Staging",
+                      "createdAt": "2019-09-12T01:49:13Z",
+                      "creator": {
+                        "login": "deliverybot"
+                      },
+                      "latestStatus": null
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjg1MTM4ODE=",
+                      "environment": "staging",
+                      "description": "Staging",
+                      "createdAt": "2019-09-12T01:49:13Z",
+                      "creator": {
+                        "login": "deliverybot-dev"
+                      },
+                      "latestStatus": null
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjg1MTUxNDc=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-12T01:59:41Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": null
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjg2Mjc2NTA=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-12T14:13:55Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": null
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjg3NTUwMDA=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-13T03:04:10Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": null
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjg3NTYzNjY=",
+                      "environment": "staging",
+                      "description": "Staging",
+                      "createdAt": "2019-09-13T03:16:46Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": {
+                        "logUrl": "https://github.com/colinjfw/deliverybot-example/commit/ecbb08acd312258e9bc3996c5e0375aab6e9e3f8/checks",
+                        "state": "FAILURE"
+                      }
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjg3NTY2MjM=",
+                      "environment": "staging",
+                      "description": "Staging",
+                      "createdAt": "2019-09-13T03:19:12Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": {
+                        "logUrl": "https://github.com/colinjfw/deliverybot-example/commit/ecbb08acd312258e9bc3996c5e0375aab6e9e3f8/checks",
+                        "state": "SUCCESS"
+                      }
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjk2MTM5MDI=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-17T14:43:08Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": null
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjk5NzEwOTI=",
+                      "environment": "staging",
+                      "description": "Staging",
+                      "createdAt": "2019-09-19T00:47:57Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": null
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "node": {
+                "messageHeadline": "Update syntax",
+                "oid": "eb4e2e58dbe2ac54ee07b6703bf33be0cd463eb0",
+                "message": "Update syntax",
+                "author": {
+                  "user": {
+                    "login": "colinjfw"
+                  }
+                },
+                "status": null,
+                "checkSuites": {
+                  "nodes": [
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    }
+                  ]
+                },
+                "deployments": {
+                  "nodes": [
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjgxNTgzNjE=",
+                      "environment": "staging",
+                      "description": "Staging",
+                      "createdAt": "2019-09-10T14:37:58Z",
+                      "creator": {
+                        "login": "deliverybot"
+                      },
+                      "latestStatus": null
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjgxNTkxODQ=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-10T14:41:30Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": null
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjg1MTQ0MjA=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-12T01:53:56Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": null
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjkwNTEwODY=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-14T18:14:05Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": null
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "node": {
+                "messageHeadline": "trigger",
+                "oid": "eeada946eff96e2e640626e5a6c70b1472ed8b2c",
+                "message": "trigger",
+                "author": {
+                  "user": {
+                    "login": "colinjfw"
+                  }
+                },
+                "status": null,
+                "checkSuites": {
+                  "nodes": [
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    }
+                  ]
+                },
+                "deployments": {
+                  "nodes": [
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjc4MjI1OTk=",
+                      "environment": "staging",
+                      "description": "Staging",
+                      "createdAt": "2019-09-09T04:20:36Z",
+                      "creator": {
+                        "login": "deliverybot"
+                      },
+                      "latestStatus": null
+                    },
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjg1MTI5MjI=",
+                      "environment": "production",
+                      "description": "Production",
+                      "createdAt": "2019-09-12T01:41:27Z",
+                      "creator": {
+                        "login": "colinjfw"
+                      },
+                      "latestStatus": null
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "node": {
+                "messageHeadline": "Use helm version 3",
+                "oid": "cf1e4266ff8d74161aa68e8926b328ae74f2cf2b",
+                "message": "Use helm version 3",
+                "author": {
+                  "user": {
+                    "login": "colinjfw"
+                  }
+                },
+                "status": null,
+                "checkSuites": {
+                  "nodes": [
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    }
+                  ]
+                },
+                "deployments": {
+                  "nodes": [
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjc4MTkyOTM=",
+                      "environment": "staging",
+                      "description": "Staging",
+                      "createdAt": "2019-09-09T03:51:18Z",
+                      "creator": {
+                        "login": "deliverybot"
+                      },
+                      "latestStatus": null
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "node": {
+                "messageHeadline": "Fix build arg",
+                "oid": "f834faf0fd828e17a312ace5ec976fa48a00148b",
+                "message": "Fix build arg",
+                "author": {
+                  "user": {
+                    "login": "colinjfw"
+                  }
+                },
+                "status": null,
+                "checkSuites": {
+                  "nodes": [
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    }
+                  ]
+                },
+                "deployments": {
+                  "nodes": [
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjc4MDgxMTA=",
+                      "environment": "staging",
+                      "description": "Staging",
+                      "createdAt": "2019-09-09T02:19:49Z",
+                      "creator": {
+                        "login": "deliverybot"
+                      },
+                      "latestStatus": null
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "node": {
+                "messageHeadline": "Trigger",
+                "oid": "b99e1ac89476953a330e302f2a8b79ebe9db44c5",
+                "message": "Trigger",
+                "author": {
+                  "user": {
+                    "login": "colinjfw"
+                  }
+                },
+                "status": null,
+                "checkSuites": {
+                  "nodes": [
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    }
+                  ]
+                },
+                "deployments": {
+                  "nodes": [
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjc4MDc3ODg=",
+                      "environment": "staging",
+                      "description": "Staging",
+                      "createdAt": "2019-09-09T02:17:18Z",
+                      "creator": {
+                        "login": "deliverybot"
+                      },
+                      "latestStatus": null
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "node": {
+                "messageHeadline": "Resync with cloudbuild",
+                "oid": "3fbbdf4c2f9750e745bae8351502df7b41736038",
+                "message": "Resync with cloudbuild",
+                "author": {
+                  "user": {
+                    "login": "colinjfw"
+                  }
+                },
+                "status": null,
+                "checkSuites": {
+                  "nodes": [
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    },
+                    {
+                      "conclusion": "FAILURE",
+                      "status": "COMPLETED"
+                    }
+                  ]
+                },
+                "deployments": {
+                  "nodes": [
+                    {
+                      "id": "MDEwOkRlcGxveW1lbnQxNjc3OTA1NDE=",
+                      "environment": "staging",
+                      "description": "Staging",
+                      "createdAt": "2019-09-08T23:35:24Z",
+                      "creator": {
+                        "login": "deliverybot"
+                      },
+                      "latestStatus": null
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "node": {
+                "messageHeadline": "Add version",
+                "oid": "bc347063ed2ea8db869e00b7292c7956b8fc4064",
+                "message": "Add version",
+                "author": {
+                  "user": {
+                    "login": "colinjfw"
+                  }
+                },
+                "status": null,
+                "checkSuites": {
+                  "nodes": [
+                    {
+                      "conclusion": "SUCCESS",
+                      "status": "COMPLETED"
+                    }
+                  ]
+                },
+                "deployments": {
+                  "nodes": []
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
