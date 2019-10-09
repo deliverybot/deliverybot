@@ -82,6 +82,8 @@ export async function commits(
   opts: Options
 ) {
   const result = await gql(token, CommitsQuery(opts), { owner, repo, branch });
+  // For generating test files:
+  // require('fs').writeFileSync(`./test/fixtures/query-commits.${opts.minimal ? 'minimal' : 'full'}.json`, JSON.stringify(result, null, 2));
   return View(owner, repo, target, branch, result);
 }
 
@@ -95,6 +97,8 @@ export async function commit(
   opts: Options
 ) {
   const result = await gql(token, CommitQuery(opts), { owner, repo, oid });
+  // For generating test files:
+  // require('fs').writeFileSync(`./test/fixtures/query-commit.${opts.minimal ? 'minimal' : 'full'}.json`, JSON.stringify(result, null, 2));
   return Commit(owner, repo, target, branch, result.repository);
 }
 
