@@ -1,6 +1,8 @@
 import nock from "nock";
+import request from "supertest";
 import deploybot from "../src";
-import { Probot } from "probot";
+import { Probot, Application as ProbotApp } from "probot";
+import { Application } from "express";
 
 // nock.disableNetConnect();
 
@@ -15,13 +17,40 @@ const fixtures = {
   ref: require("./fixtures/ref.json"),
   prClosed: require("./fixtures/pull_request.closed.json"),
   commit: require("./fixtures/commit.json"),
-  checkRunCreated: require("./fixtures/check_run.created.json")
+  checkRunCreated: require("./fixtures/check_run.created.json"),
+  commitMinimal: require("./fixtures/query-commit.minimal.json"),
+  commitFull: require("./fixtures/query-commit.full.json"),
+  commitsMinimal: require("./fixtures/query-commits.minimal.json"),
+  commitsFull: require("./fixtures/query-commits.full.json"),
 };
+
+export const login = async (app: Application) => {
+  oauthToken();
+  currentUser();
+
+  const response = await request(app).get("/login/cb?code=foo");
+  return response.get("set-cookie")[0];
+};
+
+export const oauthToken = () =>
+  nock("https://github.com")
+    .post("/login/oauth/access_token")
+    .reply(200, { access_token: "token" });
+
+export const currentUser = () =>
+  nock("https://api.github.com")
+    .get("/user")
+    .reply(200, { id: 1, login: "Codertocat" });
 
 export const gql = (data: any) =>
   nock("https://api.github.com")
     .post("/graphql")
     .reply(200, { data });
+
+export const commitMinimalGql = () => gql(fixtures.commitMinimal);
+export const commitFullGql = () => gql(fixtures.commitFull);
+export const commitsMinimalGql = () => gql(fixtures.commitsMinimal);
+export const commitsFullGql = () => gql(fixtures.commitsFull);
 
 export const gitRef = () =>
   nock("https://api.github.com")
@@ -77,6 +106,11 @@ export const config = ({ valid }: { valid?: boolean }) =>
       ).toString("base64")
     });
 
+export const repo = () =>
+  nock("https://api.github.com")
+    .get("/repos/Codertocat/Hello-World")
+    .reply(200, { id: 1 });
+
 export const pr = () =>
   nock("https://api.github.com")
     .get("/repos/Codertocat/Hello-World/pulls/2")
@@ -130,12 +164,15 @@ export const errorComment = (expected: string) =>
     })
     .reply(200);
 
-export const probot = (): Probot => {
-  const probot = new Probot({ id: 123, cert: "test" }) as any;
-  const app = probot.load(deploybot);
+export const probot = (): {
+  app: ProbotApp,
+  bot: Probot,
+} => {
+  const bot = new Probot({ id: 123, cert: "test" }) as any;
+  const app = bot.load(deploybot);
   app.app = {
     getSignedJsonWebToken: (option?: any) => Promise.resolve("test"),
     getInstallationAccessToken: (option: any) => Promise.resolve("test")
   };
-  return probot;
+  return { app, bot };
 };

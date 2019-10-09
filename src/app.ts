@@ -86,8 +86,14 @@ export const getApp = (apps: RegisterFunc[], services: Services) => (
   app.set("views", path.join(__dirname, "..", "views"));
 
   const hbs = require("hbs");
-  hbs.registerPartials(path.join(__dirname, "..", "views", "partials"));
-  hbs.registerHelper("json", (arg: object) => JSON.stringify(arg, null, 2));
+  hbs.registerPartials(
+    path.join(__dirname, "..", "views", "partials"),
+    // Partials load async so we emit an event where a caller can listen to
+    // handle partials being loaded up.
+    () => {
+      robot.events.emit('app.partials-loaded')
+    },
+  );
 
   app.use(turbolinks.redirect);
   app.use(turbolinks.location);

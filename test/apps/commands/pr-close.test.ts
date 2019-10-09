@@ -11,7 +11,7 @@ describe("Deployments PR", () => {
   });
 
   beforeEach(() => {
-    probot = factory.probot();
+    probot = factory.probot().bot;
     factory.token();
     factory.gitCommit();
     factory.deploymentStatus();

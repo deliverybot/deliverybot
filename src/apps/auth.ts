@@ -136,6 +136,9 @@ const loginUrl = `https://github.com/login/oauth/authorize?scope=user&client_id=
 export function auth({ app }: { app: Application }) {
   app.get("/login", (req: Request, res: Response) => res.redirect(loginUrl));
   app.get("/login/cb", callback);
+  app.get("/me", setUser, (req: AuthedRequest, res: Response) => {
+    res.json({ id: req.user ? req.user.id : null });
+  });
   app.get("/logout", (req: Request, res: Response) => {
     req.session = {};
     res.redirect("/");
