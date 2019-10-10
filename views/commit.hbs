@@ -46,9 +46,14 @@
           <strong><code>{{oidShort}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
         </div>
       </div>
+      <div class="Box-body">
+        <pre><code>{{message}}</code></pre>
+      </div>
       {{#if error}}
-      <h2>Deployment failed</h2>
-      <p id="error" class="text-red">{{error}}</p>
+      <div class="p-4">
+        <h2>Deployment failed</h2>
+        <p id="error" class="text-red">{{error}}</p>
+      </div>
       {{else}}
       <div id="deploy_status_body" style="transition: 0.5s;">
         {{#if minimal}}
