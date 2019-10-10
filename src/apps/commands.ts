@@ -257,6 +257,7 @@ async function handleAutoDeploy(context: Context) {
       context.log.info(logCtx(context, { error }), "auto deploy: no config");
     } else {
       context.log.error(logCtx(context, { error }), "auto deploy: failed");
+      throw error;
     }
   }
 }
@@ -306,6 +307,7 @@ async function autoDeployTarget(
         logCtx(context, { target, ref, error }),
         "auto deploy: deploy attempt failed"
       );
+      throw error;
     }
   }
 }
