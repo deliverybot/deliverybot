@@ -23,19 +23,24 @@ pre {
   word-wrap: normal;
   white-space: pre;
 }
-
-html,
-body {
-  height: 100%;
-  margin: 0
-}
 main {
-  display: flex;
-  flex-flow: column;
-  height: 100%;
+  min-height: 80vh;
 }
-.fill {
-  flex: 1 1 auto;
+
+@media (max-width: 544px) {
+  .d-none-sm {
+    display: none;
+  }
+}
+@media (max-width: 768px) {
+  .d-none-md {
+    display: none;
+  }
+}
+@media (max-width: 1012px) {
+  .d-none-lg {
+    display: none;
+  }
 }
 
 .loader:after {

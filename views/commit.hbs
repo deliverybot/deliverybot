@@ -9,10 +9,10 @@
 </nav>
 </header>
 
-<div class="bg-white fill">
-  <div class="content pb-10">
+<main class="bg-white fill pt-3 pb-8">
+  <div class="content">
 
-    <div class="position-relative mt-3">
+    <div class="position-relative">
       <div id="targets" class="Popover position-absolute d-none" style="top: 130%; left: 0;">
         <div class="Popover-message Popover-message--top-left mx-auto mb-2 text-left Box Box-condensed box-shadow-large">
           {{#each targets}}
@@ -46,15 +46,16 @@
           <strong><code>{{oidShort}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
         </div>
       </div>
-      <div class="Box-body">
-        <pre><code>{{message}}</code></pre>
-      </div>
+
       {{#if error}}
       <div class="p-4">
         <h2>Deployment failed</h2>
         <p id="error" class="text-red">{{error}}</p>
       </div>
       {{else}}
+      <div class="Box-body">
+        <pre><code>{{message}}</code></pre>
+      </div>
       <div id="deploy_status_body" style="transition: 0.5s;">
         {{#if minimal}}
           <h1 class="p-4 loader text-center"></h1>
@@ -69,6 +70,6 @@
       {{/if}}
     </div>
   </div>
-</div>
+</main>
 
 {{> footer}}

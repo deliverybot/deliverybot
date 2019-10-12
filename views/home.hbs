@@ -1,7 +1,7 @@
 {{> header}}
 </header>
 
-<div class="content">
+<main class="content pb-8">
   <div class="box-shadow rounded-2 border p-6 bg-white">
     <div class="text-center">
       <h1 class="f1-light">Welcome to Deliverybot</h1>
@@ -19,7 +19,7 @@
       {{#each repos}}
       <div class="Box-row d-flex flex-justify-between">
         <a href="/{{owner.login}}/{{name}}"><strong>{{owner.login}} / {{name}}</strong></a>
-        <a target="_blank" href="{{../htmlUrl}}">Manage installation</a>
+        <a target="_blank" href="{{../htmlUrl}}">Edit</a>
       </div>
       {{/each}}
       {{else}}
@@ -34,14 +34,15 @@
       {{/each}}
       {{#if hasInstalls}}
       <div class="text-center mt-5">
-        <p>
+        <p class="lead">
           Above are all the installed repositories that you can manage. You can
-          <a href="https://github.com/apps/{{ pkg.name }}/installations/new">install</a>
-          Deliverybot on a new repository or click on a repository to start deploying.
+          <a href="https://github.com/apps/{{ pkg.name }}/installations/new">install Deliverybot</a>
+           on a new repository or click on a repository to start deploying.
         </p>
       </div>
       {{/if}}
     </div>
   </div>
-</div>
+</main>
+
 {{> footer}}

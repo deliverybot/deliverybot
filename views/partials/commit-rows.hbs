@@ -12,7 +12,7 @@
       <strong><code>{{oidShort}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
     </div>
   </div>
-  <div class="text-gray-light mr-3 {{#if @root.minimal}}loader{{/if}}">
+  <div class="d-none-sm text-gray-light mr-3 {{#if @root.minimal}}loader{{/if}}">
     {{#if deployment.lastDeployedAtWords}}
       Last deployed {{deployment.lastDeployedAtWords}}
     {{/if}}
