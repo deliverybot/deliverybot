@@ -206,10 +206,10 @@ export function Deployments(node: any) {
     status: Status(deploy.latestStatus && deploy.latestStatus.state),
     description: truncate(deploy.description, 20),
     environment: deploy.environment,
-    creator: deploy.creator.login,
+    creator: get(deploy, 'creator.login'),
     createdAt: Date.parse(deploy.createdAt),
     createdAtWords: moment(Date.parse(deploy.createdAt)).fromNow(),
-    url: deploy.latestStatus && deploy.latestStatus.logUrl
+    url: get(deploy, 'latestStatus.logUrl')
   }));
 }
 
@@ -272,10 +272,10 @@ export function Commit(
     repo,
     target,
     branch,
-    message: edge.node.messageHeadline,
-    oid: edge.node.oid,
-    oidShort: edge.node.oid.substr(0, 7),
-    author: edge.node.author.user.login,
+    message: get(edge, 'node.messageHeadline', ''),
+    oid: get(edge, 'node.oid'),
+    oidShort: get(edge, 'node.oid', '').substr(0, 7),
+    author: get(edge, 'node.author.user.login'),
     undeployed: Undeployed(edge.node),
     deployment: Deployment(edge.node),
     deployments: Deployments(edge.node),
