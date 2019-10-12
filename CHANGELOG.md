@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.5](https://github.com/deliverybot/deliverybot/compare/v0.3.4...v0.3.5) (2019-10-12)
+
+
+### Bug Fixes
+
+* Mobile view fixes ([75f850c](https://github.com/deliverybot/deliverybot/commit/75f850c)), closes [#22](https://github.com/deliverybot/deliverybot/issues/22)
+* Undefined errors in commit queries ([34f7e03](https://github.com/deliverybot/deliverybot/commit/34f7e03)), closes [#23](https://github.com/deliverybot/deliverybot/issues/23)
+
+
+### Features
+
+* Add message on commit page ([a502e35](https://github.com/deliverybot/deliverybot/commit/a502e35)), closes [#20](https://github.com/deliverybot/deliverybot/issues/20)
+
 ### [0.3.4](https://github.com/deliverybot/deliverybot/compare/v0.3.3...v0.3.4) (2019-10-10)
 
 
