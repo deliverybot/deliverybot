@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/deliverybot/deliverybot/compare/v0.3.5...v0.4.0) (2019-10-18)
+
+
+### Features
+
+* Create a timeAgo helper ([cebb909](https://github.com/deliverybot/deliverybot/commit/cebb909))
+* Remove probot dependency ([1814c3c](https://github.com/deliverybot/deliverybot/commit/1814c3c))
+
 ### [0.3.5](https://github.com/deliverybot/deliverybot/compare/v0.3.4...v0.3.5) (2019-10-12)
 
 
