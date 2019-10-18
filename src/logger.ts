@@ -20,27 +20,6 @@ export interface Logger {
   child(obj: Object): Logger;
 }
 
-export const consoleLogger: Logger = {
-  child(obj: Object) {
-    return consoleLogger;
-  },
-  trace(...args: any[]) {
-    console.log(...args);
-  },
-  debug(...args: any[]) {
-    console.log(...args);
-  },
-  info(...args: any[]) {
-    console.log(...args);
-  },
-  error(...args: any[]) {
-    console.log(...args);
-  },
-  warn(...args: any[]) {
-    console.log(...args);
-  }
-};
-
 export const noLogger: Logger = {
   child(obj: Object) {
     return noLogger;

@@ -1,8 +1,8 @@
 import Octokit from "@octokit/rest";
 import { Response, Request, NextFunction } from "express";
-import request from "request";
 import { Application } from "express";
 import { CLIENT_ID, CLIENT_SECRET, BASE_URL } from "../config";
+import fetch from "node-fetch";
 
 export interface AuthedRequest extends Request {
   user?: {
@@ -89,31 +89,21 @@ export async function verifyRepo(
   next();
 }
 
-function accessToken(code: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    request.post(
-      {
-        headers: {
-          accept: "application/json"
-        },
-        url: "https://github.com/login/oauth/access_token",
-        form: {
-          client_id: CLIENT_ID,
-          client_secret: CLIENT_SECRET,
-          code
-        }
-      },
-      (err: Error, _: request.Response, body: any) => {
-        if (err) {
-          return reject(err);
-        }
-
-        const data = JSON.parse(body);
-        const token = data["access_token"];
-        resolve(token);
-      }
-    );
+async function accessToken(code: string): Promise<string> {
+  const resp = await fetch("https://github.com/login/oauth/access_token", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      accept: "application/json"
+    },
+    body: JSON.stringify({
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
+      code,
+    }),
   });
+  const body = await resp.json();
+  return body["access_token"];
 }
 
 export async function callback(req: Request, res: Response) {
