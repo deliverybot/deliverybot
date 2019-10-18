@@ -127,3 +127,16 @@
       .catch(function(err) { console.error(err); })
   });
 })();
+
+(function() {
+  fetch("/app/config")
+    .then(function(resp) { return resp.json(); })
+    .then(function(data) {
+      console.log("config", data);
+      if (data.script) {
+        var script = document.createElement('script');
+        script.src = data.script;
+        document.head.appendChild(script);
+      }
+    })
+})();

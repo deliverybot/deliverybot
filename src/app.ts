@@ -101,6 +101,10 @@ export const getApp = (apps: RegisterFunc[], services: Services) => {
     })
   );
 
+  app.get("/app/config", (req: Request, res: Response) => {
+    res.json({});
+  });
+
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     req.log.error({ error: err.message, errorObj: err }, "request failed");
     if (process.env.NODE_ENV === "development") {
