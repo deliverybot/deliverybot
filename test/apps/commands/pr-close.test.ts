@@ -1,17 +1,16 @@
-import nock from "nock";
-import { Probot } from "probot";
 import * as factory from "../../factory";
+import { deliverybot } from "../../../src";
+
+const probot = deliverybot.probot;
 
 describe("Deployments PR", () => {
   jest.setTimeout(30000);
-  let probot: Probot;
 
   afterEach(() => {
-    nock.cleanAll();
+    factory.cleanAll();
   });
 
   beforeEach(() => {
-    probot = factory.probot().bot;
     factory.token();
     factory.gitCommit();
     factory.deploymentStatus();

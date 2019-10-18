@@ -427,7 +427,7 @@ Object {
       "deployments": Array [
         Object {
           "createdAt": 1568252953000,
-          "createdAtWords": "a few seconds ago",
+          "createdAtWords": "about 12 hours ago",
           "creator": "deliverybot",
           "description": "Staging",
           "environment": "staging",
@@ -439,7 +439,7 @@ Object {
         },
         Object {
           "createdAt": 1568252953000,
-          "createdAtWords": "a few seconds ago",
+          "createdAtWords": "about 12 hours ago",
           "creator": "deliverybot-dev",
           "description": "Staging",
           "environment": "staging",
@@ -451,7 +451,7 @@ Object {
         },
         Object {
           "createdAt": 1568253581000,
-          "createdAtWords": "a few seconds ago",
+          "createdAtWords": "about 12 hours ago",
           "creator": "colinjfw",
           "description": "Production",
           "environment": "production",
@@ -463,7 +463,7 @@ Object {
         },
         Object {
           "createdAt": 1568297635000,
-          "createdAtWords": "a few seconds ago",
+          "createdAtWords": "17 minutes ago",
           "creator": "colinjfw",
           "description": "Production",
           "environment": "production",
@@ -562,7 +562,7 @@ Object {
       "deployments": Array [
         Object {
           "createdAt": 1568126278000,
-          "createdAtWords": "a few seconds ago",
+          "createdAtWords": "a day ago",
           "creator": "deliverybot",
           "description": "Staging",
           "environment": "staging",
@@ -574,7 +574,7 @@ Object {
         },
         Object {
           "createdAt": 1568126490000,
-          "createdAtWords": "a few seconds ago",
+          "createdAtWords": "a day ago",
           "creator": "colinjfw",
           "description": "Production",
           "environment": "production",
@@ -586,7 +586,7 @@ Object {
         },
         Object {
           "createdAt": 1568253236000,
-          "createdAtWords": "a few seconds ago",
+          "createdAtWords": "about 12 hours ago",
           "creator": "colinjfw",
           "description": "Production",
           "environment": "production",
@@ -628,7 +628,7 @@ Object {
       },
       "deployment": Object {
         "lastDeployedAt": 1568252487000,
-        "lastDeployedAtWords": "a few seconds ago",
+        "lastDeployedAtWords": "about 12 hours ago",
         "status": Object {
           "color": "gray",
           "waiting": true,
@@ -637,7 +637,7 @@ Object {
       "deployments": Array [
         Object {
           "createdAt": 1568002836000,
-          "createdAtWords": "a few seconds ago",
+          "createdAtWords": "3 days ago",
           "creator": "deliverybot",
           "description": "Staging",
           "environment": "staging",
@@ -649,7 +649,7 @@ Object {
         },
         Object {
           "createdAt": 1568252487000,
-          "createdAtWords": "a few seconds ago",
+          "createdAtWords": "about 12 hours ago",
           "creator": "colinjfw",
           "description": "Production",
           "environment": "production",
@@ -679,7 +679,7 @@ Object {
       },
       "deployment": Object {
         "lastDeployedAt": 1568001078000,
-        "lastDeployedAtWords": "a few seconds ago",
+        "lastDeployedAtWords": "3 days ago",
         "status": Object {
           "color": "gray",
           "waiting": true,
@@ -688,7 +688,7 @@ Object {
       "deployments": Array [
         Object {
           "createdAt": 1568001078000,
-          "createdAtWords": "a few seconds ago",
+          "createdAtWords": "3 days ago",
           "creator": "deliverybot",
           "description": "Staging",
           "environment": "staging",
@@ -718,7 +718,7 @@ Object {
       },
       "deployment": Object {
         "lastDeployedAt": 1567995589000,
-        "lastDeployedAtWords": "a few seconds ago",
+        "lastDeployedAtWords": "3 days ago",
         "status": Object {
           "color": "gray",
           "waiting": true,
@@ -727,7 +727,7 @@ Object {
       "deployments": Array [
         Object {
           "createdAt": 1567995589000,
-          "createdAtWords": "a few seconds ago",
+          "createdAtWords": "3 days ago",
           "creator": "deliverybot",
           "description": "Staging",
           "environment": "staging",
@@ -757,7 +757,7 @@ Object {
       },
       "deployment": Object {
         "lastDeployedAt": 1567995438000,
-        "lastDeployedAtWords": "a few seconds ago",
+        "lastDeployedAtWords": "3 days ago",
         "status": Object {
           "color": "gray",
           "waiting": true,
@@ -766,7 +766,7 @@ Object {
       "deployments": Array [
         Object {
           "createdAt": 1567995438000,
-          "createdAtWords": "a few seconds ago",
+          "createdAtWords": "3 days ago",
           "creator": "deliverybot",
           "description": "Staging",
           "environment": "staging",
@@ -796,7 +796,7 @@ Object {
       },
       "deployment": Object {
         "lastDeployedAt": 1567985724000,
-        "lastDeployedAtWords": "a few seconds ago",
+        "lastDeployedAtWords": "3 days ago",
         "status": Object {
           "color": "gray",
           "waiting": true,
@@ -805,7 +805,7 @@ Object {
       "deployments": Array [
         Object {
           "createdAt": 1567985724000,
-          "createdAtWords": "a few seconds ago",
+          "createdAtWords": "3 days ago",
           "creator": "deliverybot",
           "description": "Staging",
           "environment": "staging",

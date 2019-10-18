@@ -1,13 +1,7 @@
-import { commits, commit } from "../../src/apps/queries";
 import * as factory from "../factory";
+import { commits, commit } from "../../src/apps/queries";
 
-const DATE_TO_USE = new Date(1568298661772);
-const _Date = Date;
-// @ts-ignore
-global.Date = jest.fn(() => DATE_TO_USE);
-global.Date.UTC = _Date.UTC;
-global.Date.parse = _Date.parse;
-global.Date.now = _Date.now;
+global.Date.now = () => 1568298661772;
 
 describe("Queries", () => {
   it("runs commit minimal", async () => {

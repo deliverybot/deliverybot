@@ -1,10 +1,22 @@
+// Global environment variable fixes:
+process.env.WEBHOOK_SECRET = "fake";
+
 import nock from "nock";
-import request from "supertest";
-import deploybot from "../src";
-import { Probot, Application as ProbotApp } from "probot";
+import supertest from "supertest";
+import { deliverybot } from "../src";
 import { Application } from "express";
 
-// nock.disableNetConnect();
+// Keep tests clean by exporting mocking tools here;
+export { Scope } from "nock";
+export const request = supertest;
+export const cleanAll = nock.cleanAll;
+
+// Global mocks, always import factory first:
+deliverybot.probot.githubToken = "test";
+(deliverybot.probot.app as any).app = {
+  getSignedJsonWebToken: (option?: any) => Promise.resolve("test"),
+  getInstallationAccessToken: (option: any) => Promise.resolve("test")
+};
 
 const fixtures = {
   deployValid: require("./fixtures/deploy-valid"),
@@ -21,7 +33,7 @@ const fixtures = {
   commitMinimal: require("./fixtures/query-commit.minimal.json"),
   commitFull: require("./fixtures/query-commit.full.json"),
   commitsMinimal: require("./fixtures/query-commits.minimal.json"),
-  commitsFull: require("./fixtures/query-commits.full.json"),
+  commitsFull: require("./fixtures/query-commits.full.json")
 };
 
 export const login = async (app: Application) => {
@@ -164,15 +176,3 @@ export const errorComment = (expected: string) =>
     })
     .reply(200);
 
-export const probot = (): {
-  app: ProbotApp,
-  bot: Probot,
-} => {
-  const bot = new Probot({ id: 123, cert: "test" }) as any;
-  const app = bot.load(deploybot);
-  app.app = {
-    getSignedJsonWebToken: (option?: any) => Promise.resolve("test"),
-    getInstallationAccessToken: (option: any) => Promise.resolve("test")
-  };
-  return { app, bot };
-};
