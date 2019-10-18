@@ -4,7 +4,7 @@ import { apps } from "./apps";
 
 const store = new InMemStore<any>();
 
-export = getApp(apps, {
+export const deliverybot = getApp(apps, {
   kvStore: () => store,
   lockStore: () => store
 });

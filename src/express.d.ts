@@ -1,10 +1,14 @@
 /// <reference types="express" />
 
 declare namespace Express {
-  interface Request {
-    session: any;
-    log: any;
-  }
+  interface Request extends RequestExtras {}
+}
+
+interface RequestExtras {
+  session?: any;
+  context: any;
+  log: Logger;
+  requestId: string;
 }
 
 declare module "turbolinks-express" {

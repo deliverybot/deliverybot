@@ -1,4 +1,4 @@
-import { Application, Context, Octokit, Logger } from "probot";
+import { Application, Context, Octokit, Logger } from "../probot";
 import { render } from "../util";
 import yaml from "js-yaml";
 import { validate } from "jsonschema";
@@ -80,6 +80,12 @@ export async function config(
   };
   if (ref) params.ref = ref;
   const content = await github.repos.getContents(params);
+  if (Array.isArray(content.data)) {
+    throw new Error(".github/deploy.yml is a folder");
+  }
+  if (!content.data.content) {
+    throw new Error("content not found");
+  }
   const conf =
     yaml.safeLoad(Buffer.from(content.data.content, "base64").toString()) || {};
 

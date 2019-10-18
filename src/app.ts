@@ -1,4 +1,4 @@
-import { Application } from "probot";
+import { Application, probot } from "./probot";
 import { Express } from "express";
 import { KVStore, LockStore } from "./store";
 import session from "client-sessions";
@@ -6,6 +6,7 @@ import bodyParser from "body-parser";
 import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import csurf from "csurf";
+import { logRequests } from "./logger"
 
 import { APP_SECRET, PRODUCTION } from "./config";
 import * as turbolinks from "turbolinks-express";
@@ -24,18 +25,12 @@ export interface Dependencies extends Services {
 
 type RegisterFunc = (d: Dependencies) => void;
 
-export const getApp = (apps: RegisterFunc[], services: Services) => (
-  robot: Application
-): Express => {
+export const getApp = (apps: RegisterFunc[], services: Services) => {
   const app = express();
+  const robot = probot(app);
 
   // Attach the probot log to the request object.
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    if (!req.log) {
-      req.log = robot.log;
-    }
-    next();
-  });
+  app.use(logRequests);
 
   // Hack for client-sessions. It uses a different field to query whether the
   // connection is secure.
@@ -91,8 +86,8 @@ export const getApp = (apps: RegisterFunc[], services: Services) => (
     // Partials load async so we emit an event where a caller can listen to
     // handle partials being loaded up.
     () => {
-      robot.events.emit('app.partials-loaded')
-    },
+      app.emit("app.partials-loaded");
+    }
   );
 
   app.use(turbolinks.redirect);
@@ -117,6 +112,15 @@ export const getApp = (apps: RegisterFunc[], services: Services) => (
     res.status(404).sendFile(error404);
   });
 
-  robot.router.use(app);
-  return app;
+  return {
+    express: app,
+    probot: robot,
+    loaded: () => {
+      return new Promise((resolve, reject) => {
+        app.on("app.partials-loaded", () => {
+          resolve();
+        });
+      });
+    },
+  };
 };
