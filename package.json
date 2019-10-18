@@ -24,13 +24,7 @@
     "probot-app"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json && node src/partials.js > static/partials.js",
-    "start": "npm run build && NODE_ENV=development probot run ./lib/index.js",
-    "format": "prettier --write \"./**/*.ts\"",
-    "test": "jest",
-    "prepack": "npm run build",
-    "release": "standard-version",
-    "finish": "git push --follow-tags origin master && npm publish"
+    "prepack": "make build"
   },
   "dependencies": {
     "@octokit/app": "4.1.0",
@@ -75,7 +69,6 @@
     "@types/uuid": "^3.4.5",
     "jest": "^24.0.0",
     "nock": "^10.0.0",
-    "prettier": "^1.17.0",
     "supertest": "^4.0.2",
     "ts-jest": "^24.0.0",
     "typescript": "^3.3.1"
