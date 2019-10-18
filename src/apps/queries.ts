@@ -1,7 +1,7 @@
 import { request as ghRequest } from "@octokit/request";
 import { Targets } from "./commands";
-import get from "lodash/get";
-import moment from "moment";
+import get from "lodash.get";
+import { timeAgoInWords } from "../util";
 
 async function gql(token: string, query: string, variables: any) {
   const resp = await ghRequest({
@@ -173,12 +173,11 @@ export function Deployment(node: any) {
   const statuses = deployments.map((deploy: any) =>
     get(deploy, "latestStatus.state", "WAITING")
   );
-  const lastDeployedAt = deployments
+  const lastDeployedAt: number = deployments
     .map((deploy: any) => Date.parse(deploy.createdAt))
     .sort()
     .pop();
-  const lastDeployedAtWords =
-    lastDeployedAt && moment(lastDeployedAt).fromNow();
+  const lastDeployedAtWords = lastDeployedAt && timeAgoInWords(lastDeployedAt);
   return {
     // Use the latest status to make a decision:
     status: Status(
@@ -206,10 +205,10 @@ export function Deployments(node: any) {
     status: Status(deploy.latestStatus && deploy.latestStatus.state),
     description: truncate(deploy.description, 20),
     environment: deploy.environment,
-    creator: get(deploy, 'creator.login'),
+    creator: get(deploy, "creator.login"),
     createdAt: Date.parse(deploy.createdAt),
-    createdAtWords: moment(Date.parse(deploy.createdAt)).fromNow(),
-    url: get(deploy, 'latestStatus.logUrl')
+    createdAtWords: timeAgoInWords(Date.parse(deploy.createdAt)),
+    url: get(deploy, "latestStatus.logUrl")
   }));
 }
 
@@ -272,10 +271,10 @@ export function Commit(
     repo,
     target,
     branch,
-    message: get(edge, 'node.messageHeadline', ''),
-    oid: get(edge, 'node.oid'),
-    oidShort: get(edge, 'node.oid', '').substr(0, 7),
-    author: get(edge, 'node.author.user.login'),
+    message: get(edge, "node.messageHeadline", ""),
+    oid: get(edge, "node.oid"),
+    oidShort: get(edge, "node.oid", "").substr(0, 7),
+    author: get(edge, "node.author.user.login"),
     undeployed: Undeployed(edge.node),
     deployment: Deployment(edge.node),
     deployments: Deployments(edge.node),
