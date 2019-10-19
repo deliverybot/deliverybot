@@ -9,6 +9,7 @@ interface RequestExtras {
   context: any;
   log: Logger;
   requestId: string;
+  rawBody?: string;
 }
 
 declare module "turbolinks-express" {

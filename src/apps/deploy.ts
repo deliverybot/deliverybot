@@ -1,20 +1,21 @@
 import { AuthedRequest, authenticate, verifyRepo, auth } from "./auth";
-import { Response, Application } from "express";
+import { Response } from "express";
 import { deployCommit, config } from "./commands";
 import * as pkg from "../package";
 import * as queries from "./queries";
 import hash from "object-hash";
 import { newDeployFileUrl } from "../util";
+import { Dependencies } from "../app";
 
-export function deploy({ app }: { app: Application }) {
+export function deploy({ app, csrf }: Dependencies) {
   const baseUrl = "/:owner/:repo";
   const indexUrl = `${baseUrl}/target/:target/branch/:branch`;
   const commitUrl = `${indexUrl}/o/:sha`;
 
-  app.get(baseUrl, authenticate, verifyRepo, redirect);
-  app.get(indexUrl, authenticate, verifyRepo, index);
-  app.get(commitUrl, authenticate, verifyRepo, show);
-  app.post(commitUrl, authenticate, verifyRepo, create);
+  app.get(baseUrl, csrf, authenticate, verifyRepo, redirect);
+  app.get(indexUrl, csrf, authenticate, verifyRepo, index);
+  app.get(commitUrl, csrf, authenticate, verifyRepo, show);
+  app.post(commitUrl, csrf, authenticate, verifyRepo, create);
 }
 
 function watch(req: AuthedRequest, page: string) {

@@ -1,5 +1,5 @@
 import { Application, probot } from "./probot";
-import { Express } from "express";
+import { Express, Handler } from "express";
 import { KVStore, LockStore } from "./store";
 import session from "client-sessions";
 import bodyParser from "body-parser";
@@ -21,6 +21,7 @@ interface Services {
 export interface Dependencies extends Services {
   robot: Application;
   app: Express;
+  csrf: Handler;
 }
 
 type RegisterFunc = (d: Dependencies) => void;
@@ -67,9 +68,8 @@ export const getApp = (apps: RegisterFunc[], services: Services) => {
   );
 
   // Application and parsing middleware.
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(csurf());
+  app.use(bodyParser.urlencoded({verify: rawBodyBuffer, extended: true }));
+  app.use(bodyParser.json({ verify: rawBodyBuffer }));
 
   app.use("/static/", express.static(path.join(__dirname, "..", "static")));
 
@@ -96,6 +96,7 @@ export const getApp = (apps: RegisterFunc[], services: Services) => {
   apps.forEach(register =>
     register({
       ...services,
+      csrf: csurf(),
       app,
       robot
     })
@@ -127,4 +128,10 @@ export const getApp = (apps: RegisterFunc[], services: Services) => {
       });
     },
   };
+};
+
+export function rawBodyBuffer(req: Request, res: Response, buf: Buffer, encoding: string) {
+  if (buf && buf.length) {
+    req.rawBody = buf.toString(encoding || 'utf8');
+  }
 };
