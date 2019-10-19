@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.3](https://github.com/deliverybot/deliverybot/compare/v0.4.2...v0.4.3) (2019-10-19)
+
+
+### Bug Fixes
+
+* Make csrf optional ([bdac9f8](https://github.com/deliverybot/deliverybot/commit/bdac9f8))
+
 ### [0.4.2](https://github.com/deliverybot/deliverybot/compare/v0.4.1...v0.4.2) (2019-10-18)
 
 
