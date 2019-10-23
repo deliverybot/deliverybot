@@ -1,17 +1,16 @@
-import * as factory from "../../factory";
-import { deliverybot } from "../../../src";
-
-const probot = deliverybot.probot;
+import * as factory from "./factory";
 
 describe("Deployments PR", () => {
   jest.setTimeout(30000);
   let deploy: factory.Scope;
+  let probot: factory.Probot;
 
   afterEach(() => {
     factory.cleanAll();
   });
 
   beforeEach(() => {
+    probot = factory.probot();
     factory.token();
     factory.gitCommit();
     factory.deploymentStatus();

@@ -1,4 +1,3 @@
-import { View } from "../src/apps/queries";
 import { InMemStore } from "../src/store";
 
 describe("LockStore", () => {

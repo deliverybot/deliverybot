@@ -1,10 +1,5 @@
-import { getApp } from "./app";
 import { InMemStore } from "./store";
-import { apps } from "./apps";
+import { app } from "./app";
 
-const store = new InMemStore<any>();
-
-export const deliverybot = getApp(apps, {
-  kvStore: () => store,
-  lockStore: () => store
-});
+const lockStore = () => new InMemStore<any>();
+export = app(lockStore);

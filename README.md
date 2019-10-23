@@ -15,13 +15,13 @@ Deployment automation:
 
 ```sh
 # Install dependencies
-npm install
+yarn install
 
 # Run typescript
-npm run build
+yarn run build
 
 # Run the bot
-npm start
+yarn start
 ```
 
 ## Contributing

@@ -3,20 +3,25 @@ process.env.WEBHOOK_SECRET = "fake";
 
 import nock from "nock";
 import supertest from "supertest";
-import { deliverybot } from "../src";
-import { Application } from "express";
+import { Probot } from "probot";
+import deliverybot from "../src";
 
 // Keep tests clean by exporting mocking tools here;
 export { Scope } from "nock";
+export { Probot } from "probot";
 export const request = supertest;
 export const cleanAll = nock.cleanAll;
 
-// Global mocks, always import factory first:
-deliverybot.probot.githubToken = "test";
-(deliverybot.probot.app as any).app = {
-  getSignedJsonWebToken: (option?: any) => Promise.resolve("test"),
-  getInstallationAccessToken: (option: any) => Promise.resolve("test")
-};
+
+export const probot = () => {
+  const probot = new Probot({ id: 123, cert: "test" });
+  const app = probot.load(deliverybot);
+  (app as any).app = {
+    getSignedJsonWebToken: (option?: any) => Promise.resolve("test"),
+    getInstallationAccessToken: (option: any) => Promise.resolve("test")
+  };
+  return probot;
+}
 
 const fixtures = {
   deployValid: require("./fixtures/deploy-valid"),
@@ -35,19 +40,6 @@ const fixtures = {
   commitsMinimal: require("./fixtures/query-commits.minimal.json"),
   commitsFull: require("./fixtures/query-commits.full.json")
 };
-
-export const login = async (app: Application) => {
-  oauthToken();
-  currentUser();
-
-  const response = await request(app).get("/login/cb?code=foo");
-  return response.get("set-cookie")[0];
-};
-
-export const oauthToken = () =>
-  nock("https://github.com")
-    .post("/login/oauth/access_token")
-    .reply(200, { access_token: "token" });
 
 export const currentUser = () =>
   nock("https://api.github.com")
