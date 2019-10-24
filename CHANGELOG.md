@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/deliverybot/deliverybot/compare/v0.4.3...v0.5.0) (2019-10-24)
+
+
+### Features
+
+* Remove UI from core deliverybot ([4770073](https://github.com/deliverybot/deliverybot/commit/4770073))
+
 ### [0.4.3](https://github.com/deliverybot/deliverybot/compare/v0.4.2...v0.4.3) (2019-10-19)
 
 
