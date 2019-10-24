@@ -30,12 +30,12 @@
     "prepack": "tsc"
   },
   "dependencies": {
+    "@octokit/rest": "16.33.1",
     "js-yaml": "3.13.1",
     "jsonschema": "1.2.4",
     "mustache": "^3.1.0"
   },
   "peerDependencies": {
-    "@octokit/rest": "^16.33.1",
     "probot": "^9.5.3"
   },
   "devDependencies": {
