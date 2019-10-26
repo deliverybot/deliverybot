@@ -2,11 +2,7 @@ import { Application, Context, Octokit, Logger } from "probot";
 import { render } from "./render";
 import yaml from "js-yaml";
 import { validate } from "jsonschema";
-import {
-  ReposListDeploymentsResponseItem,
-  PullsGetResponse,
-  ReposGetContentsParams
-} from "@octokit/rest";
+import { PullsGetResponse, ReposGetContentsParams } from "@octokit/rest";
 import schema from "./schema.json";
 import { LockStore } from "./store";
 
@@ -131,7 +127,6 @@ export async function canWrite(
   });
   return ["admin", "write"].includes(perms.data.permission);
 }
-
 
 function getDeployBody(target: Target, data: any): DeployBody {
   return withPreview({
@@ -332,17 +327,12 @@ async function autoDeployTarget(
 
 async function handlePRClose(context: Context) {
   const ref = context.payload.pull_request.head.ref;
-  const sha = context.payload.pull_request.head.sha;
   const deployments = await context.github.repos.listDeployments(
     withPreview({ ...context.repo(), ref })
   );
-  context.log.info(logCtx(context, { ref }), "pr close: listed deploys");
 
-  // List all deployments for this pull request by environment to undeploy the
-  // last deployment for every environment.
-  const environments: { [env: string]: ReposListDeploymentsResponseItem } = {};
+  context.log.info(logCtx(context, { ref }), "pr close: listed deploys");
   for (const deployment of deployments.data.reverse()) {
-    // Only terminate transient environments.
     if (!deployment.transient_environment) {
       context.log.info(
         logCtx(context, { ref, deployment: deployment.id }),
@@ -350,6 +340,7 @@ async function handlePRClose(context: Context) {
       );
       continue;
     }
+
     try {
       context.log.info(
         logCtx(context, { ref, deployment: deployment.id }),
@@ -367,46 +358,6 @@ async function handlePRClose(context: Context) {
         logCtx(context, { error, ref, deployment: deployment.id }),
         "pr close: marking inactive failed"
       );
-    }
-    environments[deployment.environment] = deployment;
-  }
-
-  context.log.info(
-    logCtx(context, {
-      ref,
-      environments: Object.keys(environments).map(e => e)
-    }),
-    "pr close: remove deploys"
-  );
-  for (const env in environments) {
-    const deployment = environments[env];
-    try {
-      context.log.info(
-        logCtx(context, { ref, deployment: deployment.id }),
-        "pr close: remove deploy"
-      );
-      // Undeploy for every unique environment by copying the deployment params
-      // and triggering a deployment with the task "remove".
-      await context.github.repos.createDeployment(
-        context.repo({
-          ref: sha,
-          task: "remove",
-          required_contexts: [],
-          payload: deployment.payload as any,
-          environment: deployment.environment,
-          description: deployment.description || "",
-          transient_environment: deployment.transient_environment,
-          production_environment: deployment.production_environment
-        })
-      );
-    } catch (error) {
-      // This can happen if the branch is closed immediately after a pull
-      // request is merged. Throw the error explicitly so this can be retried.
-      context.log.error(
-        logCtx(context, { error, ref, deployment: deployment.id }),
-        "pr close: failed to undeploy"
-      );
-      throw error;
     }
   }
 }
@@ -437,4 +388,4 @@ export const app = (lockStore: () => LockStore) => (app: Application) => {
   app.on("pull_request.closed", async context => {
     await handlePRClose(context);
   });
-}
+};
