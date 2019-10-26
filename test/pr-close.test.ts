@@ -12,36 +12,37 @@ describe("Deployments PR", () => {
     probot = factory.probot();
     factory.token();
     factory.gitCommit();
-    factory.deploymentStatus();
     factory.pr();
     factory.config({ valid: true });
     factory.permission({ admin: true });
   });
 
-  test("close deployment on pr close", async () => {
-    const deploy = factory.deploy();
+  test("close status on pr close", async () => {
+    const status = factory.deploymentStatus();
     factory.withDeployments([
       { id: 1, environment: "production", transient_environment: true }
     ]);
 
     await probot.receive(factory.prClosed());
-    expect(deploy.isDone()).toBe(true);
+    expect(status.isDone()).toBe(true);
   });
 
-  test("no deployment on non-transient pr close", async () => {
-    const deploy = factory.deploy();
+  test("no status on non-transient pr close", async () => {
+    const status = factory.deploymentStatus();
     factory.withDeployments([
       { id: 1, environment: "production", transient_environment: false }
     ]);
 
     await probot.receive(factory.prClosed());
-    expect(deploy.isDone()).toBe(false);
+    expect(status.isDone()).toBe(false);
   });
 
-  test("single deployment on pr close", async () => {
-    const deploy = factory.deploy();
-    factory.deploymentStatus();
-    factory.deploymentStatus();
+  test("close multiple statuses", async () => {
+    const statuses = [
+      factory.deploymentStatus(),
+      factory.deploymentStatus(),
+      factory.deploymentStatus()
+    ];
     factory.withDeployments([
       { id: 1, environment: "production", transient_environment: true },
       { id: 1, environment: "production", transient_environment: true },
@@ -49,6 +50,6 @@ describe("Deployments PR", () => {
     ]);
 
     await probot.receive(factory.prClosed());
-    expect(deploy.isDone()).toBe(true);
+    statuses.forEach(status => expect(status.isDone()).toBe(true));
   });
 });
