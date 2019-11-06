@@ -1,27 +1,28 @@
-export interface KVStore<T> {
-  get(key: string): Promise<T | undefined>;
-  set(key: string, val: T): Promise<void>;
-  del(key: string): Promise<void>;
-}
-
 export interface LockStore {
   // Runs the handler function
   lock(key: string, handler: () => {}): Promise<void>;
+
+  lockEnv(owner: string, repo: string, env: string): Promise<void>;
+  unlockEnv(owner: string, repo: string, env: string): Promise<void>;
+  isLockedEnv(owner: string, repo: string, env: string): Promise<boolean>;
 }
 
-export class InMemStore<T> implements KVStore<T>, LockStore {
-  private store: { [k: string]: T | undefined } = {};
+export class InMemStore implements LockStore {
+  private store: { [k: string]: boolean | undefined } = {};
   private locks: { [k: string]: boolean | undefined } = {};
 
-  async get(key: string): Promise<T | undefined> {
-    return this.store[key];
+  async lockEnv(owner: string, repo: string, env: string) {
+    this.store[`${owner}/${repo}/${env}`] = true;
   }
-  async set(key: string, val: T) {
-    this.store[key] = val;
+
+  async unlockEnv(owner: string, repo: string, env: string) {
+    this.store[`${owner}/${repo}/${env}`] = false;
   }
-  async del(key: string) {
-    if (this.store[key]) delete this.store[key];
+
+  async isLockedEnv(owner: string, repo: string, env: string) {
+    return !!this.store[`${owner}/${repo}/${env}`];
   }
+
   lock(key: string, handler: () => Promise<void>): Promise<void> {
     return new Promise((resolve, reject) => {
       const run = async () => {

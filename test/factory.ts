@@ -6,7 +6,6 @@ import supertest from "supertest";
 import { Probot } from "probot";
 import { InMemStore } from "../src/store";
 import { app } from "../src/app";
-import { EventEmitter } from "events";
 
 // Keep tests clean by exporting mocking tools here;
 export { Scope } from "nock";
@@ -14,9 +13,8 @@ export { Probot } from "probot";
 export const request = supertest;
 export const cleanAll = nock.cleanAll;
 
-export const events = new EventEmitter();
-export const lockStore = () => new InMemStore<any>();
-export const deliverybot = app({ lockStore, events });
+export const store = new InMemStore();
+export const deliverybot = app(() => store);
 
 export const probot = () => {
   const probot = new Probot({ id: 123, cert: "test" });

@@ -148,7 +148,11 @@ function getDeployBody(target: Target, data: any): DeployBody {
   });
 }
 
-async function handlePRDeploy(context: Context, command: string) {
+async function handlePRDeploy(
+  context: Context,
+  command: string,
+  kv: LockStore
+) {
   context.log.info(logCtx(context, { command }), "pr deploy: handling command");
   try {
     const target = command.split(" ")[1];
@@ -170,6 +174,7 @@ async function handlePRDeploy(context: Context, command: string) {
     await deployCommit(
       context.github,
       context.log,
+      kv,
       context.repo({
         target,
         ref: pr.data.head.ref,
@@ -196,6 +201,7 @@ async function handlePRDeploy(context: Context, command: string) {
 export async function deployCommit(
   github: Octokit,
   log: Logger,
+  kv: LockStore,
   {
     owner,
     repo,
@@ -244,6 +250,11 @@ export async function deployCommit(
     ref,
     ...getDeployBody(targetVal, params)
   };
+
+  if (await kv.isLockedEnv(owner, repo, body.environment)) {
+    throw new ConfigError(`Deployment environment locked`);
+  }
+
   try {
     log.info({ ...logCtx, body }, "deploy: deploying");
     // TODO: Handle auto_merge case correctly here.
@@ -261,13 +272,13 @@ export async function deployCommit(
   }
 }
 
-async function handleAutoDeploy(context: Context) {
+async function handleAutoDeploy(context: Context, kv: LockStore) {
   context.log.info("auto deploy: checking deployments");
   try {
     const conf = await config(context.github, context.repo());
     for (const key in conf) {
       const deployment = conf[key]!;
-      await autoDeployTarget(context, key, deployment);
+      await autoDeployTarget(context, key, deployment, kv);
     }
   } catch (error) {
     switch (error.status) {
@@ -287,7 +298,8 @@ async function handleAutoDeploy(context: Context) {
 async function autoDeployTarget(
   context: Context,
   target: string,
-  targetVal: Target
+  targetVal: Target,
+  kv: LockStore
 ) {
   const autoDeploy = targetVal.auto_deploy_on;
   if (!autoDeploy) {
@@ -311,6 +323,7 @@ async function autoDeployTarget(
     await deployCommit(
       context.github,
       context.log,
+      kv,
       context.repo({
         ref,
         sha,
@@ -377,7 +390,7 @@ export const app = (lockStore: () => LockStore) => (app: Application) => {
 
   const doAutoDeploy = (context: Context) => {
     return locker.lock(`${context.payload.repository.id}-autodeploy`, () => {
-      return handleAutoDeploy(context);
+      return handleAutoDeploy(context, locker);
     });
   };
 
@@ -392,7 +405,7 @@ export const app = (lockStore: () => LockStore) => (app: Application) => {
   });
   app.on("issue_comment.created", async context => {
     if (context.payload.comment.body.startsWith("/deploy")) {
-      await handlePRDeploy(context, context.payload.comment.body);
+      await handlePRDeploy(context, context.payload.comment.body, locker);
     }
   });
   app.on("pull_request.closed", async context => {

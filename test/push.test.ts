@@ -28,6 +28,26 @@ describe("Deployments PR", () => {
     expect(deploy.isDone()).toBe(true);
   });
 
+  test("no deployment if locked", async () => {
+    factory.config({ valid: true });
+    factory.noDeployments();
+
+    await factory.store.lockEnv("Codertocat", "Hello-World", "production");
+    await probot.receive(factory.push());
+    await factory.store.unlockEnv("Codertocat", "Hello-World", "production");
+    expect(deploy.isDone()).toBe(false);
+  });
+
+  test("creates a deployment if other env locked", async () => {
+    factory.config({ valid: true });
+    factory.noDeployments();
+
+    await factory.store.lockEnv("Codertocat", "Hello-World", "staging");
+    await probot.receive(factory.push());
+    await factory.store.unlockEnv("Codertocat", "Hello-World", "staging");
+    expect(deploy.isDone()).toBe(true);
+  });
+
   test("no error if no config", async () => {
     factory.noConfig();
     factory.noDeployments();
