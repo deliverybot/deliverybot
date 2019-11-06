@@ -4,7 +4,9 @@ process.env.WEBHOOK_SECRET = "fake";
 import nock from "nock";
 import supertest from "supertest";
 import { Probot } from "probot";
-import deliverybot from "../src";
+import { InMemStore } from "../src/store";
+import { app } from "../src/app";
+import { EventEmitter } from "events";
 
 // Keep tests clean by exporting mocking tools here;
 export { Scope } from "nock";
@@ -12,6 +14,9 @@ export { Probot } from "probot";
 export const request = supertest;
 export const cleanAll = nock.cleanAll;
 
+export const events = new EventEmitter();
+export const lockStore = () => new InMemStore<any>();
+export const deliverybot = app({ lockStore, events });
 
 export const probot = () => {
   const probot = new Probot({ id: 123, cert: "test" });
@@ -98,6 +103,12 @@ export const permission = ({ admin }: { admin: boolean }) =>
   nock("https://api.github.com")
     .get("/repos/Codertocat/Hello-World/collaborators/Codertocat/permission")
     .reply(200, { permission: admin ? "admin" : "read" });
+
+export const noConfig = () =>
+  nock("https://api.github.com")
+    .persist()
+    .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+    .reply(404);
 
 export const config = ({ valid }: { valid?: boolean }) =>
   nock("https://api.github.com")

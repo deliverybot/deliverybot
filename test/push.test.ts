@@ -15,20 +15,37 @@ describe("Deployments PR", () => {
     factory.gitCommit();
     factory.deploymentStatus();
     factory.pr();
-    factory.config({ valid: true });
     factory.permission({ admin: true });
     factory.gitRef();
     deploy = factory.deploy();
   });
 
   test("creates a deployment on push", async () => {
+    factory.config({ valid: true });
     factory.noDeployments();
 
     await probot.receive(factory.push());
     expect(deploy.isDone()).toBe(true);
   });
 
+  test("no error if no config", async () => {
+    factory.noConfig();
+    factory.noDeployments();
+
+    await probot.receive(factory.push());
+    expect(deploy.isDone()).toBe(false);
+  });
+
+  test("no error if config error", async () => {
+    factory.config({ valid: false });
+    factory.noDeployments();
+
+    await probot.receive(factory.push())
+    expect(deploy.isDone()).toBe(false);
+  });
+
   test("creates a deployment on status", async () => {
+    factory.config({ valid: true });
     factory.noDeployments();
 
     await probot.receive(factory.status());
@@ -36,6 +53,7 @@ describe("Deployments PR", () => {
   });
 
   test("creates a deployment on status", async () => {
+    factory.config({ valid: true });
     factory.noDeployments();
 
     await probot.receive(factory.status());
@@ -43,6 +61,7 @@ describe("Deployments PR", () => {
   });
 
   test("creates a deployment on check run", async () => {
+    factory.config({ valid: true });
     factory.noDeployments();
 
     await probot.receive(factory.checkRun());
@@ -50,6 +69,7 @@ describe("Deployments PR", () => {
   });
 
   test("creates a deployment if other environment exists", async () => {
+    factory.config({ valid: true });
     factory.deploymentsExist("staging"); // Is auto deploying production.
 
     await probot.receive(factory.push());
@@ -57,6 +77,7 @@ describe("Deployments PR", () => {
   });
 
   test("no deployment if environment exists", async () => {
+    factory.config({ valid: true });
     factory.deploymentsExist("production"); // Is auto deploying production.
 
     await probot.receive(factory.push());

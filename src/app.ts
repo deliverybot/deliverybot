@@ -54,6 +54,10 @@ export interface Target {
   production_environment: boolean;
 }
 
+class ConfigError extends Error {
+  public status = "ConfigError";
+}
+
 export type Targets = { [k: string]: Target | undefined };
 
 export async function config(
@@ -76,10 +80,10 @@ export async function config(
   if (ref) params.ref = ref;
   const content = await github.repos.getContents(params);
   if (Array.isArray(content.data)) {
-    throw new Error(".github/deploy.yml is a folder");
+    throw new ConfigError(".github/deploy.yml is a folder");
   }
   if (!content.data.content) {
-    throw new Error("content not found");
+    throw new ConfigError("content not found");
   }
   const conf =
     yaml.safeLoad(Buffer.from(content.data.content, "base64").toString()) || {};
@@ -108,7 +112,7 @@ export async function config(
   });
   if (validation.errors.length > 0) {
     const err = validation.errors[0];
-    throw new Error(`${err.property} ${err.message}`);
+    throw new ConfigError(`${err.property} ${err.message}`);
   }
   for (const key in conf) {
     conf[key].name = key;
@@ -231,7 +235,7 @@ export async function deployCommit(
   const targetVal = conf[target];
   if (!targetVal) {
     log.info(logCtx, "deploy: failed - no target");
-    throw new Error(`Deployment target "${target}" does not exist`);
+    throw new ConfigError(`Deployment target "${target}" does not exist`);
   }
 
   const body = {
@@ -266,11 +270,16 @@ async function handleAutoDeploy(context: Context) {
       await autoDeployTarget(context, key, deployment);
     }
   } catch (error) {
-    if (error.code === 404) {
-      context.log.info(logCtx(context, { error }), "auto deploy: no config");
-    } else {
-      context.log.error(logCtx(context, { error }), "auto deploy: failed");
-      throw error;
+    switch (error.status) {
+      case 404:
+        context.log.info(logCtx(context, { error }), "auto deploy: no config");
+        break;
+      case "ConfigError":
+        context.log.info(logCtx(context, { error }), "auto deploy: config err");
+        break;
+      default:
+        context.log.error(logCtx(context, { error }), "auto deploy: failed");
+        throw error;
     }
   }
 }
@@ -311,6 +320,7 @@ async function autoDeployTarget(
     context.log.info(logCtx(context, { ref }), "auto deploy: done");
   } catch (error) {
     if (error.status === 409) {
+      // Continue here since we expect another check to come in the future.
       context.log.info(
         logCtx(context, { target, ref, error }),
         "auto deploy: checks not ready"
