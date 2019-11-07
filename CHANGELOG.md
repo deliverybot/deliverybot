@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.2](https://github.com/deliverybot/deliverybot/compare/v0.5.1...v0.5.2) (2019-11-07)
+
+
+### Bug Fixes
+
+* Ensure config errors are logged correctly ([e300a93](https://github.com/deliverybot/deliverybot/commit/e300a93))
+
+
+### Features
+
+* Change repo locking to use repoId ([0342998](https://github.com/deliverybot/deliverybot/commit/0342998))
+* Implement locking store ([ee338da](https://github.com/deliverybot/deliverybot/commit/ee338da))
+
 ### [0.5.1](https://github.com/deliverybot/deliverybot/compare/v0.5.0...v0.5.1) (2019-10-26)
 
 
