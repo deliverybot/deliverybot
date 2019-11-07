@@ -12,6 +12,7 @@ describe("Deployments PR", () => {
     probot = factory.probot();
     factory.token();
     factory.gitCommit();
+    factory.repo();
     factory.pr();
     factory.config({ valid: true });
     factory.permission({ admin: true });

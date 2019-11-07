@@ -58,6 +58,10 @@ class ConfigError extends Error {
   public status = "ConfigError";
 }
 
+class LockError extends Error {
+  public status = "LockError";
+}
+
 export type Targets = { [k: string]: Target | undefined };
 
 export async function config(
@@ -197,6 +201,8 @@ async function handlePRDeploy(
  * including templating and more. All deploys should go through this function.
  * We need to deploy always using the ref of a branch so that finding
  * deployments later we can query using the branch ref.
+ *
+ * Throws ConfigError, LockError.
  */
 export async function deployCommit(
   github: Octokit,
@@ -223,6 +229,7 @@ export async function deployCommit(
     context: { repo: { owner, repo } }
   };
   const commit = await github.git.getCommit({ owner, repo, commit_sha: sha });
+  const repository = await github.repos.get({ owner, repo });
 
   // Params are the payload that goes into every deployment - change these in a
   // backwards compatible way always.
@@ -240,7 +247,7 @@ export async function deployCommit(
   const conf = await config(github, { owner, repo, ref });
   const targetVal = conf[target];
   if (!targetVal) {
-    log.info(logCtx, "deploy: failed - no target");
+    log.info(logCtx, "deploy: halted - no target");
     throw new ConfigError(`Deployment target "${target}" does not exist`);
   }
 
@@ -251,8 +258,9 @@ export async function deployCommit(
     ...getDeployBody(targetVal, params)
   };
 
-  if (await kv.isLockedEnv(owner, repo, body.environment)) {
-    throw new ConfigError(`Deployment environment locked`);
+  if (await kv.isLockedEnv(repository.data.id, body.environment)) {
+    log.info(logCtx, "deploy: halted - environment locked");
+    throw new LockError(`Deployment environment locked`);
   }
 
   try {
@@ -266,7 +274,7 @@ export async function deployCommit(
     if (error.status === 409) {
       log.info({ ...logCtx, error, body }, "deploy: checks not ready");
     } else {
-      log.error({ ...logCtx, error, body }, "deploy: failed");
+      log.error({ ...logCtx, error, body }, "deploy: unexpected failure");
     }
     throw error;
   }
@@ -281,6 +289,8 @@ async function handleAutoDeploy(context: Context, kv: LockStore) {
       await autoDeployTarget(context, key, deployment, kv);
     }
   } catch (error) {
+    // This error block will mostly catch configuration errors, autoDeployTarget
+    // will only throw if the error is not recoverable.
     switch (error.status) {
       case 404:
         context.log.info(logCtx(context, { error }), "auto deploy: no config");
@@ -332,18 +342,33 @@ async function autoDeployTarget(
     );
     context.log.info(logCtx(context, { ref }), "auto deploy: done");
   } catch (error) {
-    if (error.status === 409) {
-      // Continue here since we expect another check to come in the future.
-      context.log.info(
-        logCtx(context, { target, ref, error }),
-        "auto deploy: checks not ready"
-      );
-    } else {
-      context.log.error(
-        logCtx(context, { target, ref, error }),
-        "auto deploy: deploy attempt failed"
-      );
-      throw error;
+    // Catch deploy errors and return if this is a normal scenario for an auto
+    // deployment.
+    switch (error.status) {
+      case 409:
+        context.log.info(
+          logCtx(context, { target, ref, error }),
+          "auto deploy: checks not ready"
+        );
+        return;
+      case "LockError":
+        context.log.info(
+          logCtx(context, { target, ref, error }),
+          "auto deploy: environment locked"
+        );
+        return;
+      case "ConfigError":
+        context.log.info(
+          logCtx(context, { target, ref, error }),
+          "auto deploy: target config error"
+        );
+        return;
+      default:
+        context.log.error(
+          logCtx(context, { target, ref, error }),
+          "auto deploy: deploy attempt failed"
+        );
+        throw error;
     }
   }
 }

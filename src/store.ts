@@ -2,25 +2,25 @@ export interface LockStore {
   // Runs the handler function
   lock(key: string, handler: () => {}): Promise<void>;
 
-  lockEnv(owner: string, repo: string, env: string): Promise<void>;
-  unlockEnv(owner: string, repo: string, env: string): Promise<void>;
-  isLockedEnv(owner: string, repo: string, env: string): Promise<boolean>;
+  lockEnv(repoId: number, env: string): Promise<void>;
+  unlockEnv(repoId: number, env: string): Promise<void>;
+  isLockedEnv(repoId: number, env: string): Promise<boolean>;
 }
 
 export class InMemStore implements LockStore {
   private store: { [k: string]: boolean | undefined } = {};
   private locks: { [k: string]: boolean | undefined } = {};
 
-  async lockEnv(owner: string, repo: string, env: string) {
-    this.store[`${owner}/${repo}/${env}`] = true;
+  async lockEnv(repoId: number, env: string) {
+    this.store[`${repoId}/${env}`] = true;
   }
 
-  async unlockEnv(owner: string, repo: string, env: string) {
-    this.store[`${owner}/${repo}/${env}`] = false;
+  async unlockEnv(repoId: number, env: string) {
+    this.store[`${repoId}/${env}`] = false;
   }
 
-  async isLockedEnv(owner: string, repo: string, env: string) {
-    return !!this.store[`${owner}/${repo}/${env}`];
+  async isLockedEnv(repoId: number, env: string) {
+    return !!this.store[`${repoId}/${env}`];
   }
 
   lock(key: string, handler: () => Promise<void>): Promise<void> {

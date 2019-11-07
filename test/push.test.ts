@@ -13,6 +13,7 @@ describe("Deployments PR", () => {
     probot = factory.probot();
     factory.token();
     factory.gitCommit();
+    factory.repo();
     factory.deploymentStatus();
     factory.pr();
     factory.permission({ admin: true });
@@ -32,9 +33,9 @@ describe("Deployments PR", () => {
     factory.config({ valid: true });
     factory.noDeployments();
 
-    await factory.store.lockEnv("Codertocat", "Hello-World", "production");
+    await factory.store.lockEnv(1, "production");
     await probot.receive(factory.push());
-    await factory.store.unlockEnv("Codertocat", "Hello-World", "production");
+    await factory.store.unlockEnv(1, "production");
     expect(deploy.isDone()).toBe(false);
   });
 
@@ -42,9 +43,9 @@ describe("Deployments PR", () => {
     factory.config({ valid: true });
     factory.noDeployments();
 
-    await factory.store.lockEnv("Codertocat", "Hello-World", "staging");
+    await factory.store.lockEnv(1, "staging");
     await probot.receive(factory.push());
-    await factory.store.unlockEnv("Codertocat", "Hello-World", "staging");
+    await factory.store.unlockEnv(1, "staging");
     expect(deploy.isDone()).toBe(true);
   });
 
