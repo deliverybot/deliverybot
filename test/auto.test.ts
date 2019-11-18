@@ -97,6 +97,17 @@ describe("Deployments PR", () => {
     expect(deploy.isDone()).toBe(true);
   });
 
+  test("discards if not the latest", async () => {
+    factory.config({ valid: true });
+    factory.noDeployments();
+
+    // Since push0 returns an earlier commit that doesn't match the current ref
+    // this will immediately be discarded and not processed.
+    const noDeploy = factory.deployConflict();
+    await probot.receive(factory.push0());
+    expect(noDeploy.isDone()).toBe(false);
+  });
+
   test("creates a deployment if other environment exists", async () => {
     const deploy = factory.deploy();
     factory.config({ valid: true });

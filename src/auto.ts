@@ -9,6 +9,10 @@ function match(auto: string, ref: string) {
   return auto === ref;
 }
 
+/**
+ * Wires up automatic deployments for the `auto_deploy_on` configuration
+ * variable  in the deploy.yml.
+ */
 export function auto(
   app: Application,
   lockStore: LockStore,
@@ -81,17 +85,31 @@ export function auto(
   }
 
   /**
-   * Process watch determines if given a watch it needs to be re-deployed.
+   * Process watch determines if given a watch it needs to be re-deployed. It
+   * returns true if this watch is done and can be removed. Watches are done for
+   * a variety of scenarios:
+   *
+   * - The watch is old and should not be processed.
+   * - The watch is already deployed.
+   * - There is a non-retryable configuration error.
    */
-  async function processWatch(context: Context, watch: Watch) {
-    const { ref, target, targetVal } = watch;
+  async function processWatch(context: Context, watch: Watch): Promise<boolean> {
+    const { sha, ref, target, targetVal } = watch;
 
-    // We don't use the sha value from the watch here but refresh this
-    // value from GitHub. This avoids always deploying
+    // Check if the current sha for this ref is equal to this watch. Since
+    // multiple watches can be in progress we only want to process the latest
+    // of them.
     const refreshed = await context.github.git.getRef(
       context.repo({ ref: ref.replace("refs/", "") })
     );
-    const sha = refreshed.data.object.sha;
+    const currentSha = refreshed.data.object.sha;
+    if (currentSha !== sha) { // This is an old watch, return true.
+      context.log.info(
+        logCtx(context, { ref, sha, currentSha }),
+        "auto deploy: old watch"
+      );
+      return true;
+    }
 
     context.log.info(
       logCtx(context, { ref, sha, target, watchId: watch.id }),

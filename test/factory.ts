@@ -163,6 +163,23 @@ export const prClosed = (): any => ({
   payload: fixtures.prClosed
 });
 
+// Represents a different sha before push1.
+export const push0 = (): any => ({
+  name: "push",
+  id: "push-event",
+  payload: {
+    ...fixtures.push,
+    before: "333d685c9cb906be7461d0af11708005344454f3",
+    after: "a10867b14bb761a232cd80139fbd4c0d33264240"
+  }
+});
+
+export const push1 = (): any => ({
+  name: "push",
+  id: "push-event",
+  payload: fixtures.push
+});
+
 export const push = (): any => ({
   name: "push",
   id: "push-event",
