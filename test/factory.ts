@@ -3,7 +3,7 @@ process.env.WEBHOOK_SECRET = "fake";
 
 import nock from "nock";
 import supertest from "supertest";
-import { Probot } from "probot";
+import { Probot, Application, Octokit } from "probot";
 import { InMemStore } from "../src/store";
 import { app } from "../src/app";
 
@@ -14,7 +14,13 @@ export const request = supertest;
 export const cleanAll = nock.cleanAll;
 
 export const store = new InMemStore();
-export const deliverybot = app(() => store);
+export const deliverybot = (application: Application) => {
+  // Assign plain octokit to remove the plugins (like retries) the GitHub adds
+  // by default.
+  application['Octokit'] = Octokit;
+  app(application, store, store);
+};
+
 
 export const probot = () => {
   const probot = new Probot({ id: 123, cert: "test" });
@@ -134,6 +140,11 @@ export const deploy = () =>
     .post("/repos/Codertocat/Hello-World/deployments")
     .reply(200, { id: 1 });
 
+export const deployConflict = () =>
+  nock("https://api.github.com")
+    .post("/repos/Codertocat/Hello-World/deployments")
+    .reply(409, { id: 1 });
+
 export const errorDeploy = () =>
   nock("https://api.github.com")
     .post("/repos/Codertocat/Hello-World/deployments")
@@ -154,16 +165,19 @@ export const prClosed = (): any => ({
 
 export const push = (): any => ({
   name: "push",
+  id: "push-event",
   payload: fixtures.push
 });
 
 export const status = (): any => ({
   name: "status",
+  id: 'status-event',
   payload: fixtures.status
 });
 
 export const checkRun = (): any => ({
   name: "check_run",
+  id: 'check-run-event',
   payload: fixtures.checkRunCreated
 });
 

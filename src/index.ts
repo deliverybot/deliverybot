@@ -1,4 +1,8 @@
 import { InMemStore } from "./store";
+import { Application } from "probot";
 import { app } from "./app";
 
-export = app(() => new InMemStore());
+export = (application: Application) => {
+  const store = new InMemStore();
+  app(application, store, store);
+};
