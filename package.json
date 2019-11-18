@@ -1,6 +1,6 @@
 {
   "name": "deliverybot",
-  "version": "0.5.3-1",
+  "version": "0.5.3-2",
   "main": "lib/index.js",
   "files": [
     "lib/*",
