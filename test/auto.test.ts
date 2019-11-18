@@ -2,26 +2,26 @@ import * as factory from "./factory";
 
 describe("Deployments PR", () => {
   jest.setTimeout(30000);
-  let deploy: factory.Scope;
   let probot: factory.Probot;
 
   afterEach(() => {
     factory.cleanAll();
+    factory.store.clear();
   });
 
   beforeEach(() => {
     probot = factory.probot();
     factory.token();
-    factory.gitCommit();
-    factory.repo();
     factory.deploymentStatus();
     factory.pr();
     factory.permission({ admin: true });
-    factory.gitRef();
-    deploy = factory.deploy();
+    factory.repo().persist();
+    factory.gitCommit().persist();
+    factory.gitRef().persist();
   });
 
   test("creates a deployment on push", async () => {
+    const deploy = factory.deploy();
     factory.config({ valid: true });
     factory.noDeployments();
 
@@ -30,6 +30,7 @@ describe("Deployments PR", () => {
   });
 
   test("no deployment if locked", async () => {
+    const deploy = factory.deploy();
     factory.config({ valid: true });
     factory.noDeployments();
 
@@ -40,6 +41,7 @@ describe("Deployments PR", () => {
   });
 
   test("creates a deployment if other env locked", async () => {
+    const deploy = factory.deploy();
     factory.config({ valid: true });
     factory.noDeployments();
 
@@ -50,6 +52,7 @@ describe("Deployments PR", () => {
   });
 
   test("no error if no config", async () => {
+    const deploy = factory.deploy();
     factory.noConfig();
     factory.noDeployments();
 
@@ -58,6 +61,7 @@ describe("Deployments PR", () => {
   });
 
   test("no error if config error", async () => {
+    const deploy = factory.deploy();
     factory.config({ valid: false });
     factory.noDeployments();
 
@@ -69,14 +73,12 @@ describe("Deployments PR", () => {
     factory.config({ valid: true });
     factory.noDeployments();
 
-    await probot.receive(factory.status());
+    let deploy = factory.deployConflict();
+    await probot.receive(factory.push());
     expect(deploy.isDone()).toBe(true);
-  });
 
-  test("creates a deployment on status", async () => {
-    factory.config({ valid: true });
     factory.noDeployments();
-
+    deploy = factory.deploy();
     await probot.receive(factory.status());
     expect(deploy.isDone()).toBe(true);
   });
@@ -85,11 +87,18 @@ describe("Deployments PR", () => {
     factory.config({ valid: true });
     factory.noDeployments();
 
+    let deploy = factory.deployConflict();
+    await probot.receive(factory.push());
+    expect(deploy.isDone()).toBe(true);
+
+    factory.noDeployments();
+    deploy = factory.deploy();
     await probot.receive(factory.checkRun());
     expect(deploy.isDone()).toBe(true);
   });
 
   test("creates a deployment if other environment exists", async () => {
+    const deploy = factory.deploy();
     factory.config({ valid: true });
     factory.deploymentsExist("staging"); // Is auto deploying production.
 
@@ -98,6 +107,7 @@ describe("Deployments PR", () => {
   });
 
   test("no deployment if environment exists", async () => {
+    const deploy = factory.deploy();
     factory.config({ valid: true });
     factory.deploymentsExist("production"); // Is auto deploying production.
 
