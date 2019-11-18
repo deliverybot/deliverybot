@@ -5,7 +5,7 @@ release:
 .PHONY: release
 
 pre-release:
-	standard-version
+	standard-version --prerelease
 	git push --follow-tags origin master
 	npm publish
 .PHONY: pre-release

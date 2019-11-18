@@ -24,10 +24,10 @@
     "probot-app"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "(rm -r lib || true); tsc",
     "start": "probot run ./lib/index.js",
     "test": "LOG_LEVEL=fatal jest",
-    "prepack": "tsc"
+    "prepack": "(rm -r lib || true); tsc"
   },
   "dependencies": {
     "@octokit/rest": "16.33.1",
