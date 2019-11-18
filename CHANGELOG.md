@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.3-3](https://github.com/deliverybot/deliverybot/compare/v0.5.3-2...v0.5.3-3) (2019-11-18)
+
+
+### Bug Fixes
+
+* Log statement style ([bce7e5b](https://github.com/deliverybot/deliverybot/commit/bce7e5b))
+
 ### [0.5.3-2](https://github.com/deliverybot/deliverybot/compare/v0.5.3-1...v0.5.3-2) (2019-11-18)
 
 
