@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.3](https://github.com/deliverybot/deliverybot/compare/v0.5.2...v0.5.3) (2019-11-18)
+
+
+### Features
+
+* Add auto deploy using watches ([f9c8f78](https://github.com/deliverybot/deliverybot/commit/f9c8f78))
+
 ### [0.5.2](https://github.com/deliverybot/deliverybot/compare/v0.5.1...v0.5.2) (2019-11-07)
 
 
