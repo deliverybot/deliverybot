@@ -197,7 +197,10 @@ export function auto(
         app.receive({
           id: context.id,
           name: "push_watch",
-          payload: watch,
+          payload: {
+            ...watch,
+            installation: context.payload.installation,
+          },
           protocol: context.protocol,
           host: context.host,
           url: context.url
