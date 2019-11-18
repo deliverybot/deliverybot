@@ -182,14 +182,16 @@ export function auto(
   async function emitWatches(context: Context, repoId: number, sha: string) {
     const watches = await watchStore.listWatchBySha(repoId, sha);
     context.log.info(
-      {
+      logCtx(context, {
+        repoId,
+        sha,
         watches: watches.map(w => ({
           id: w.id,
           ref: w.ref,
           sha: w.sha,
           repo: w.repository.id
         }))
-      },
+      }),
       "auto deploy: emitting watches"
     );
     await Promise.all(
