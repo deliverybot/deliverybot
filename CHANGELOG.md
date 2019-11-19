@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.3-5](https://github.com/deliverybot/deliverybot/compare/v0.5.3-4...v0.5.3-5) (2019-11-19)
+
+
+### Bug Fixes
+
+* Watch uses its own id ([7b58117](https://github.com/deliverybot/deliverybot/commit/7b58117))
+
 ### [0.5.3-4](https://github.com/deliverybot/deliverybot/compare/v0.5.3-3...v0.5.3-4) (2019-11-18)
 
 
