@@ -3,6 +3,7 @@ import { WatchStore, LockStore, Watch } from "./store";
 import { logCtx } from "./util";
 import { config, deploy } from "./deploy";
 import { hash } from "./util";
+import { v4 as uuid } from "uuid";
 import { PayloadRepository } from "@octokit/webhooks";
 
 function match(auto: string, ref: string) {
@@ -45,7 +46,7 @@ export function auto(
           "auto deploy: add watch"
         );
         const watch: Watch = {
-          id: context.id,
+          id: uuid(),
           targetVal,
           ref,
           sha,
@@ -93,7 +94,10 @@ export function auto(
    * - The watch is already deployed.
    * - There is a non-retryable configuration error.
    */
-  async function processWatch(context: Context, watch: Watch): Promise<boolean> {
+  async function processWatch(
+    context: Context,
+    watch: Watch
+  ): Promise<boolean> {
     const { sha, ref, target, targetVal } = watch;
 
     // Check if the current sha for this ref is equal to this watch. Since
@@ -103,7 +107,8 @@ export function auto(
       context.repo({ ref: ref.replace("refs/", "") })
     );
     const currentSha = refreshed.data.object.sha;
-    if (currentSha !== sha) { // This is an old watch, return true.
+    if (currentSha !== sha) {
+      // This is an old watch, return true.
       context.log.info(
         logCtx(context, { ref, sha, currentSha }),
         "auto deploy: old watch"
@@ -219,7 +224,7 @@ export function auto(
           name: "push_watch",
           payload: {
             ...watch,
-            installation: context.payload.installation,
+            installation: context.payload.installation
           },
           protocol: context.protocol,
           host: context.host,
