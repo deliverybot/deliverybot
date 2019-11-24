@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.3-6](https://github.com/deliverybot/deliverybot/compare/v0.5.3-5...v0.5.3-6) (2019-11-24)
+
+
+### Features
+
+* Match refs with glob ([2ede53a](https://github.com/deliverybot/deliverybot/commit/2ede53a))
+
 ### [0.5.3-5](https://github.com/deliverybot/deliverybot/compare/v0.5.3-4...v0.5.3-5) (2019-11-19)
 
 
