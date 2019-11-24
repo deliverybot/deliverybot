@@ -1,6 +1,7 @@
 import * as factory from "./factory";
+import { match } from "../src/auto";
 
-describe("Deployments PR", () => {
+describe("auto", () => {
   jest.setTimeout(30000);
   let probot: factory.Probot;
 
@@ -18,6 +19,30 @@ describe("Deployments PR", () => {
     factory.repo().persist();
     factory.gitCommit().persist();
     factory.gitRef().persist();
+  });
+
+  describe("Match", () => {
+    const matches = [
+      ["refs/heads/master", "refs/heads/master"],
+      ["refs/heads/*", "refs/heads/master"],
+      ["refs/*", "refs/tags/simple-tag"],
+      ["refs/tags/*", "refs/tags/simple-tag"],
+    ];
+    const unmatched = [
+      ["refs/heads/staging", "refs/heads/master"],
+      ["refs/heads/*", "refs/tags/simple-tag"],
+    ];
+
+    matches.forEach(m => {
+      it(`matches ${m[0]}`, () =>
+        expect(match(m[0], m[1])).toBe(true)
+      )
+    });
+    unmatched.forEach(m => {
+      it(`unmatched ${m[0]}`, () =>
+        expect(match(m[0], m[1])).toBe(false)
+      )
+    });
   });
 
   test("creates a deployment on push", async () => {

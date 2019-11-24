@@ -6,8 +6,13 @@ import { hash } from "./util";
 import { v4 as uuid } from "uuid";
 import { PayloadRepository } from "@octokit/webhooks";
 
-function match(auto: string, ref: string) {
-  return auto === ref;
+export function match(auto: string | undefined, ref: string) {
+  if (!auto) return false;
+  for (let i = 0; i < auto.length; i++) {
+    if (auto[i] === '*') return true;
+    if (auto[i] !== ref[i]) return false;
+  }
+  return auto.length === ref.length;
 }
 
 /**

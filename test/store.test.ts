@@ -1,6 +1,6 @@
 import { InMemStore } from "../src/store";
 
-describe("LockStore", () => {
+describe("store", () => {
   it("counts sequentially", async () => {
     const store = new InMemStore();
 

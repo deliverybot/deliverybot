@@ -26,7 +26,7 @@
   "scripts": {
     "build": "(rm -r lib || true); tsc",
     "start": "probot run ./lib/index.js",
-    "test": "LOG_LEVEL=fatal jest",
+    "test": "LOG_LEVEL=fatal jest --verbose",
     "prepack": "(rm -r lib || true); tsc"
   },
   "dependencies": {

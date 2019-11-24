@@ -1,6 +1,6 @@
 import * as factory from "./factory";
 
-describe("Deployments PR", () => {
+describe("pr-close", () => {
   let probot: factory.Probot;
   jest.setTimeout(30000);
 
