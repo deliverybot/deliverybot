@@ -27,9 +27,11 @@ describe("auto", () => {
       ["refs/heads/*", "refs/heads/master"],
       ["refs/*", "refs/tags/simple-tag"],
       ["refs/tags/*", "refs/tags/simple-tag"],
+      ["refs/tags/v*", "refs/tags/v1.2.3"],
     ];
     const unmatched = [
       ["refs/heads/staging", "refs/heads/master"],
+      ["refs/tags/v", "refs/tags/v1.2.3"],
       ["refs/heads/*", "refs/tags/simple-tag"],
     ];
 
