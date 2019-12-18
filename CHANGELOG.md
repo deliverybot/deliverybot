@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.1](https://github.com/deliverybot/deploybot/compare/v0.6.0...v0.6.1) (2019-12-18)
+
+
+### Features
+
+* Change locking to include target ([74c833b](https://github.com/deliverybot/deploybot/commit/74c833b))
+
 ## [0.6.0](https://github.com/deliverybot/deploybot/compare/v0.5.3-6...v0.6.0) (2019-12-18)
 
 
