@@ -10,7 +10,7 @@ import Webhooks from "@octokit/webhooks";
 export function match(auto: string | undefined, ref: string) {
   if (!auto) return false;
   for (let i = 0; i < auto.length; i++) {
-    if (auto[i] === '*') return true;
+    if (auto[i] === "*") return true;
     if (auto[i] !== ref[i]) return false;
   }
   return auto.length === ref.length;
@@ -191,13 +191,19 @@ export function auto(
   function lockWatch(context: Context, handle: () => Promise<boolean>) {
     // We need to lock by the ref + repository here. Since we want to deploy
     // by reference and not by the sha.
-    const key = hash([context.payload.repository.id, context.payload.ref]);
+    const watch = context.payload as Watch;
+    const key = hash([watch.ref, watch.repository.id.toString(), watch.target]);
     context.log.info(
-      { key, watchId: context.payload.id },
+      logCtx(context, {
+        key,
+        ref: watch.ref,
+        repo: watch.repository.id,
+        target: watch.target,
+        watchId: context.payload.id
+      }),
       "auto deploy: locking"
     );
     return lockStore.lock(key, async () => {
-      const watch = context.payload as Watch;
       const done = await handle();
       if (done) {
         await watchStore.delWatch(watch.repository.id, watch);
