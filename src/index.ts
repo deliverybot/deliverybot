@@ -4,5 +4,5 @@ import { app } from "./app";
 
 export = (application: Application) => {
   const store = new InMemStore();
-  app(application, store, store);
+  app(application, store, store, application.receive.bind(application));
 };

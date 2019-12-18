@@ -5,6 +5,7 @@ import { config, deploy } from "./deploy";
 import { hash } from "./util";
 import { v4 as uuid } from "uuid";
 import { PayloadRepository } from "@octokit/webhooks";
+import Webhooks from "@octokit/webhooks";
 
 export function match(auto: string | undefined, ref: string) {
   if (!auto) return false;
@@ -22,7 +23,8 @@ export function match(auto: string | undefined, ref: string) {
 export function auto(
   app: Application,
   lockStore: LockStore,
-  watchStore: WatchStore
+  watchStore: WatchStore,
+  publish: (event: Webhooks.WebhookEvent<any>) => Promise<any>
 ) {
   /**
    * Add watch adds a watch on a specific ref, sha and repository.
@@ -214,6 +216,7 @@ export function auto(
         repoId,
         sha,
         watches: watches.map(w => ({
+          target: w.target,
           id: w.id,
           ref: w.ref,
           sha: w.sha,
@@ -224,8 +227,8 @@ export function auto(
     );
     await Promise.all(
       watches.map(watch =>
-        app.receive({
-          id: context.id,
+        publish({
+          id: uuid(),
           name: "push_watch",
           payload: {
             ...watch,

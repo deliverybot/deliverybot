@@ -18,7 +18,7 @@ export const deliverybot = (application: Application) => {
   // Assign plain octokit to remove the plugins (like retries) the GitHub adds
   // by default.
   application['Octokit'] = Octokit;
-  app(application, store, store);
+  app(application, store, store, application.receive.bind(application));
 };
 
 
