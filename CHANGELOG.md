@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.3](https://github.com/deliverybot/deploybot/compare/v0.5.3-6...v0.5.3) (2019-12-18)
+
+
+### Features
+
+* Implement a publish method ([036dc49](https://github.com/deliverybot/deploybot/commit/036dc49))
+
 ### [0.5.3-6](https://github.com/deliverybot/deliverybot/compare/v0.5.3-5...v0.5.3-6) (2019-11-24)
 
 
