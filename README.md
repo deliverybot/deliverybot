@@ -1,4 +1,4 @@
-# deliverybot
+# deploybot
 
 Complete deployment automation for GitHub. https://deliverybot.dev
 

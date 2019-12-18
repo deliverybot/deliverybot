@@ -1,5 +1,5 @@
 {
-  "name": "deliverybot",
+  "name": "@deliverybot/deploybot",
   "version": "0.5.3-6",
   "main": "lib/index.js",
   "files": [
@@ -12,7 +12,7 @@
   "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",
   "license": "MIT",
   "support": "support@deliverybot.dev",
-  "repository": "https://github.com/deliverybot/deliverybot.git",
+  "repository": "https://github.com/deliverybot/deploybot",
   "homepage": "https://deliverybot.dev",
   "documentation": "https://deliverybot.dev/docs/",
   "bugs": "https://github.com/deliverybot/deliverybot/issues",
