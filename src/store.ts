@@ -17,6 +17,7 @@ export interface Watch {
   targetVal: Target;
   sha: string;
   ref: string;
+  prNumber?: number;
 }
 
 export interface WatchStore {

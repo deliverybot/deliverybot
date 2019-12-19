@@ -6,6 +6,7 @@ import { hash } from "./util";
 import { v4 as uuid } from "uuid";
 import { PayloadRepository } from "@octokit/webhooks";
 import Webhooks from "@octokit/webhooks";
+import { handlePRDeploy } from "./pr-deploy";
 
 export function match(auto: string | undefined, ref: string) {
   if (!auto) return false;
@@ -28,19 +29,23 @@ export function auto(
 ) {
   /**
    * Add watch adds a watch on a specific ref, sha and repository.
+   * The matchRef argument can be an specific ref or the keyword 'pr'.
+   * On pr you'll need to pass the number to the watch.
    */
   async function addWatch(
     context: Context,
+    matchRef: string,
     ref: string,
     sha: string,
-    repository: PayloadRepository
+    repository: PayloadRepository,
+    prNumber?: number,
   ) {
     try {
       let anyAdded = false;
       const conf = await config(context.github, context.repo());
       for (const target in conf) {
         const targetVal = conf[target]!;
-        if (!match(targetVal.auto_deploy_on, ref)) {
+        if (!match(targetVal.auto_deploy_on, matchRef)) {
           continue;
         }
         context.log.info(
@@ -58,7 +63,8 @@ export function auto(
           ref,
           sha,
           repository,
-          target
+          target,
+          prNumber
         };
         anyAdded = true;
         await watchStore.addWatch(repository.id, watch);
@@ -138,6 +144,16 @@ export function auto(
       return true;
     }
 
+    let pr = undefined;
+    if (watch.prNumber) {
+      const prObject = await context.github.pulls.get({
+        owner: context.payload.repository.owner.login,
+        repo: context.payload.repository.name,
+        pull_number: watch.prNumber
+      });
+      pr = prObject.data;
+    }
+
     context.log.info(logCtx(context, { ref }), "auto deploy: deploying");
     try {
       await deploy(
@@ -147,7 +163,8 @@ export function auto(
         context.repo({
           ref,
           sha,
-          target
+          target,
+          pr
         })
       );
       context.log.info(logCtx(context, { ref }), "auto deploy: done");
@@ -283,8 +300,33 @@ export function auto(
     await addWatch(
       context,
       context.payload.ref,
+      context.payload.ref,
       context.payload.after,
       context.payload.repository
     );
+  });
+
+  // Auto deploy on open PR event
+  app.on("pull_request.opened", async context => {
+    await addWatch(
+      context,
+      "pr",
+      `heads/${context.payload.pull_request.head.ref}`,
+      context.payload.pull_request.head.sha,
+      context.payload.repository,
+      context.payload.number
+    )
+  });
+
+  // Auto deploy on push to PR
+  app.on("pull_request.synchronize", async context => {
+    await addWatch(
+      context,
+      "pr",
+      `heads/${context.payload.pull_request.head.ref}`,
+      context.payload.pull_request.head.sha,
+      context.payload.repository,
+      context.payload.number
+    )
   });
 }
