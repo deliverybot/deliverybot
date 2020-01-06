@@ -17,10 +17,9 @@ export const store = new InMemStore();
 export const deliverybot = (application: Application) => {
   // Assign plain octokit to remove the plugins (like retries) the GitHub adds
   // by default.
-  application['Octokit'] = Octokit;
+  application["Octokit"] = Octokit;
   app(application, store, store, application.receive.bind(application));
 };
-
 
 export const probot = () => {
   const probot = new Probot({ id: 123, cert: "test" });
@@ -30,7 +29,7 @@ export const probot = () => {
     getInstallationAccessToken: (option: any) => Promise.resolve("test")
   };
   return probot;
-}
+};
 
 const fixtures = {
   deployValid: require("./fixtures/deploy-valid"),
@@ -135,9 +134,9 @@ export const pr = () =>
     .get("/repos/Codertocat/Hello-World/pulls/2")
     .reply(200, fixtures.pullRequest);
 
-export const deploy = () =>
+export const deploy = (body?: any) =>
   nock("https://api.github.com")
-    .post("/repos/Codertocat/Hello-World/deployments")
+    .post("/repos/Codertocat/Hello-World/deployments", body)
     .reply(200, { id: 1 });
 
 export const deployConflict = () =>
@@ -188,13 +187,13 @@ export const push = (): any => ({
 
 export const status = (): any => ({
   name: "status",
-  id: 'status-event',
+  id: "status-event",
   payload: fixtures.status
 });
 
 export const checkRun = (): any => ({
   name: "check_run",
-  id: 'check-run-event',
+  id: "check-run-event",
   payload: fixtures.checkRunCreated
 });
 
@@ -207,4 +206,3 @@ export const errorComment = (expected: string) =>
       return true;
     })
     .reply(200);
-

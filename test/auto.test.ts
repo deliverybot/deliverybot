@@ -27,23 +27,19 @@ describe("auto", () => {
       ["refs/heads/*", "refs/heads/master"],
       ["refs/*", "refs/tags/simple-tag"],
       ["refs/tags/*", "refs/tags/simple-tag"],
-      ["refs/tags/v*", "refs/tags/v1.2.3"],
+      ["refs/tags/v*", "refs/tags/v1.2.3"]
     ];
     const unmatched = [
       ["refs/heads/staging", "refs/heads/master"],
       ["refs/tags/v", "refs/tags/v1.2.3"],
-      ["refs/heads/*", "refs/tags/simple-tag"],
+      ["refs/heads/*", "refs/tags/simple-tag"]
     ];
 
     matches.forEach(m => {
-      it(`matches ${m[0]}`, () =>
-        expect(match(m[0], m[1])).toBe(true)
-      )
+      it(`matches ${m[0]}`, () => expect(match(m[0], m[1])).toBe(true));
     });
     unmatched.forEach(m => {
-      it(`unmatched ${m[0]}`, () =>
-        expect(match(m[0], m[1])).toBe(false)
-      )
+      it(`unmatched ${m[0]}`, () => expect(match(m[0], m[1])).toBe(false));
     });
   });
 
@@ -92,7 +88,7 @@ describe("auto", () => {
     factory.config({ valid: false });
     factory.noDeployments();
 
-    await probot.receive(factory.push())
+    await probot.receive(factory.push());
     expect(deploy.isDone()).toBe(false);
   });
 

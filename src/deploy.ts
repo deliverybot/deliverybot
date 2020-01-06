@@ -71,14 +71,20 @@ export async function config(
   return conf;
 }
 
-function getDeployBody(target: Target, data: any): DeployBody {
+function getDeployBody(
+  target: Target,
+  data: any,
+  force?: boolean,
+  task?: string
+): DeployBody {
   return withPreview({
-    task: target.task || "deploy",
+    task: task || target.task || "deploy",
     transient_environment: target.transient_environment || false,
     production_environment: target.production_environment || false,
     environment: render(target.environment || "production", data),
     auto_merge: target.auto_merge || false,
-    required_contexts: target.required_contexts || [],
+    // The presence of force sets the required contexts to an empty array [].
+    required_contexts: force ? [] : target.required_contexts || [],
     description: render(target.description, data),
     payload: {
       target: target.name,
@@ -105,6 +111,8 @@ export async function deploy(
     target,
     ref,
     sha,
+    force,
+    task,
     pr
   }: {
     owner: string;
@@ -112,6 +120,8 @@ export async function deploy(
     target: string;
     ref: string;
     sha: string;
+    force?: boolean;
+    task?: string;
     pr?: PullsGetResponse;
   }
 ) {
@@ -146,7 +156,7 @@ export async function deploy(
     owner,
     repo,
     ref,
-    ...getDeployBody(targetVal, params)
+    ...getDeployBody(targetVal, params, force, task)
   };
 
   if (await kv.isLockedEnv(repository.data.id, body.environment)) {
