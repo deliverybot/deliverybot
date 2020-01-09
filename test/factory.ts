@@ -40,6 +40,9 @@ const fixtures = {
   push: require("./fixtures/push.json"),
   status: require("./fixtures/status.json"),
   ref: require("./fixtures/ref.json"),
+  changeRef: require("./fixtures/change-ref.json"),
+  prOpened: require("./fixtures/pull_request.opened.json"),
+  prSync: require("./fixtures/pull_request.synchronize.json"),
   prClosed: require("./fixtures/pull_request.closed.json"),
   commit: require("./fixtures/commit.json"),
   checkRunCreated: require("./fixtures/check_run.created.json"),
@@ -68,6 +71,11 @@ export const gitRef = () =>
   nock("https://api.github.com")
     .get("/repos/Codertocat/Hello-World/git/refs/tags/simple-tag")
     .reply(200, fixtures.ref);
+
+export const changesRef = () =>
+  nock("https://api.github.com")
+    .get("/repos/Codertocat/Hello-World/git/refs/heads/changes")
+    .reply(200, fixtures.changeRef);
 
 export const noDeployments = () =>
   nock("https://api.github.com")
@@ -155,6 +163,16 @@ export const prDeployComment = (env: string): any => ({
     ...fixtures.commentCreated,
     comment: { ...fixtures.commentCreated.comment, body: `/deploy ${env}` }
   }
+});
+
+export const prOpened = (): any => ({
+  name: "pull_request",
+  payload: fixtures.prOpened
+});
+
+export const prSync = (): any => ({
+  name: "pull_request",
+  payload: fixtures.prSync
 });
 
 export const prClosed = (): any => ({

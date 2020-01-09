@@ -19,6 +19,7 @@ describe("auto", () => {
     factory.repo().persist();
     factory.gitCommit().persist();
     factory.gitRef().persist();
+    factory.changesRef().persist();
   });
 
   describe("Match", () => {
@@ -51,6 +52,24 @@ describe("auto", () => {
     await probot.receive(factory.push());
     expect(deploy.isDone()).toBe(true);
   });
+
+  test("creates a deployment on pull request opened", async () => {
+    const deploy = factory.deploy();
+    factory.config({ valid: true });
+    factory.noDeployments();
+
+    await probot.receive(factory.prOpened());
+    expect(deploy.isDone()).toBe(true);
+  })
+
+  test("creates a deployment on push to pull request", async () => {
+    const deploy = factory.deploy();
+    factory.config({ valid: true });
+    factory.noDeployments();
+
+    await probot.receive(factory.prSync());
+    expect(deploy.isDone()).toBe(true);
+  })
 
   test("no deployment if locked", async () => {
     const deploy = factory.deploy();

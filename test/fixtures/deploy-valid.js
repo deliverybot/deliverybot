@@ -1,5 +1,6 @@
 module.exports = `
 review:
+  auto_deploy_on: pr
   transient_environment: true
   production_environment: false
   required_contexts:
