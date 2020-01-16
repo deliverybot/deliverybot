@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.3](https://github.com/deliverybot/deploybot/compare/v0.6.2...v0.6.3) (2020-01-16)
+
+
+### Features
+
+* Implement auto deploy on pull requests ([#24](https://github.com/deliverybot/deploybot/issues/24)) ([9a077ca](https://github.com/deliverybot/deploybot/commit/9a077ca))
+
 ### [0.6.2](https://github.com/deliverybot/deploybot/compare/v0.6.1...v0.6.2) (2020-01-06)
 
 
