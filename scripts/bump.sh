@@ -6,6 +6,6 @@ node ./scripts/bump-versions.js
 version=$(jq -r '.version' < ./package.json)
 
 git add .
-git commit -m "chore: release v${version}"
+git commit -m "chore(release): v${version}"
 git tag "v${version}"
 git push --follow-tags origin master
