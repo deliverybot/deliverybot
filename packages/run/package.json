@@ -1,0 +1,48 @@
+{
+  "name": "@deliverybot/run",
+  "version": "0.7.2",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib/*",
+    "bundle/*",
+    "config/*"
+  ],
+  "scripts": {
+    "clean": "mkdir -p lib && mkdir -p bundle && rm -r lib && rm -r bundle",
+    "build": "tsc",
+    "build:watch": "tsc --watch --preserveWatchOutput",
+    "bundle": "webpack --config config/webpack.config.js",
+    "bundle:watch": "webpack --config config/webpack.config.js --watch",
+    "run": "node lib/index.js"
+  },
+  "dependencies": {
+    "@deliverybot/app": "0.7.2",
+    "@deliverybot/core": "0.7.2",
+    "@deliverybot/client": "0.7.2",
+    "dotenv": "8.2.0"
+  },
+  "devDependencies": {
+    "css-loader": "^3.4.2",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "typescript": "3.7.2",
+    "webpack": "4.41.5",
+    "webpack-cli": "3.3.10"
+  },
+  "description": "Controls and configures deployments using the GitHub API.",
+  "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",
+  "license": "MIT",
+  "support": "support@deliverybot.dev",
+  "repository": "https://github.com/deliverybot/deliverybot",
+  "homepage": "https://deliverybot.dev",
+  "documentation": "https://deliverybot.dev/docs/",
+  "bugs": "https://github.com/deliverybot/deliverybot/issues",
+  "community": "https://spectrum.chat/deliverybot/general",
+  "github": "https://github.com/deliverybot",
+  "keywords": [
+    "probot",
+    "github",
+    "probot-app"
+  ]
+}
