@@ -1,0 +1,36 @@
+{{#each commits}}
+<div id="{{oidShort}}" class="Box-row {{#if deployment.latest}}Box-row--unread{{/if}}">
+  <details class="details-reset">
+    <summary class="d-flex flex-items-center" style="outline: none;">
+      <div class="flex-auto">
+        <div>
+          <a class="text-gray-dark">
+            {{> icon_down}}
+            {{message}}
+          </a>
+          <span data-target="commits.checkstatus" id="checkstatus-{{oid}}" data-hash="{{hash}}">
+            {{> commit_status}}
+            <span class="loader"></span>
+          </span>
+        </div>
+
+        <div class="text-gray-light">
+          <strong><code>{{oidShort}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
+        </div>
+      </div>
+      <div data-target="commits.envstatus" id="envstatus-{{oid}}" data-hash="{{hash}}" class="d-none-sm text-gray-light clearfix f6" style="width: 230px;">
+        {{> deploy_env_status}}
+      </div>
+    </summary>
+    <div class="Box--condensed">
+      <div data-target="commits.details" id="details-{{oid}}" data-hash="{{hash}}">
+        {{> commit_details}}
+      </div>
+      <div class="Box-footer p-3 d-flex flex-justify-between">
+        {{> deploy_button}}
+        {{> promote_button}}
+      </div>
+    </div>
+  </details>
+</div>
+{{/each}}

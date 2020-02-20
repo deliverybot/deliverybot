@@ -1,0 +1,9 @@
+{{#each locking.targets}}
+{{#if locked}}
+<span aria-label="The target {{target}} is locked" title="The target {{target}} is locked"
+  class="State text-small State--red d-inline-block ml-2 tooltipped tooltipped-n">
+  {{> icon_lock}}
+  {{target}}
+</span>
+{{/if}}
+{{/each}}

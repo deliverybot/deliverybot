@@ -1,0 +1,20 @@
+{{#if config.notExists}}
+{{#if config.error}}
+<div class="flash flash-error mt-3">
+  <a class="btn-link flash-action" role="button" target="_blank" href="{{config.editFileUrl}}">Edit file</a>
+  <p>
+    Your <code>.github/deploy.yml</code> file has an error. Automatic
+    deployments will not go out until this is resolved.
+  </p>
+  <pre><code>{{config.error}}</code></pre>
+</div>
+{{else}}
+<div class="flash mt-3">
+  <a class="btn-link flash-action" role="button" target="_blank" href="{{config.newFileUrl}}">Add file</a>
+  <p>
+    You haven't setup a <code>.github/deploy.yml</code> file yet.
+    Deliverybot can't deploy without this configuration file.
+  </p>
+</div>
+{{/if}}
+{{/if}}

@@ -1,0 +1,1118 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Queries runs commits blank 1`] = `
+Object {
+  "branches": Array [],
+  "commits": Array [],
+  "latest": undefined,
+  "pagination": Object {
+    "next": undefined,
+    "prev": undefined,
+  },
+  "previous": null,
+}
+`;
+
+exports[`Queries runs commits full 1`] = `
+Object {
+  "branches": Array [
+    Object {
+      "active": false,
+      "name": "colinjfw-patch-1",
+    },
+    Object {
+      "active": true,
+      "name": "master",
+    },
+  ],
+  "commits": Array [
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "checks": Array [
+        Object {
+          "context": "deliverybot/promotion",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+        Object {
+          "context": "build",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+        Object {
+          "context": "deployment",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+      ],
+      "deployment": Object {
+        "lastDeployedAt": 1574180855000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1574180855000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot-local",
+          "description": "",
+          "environment": "production",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example-local/commit/43aa699010bb9d3c3a2f5ec841f66f99434e4e0e/checks",
+        },
+        Object {
+          "createdAt": 1574178270000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot-local",
+          "description": "",
+          "environment": "staging",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example-local/commit/43aa699010bb9d3c3a2f5ec841f66f99434e4e0e/checks",
+        },
+      ],
+      "hash": "cdaa2136f0ebe06bd4495e6da5c33566e6f8054b",
+      "message": "Update README.md",
+      "oid": "43aa699010bb9d3c3a2f5ec841f66f99434e4e0e",
+      "oidShort": "43aa699",
+      "owner": "colinjfw",
+      "promoted": true,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update deploy.yml",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "checks": Array [
+        Object {
+          "context": "deliverybot/promotion",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+        Object {
+          "context": "build",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+        Object {
+          "context": "deployment",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+      ],
+      "deployment": Object {
+        "lastDeployedAt": 1574737924000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "latest": true,
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1574737924000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "",
+          "environment": "production",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example-local/commit/c57bb8ee26495cd7016f9adb87c0b5d6e79f7f5c/checks",
+        },
+        Object {
+          "createdAt": 1574139605000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot-local",
+          "description": "",
+          "environment": "staging",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example-local/commit/c57bb8ee26495cd7016f9adb87c0b5d6e79f7f5c/checks",
+        },
+      ],
+      "hash": "6e9cf381d093ac4f12e27a1a7040222141c4445e",
+      "message": "Update deploy.yml",
+      "oid": "c57bb8ee26495cd7016f9adb87c0b5d6e79f7f5c",
+      "oidShort": "c57bb8e",
+      "owner": "colinjfw",
+      "promoted": true,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update deploy.yml",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "checks": Array [
+        Object {
+          "context": "deliverybot/promotion",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+        Object {
+          "context": "build",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+        Object {
+          "context": "deployment",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+      ],
+      "deployment": Object {
+        "lastDeployedAt": 1574139446000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1574139446000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot-local",
+          "description": "",
+          "environment": "staging",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example-local/commit/43c6569dfd5cad3e45a5c8c908f44fda29c7dca5/checks",
+        },
+      ],
+      "hash": "4a3ab30cc157a4b6243b54a4e7a378bcade7df1c",
+      "message": "Update deploy.yml",
+      "oid": "43c6569dfd5cad3e45a5c8c908f44fda29c7dca5",
+      "oidShort": "43c6569",
+      "owner": "colinjfw",
+      "promoted": true,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "checks": Array [
+        Object {
+          "context": "build",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+        Object {
+          "context": "deployment",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+      ],
+      "deployment": Object {
+        "lastDeployedAt": 1574058372000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1574058372000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot-local",
+          "description": "",
+          "environment": "staging",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example-local/commit/515cc74fb79c5e29d49c85c4a304386996ab8285/checks",
+        },
+      ],
+      "hash": "040f534ca0909ba1e2919b3f4120ce5969ccc765",
+      "message": "Update README.md",
+      "oid": "515cc74fb79c5e29d49c85c4a304386996ab8285",
+      "oidShort": "515cc74",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "checks": Array [
+        Object {
+          "context": "build",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+      ],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "8d6de385a3272c50d67c937ffe320b5643f1f5d6",
+      "message": "Update README.md",
+      "oid": "7da5b87b7902e115854583c6e628c3a65de79f01",
+      "oidShort": "7da5b87",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": true,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "checks": Array [
+        Object {
+          "context": "build",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+      ],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "9c8cb9722ff96c5f48b65122645b85443393394f",
+      "message": "Update README.md",
+      "oid": "3815abcd2848e4b5dfbc864478caeee418e3ee29",
+      "oidShort": "3815abc",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": true,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "checks": Array [
+        Object {
+          "context": "build",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+      ],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "5a702327a718a6e744fc1cdd013b00f3dd468691",
+      "message": "Update README.md",
+      "oid": "1a1b398530ca62b2aaad6cb86bf25ed71f909143",
+      "oidShort": "1a1b398",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": true,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "checks": Array [
+        Object {
+          "context": "build",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+        Object {
+          "context": "deployment",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+      ],
+      "deployment": Object {
+        "lastDeployedAt": 1573705119000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1573705119000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot-local",
+          "description": "",
+          "environment": "staging",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example-local/commit/4034349ab90bbb234cb94ff209fd02699d866705/checks",
+        },
+        Object {
+          "createdAt": 1573705110000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "colinjfw",
+          "description": "",
+          "environment": "production",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example-local/commit/4034349ab90bbb234cb94ff209fd02699d866705/checks",
+        },
+      ],
+      "hash": "708b8b5703bd2f2b9b736fcd156c7ed008eece5a",
+      "message": "Update README.md",
+      "oid": "4034349ab90bbb234cb94ff209fd02699d866705",
+      "oidShort": "4034349",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "checks": Array [
+        Object {
+          "context": "build",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+      ],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "2f963a69fe684be34b05676a0cc5685bff41f89a",
+      "message": "Update README.md",
+      "oid": "053d62886247d373ab8d76f83caf335635c7d0e3",
+      "oidShort": "053d628",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": true,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update deploy.yml",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "checks": Array [
+        Object {
+          "context": "build",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+        Object {
+          "context": "deployment",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+        },
+      ],
+      "deployment": Object {
+        "lastDeployedAt": 1573154378000,
+        "lastDeployedAtWords": "a few seconds ago",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      "deployments": Array [
+        Object {
+          "createdAt": 1573154378000,
+          "createdAtWords": "a few seconds ago",
+          "creator": "deliverybot-local",
+          "description": "",
+          "environment": "staging",
+          "status": Object {
+            "color": "green",
+            "name": "SUCCESS",
+            "success": true,
+          },
+          "url": "https://github.com/colinjfw/deliverybot-example-local/commit/a1e9ae8586213ea8ba8ff46a147c18d94e2d8899/checks",
+        },
+      ],
+      "hash": "8c47d32be9e29e419bd4620763c659e6309f052f",
+      "message": "Update deploy.yml",
+      "oid": "a1e9ae8586213ea8ba8ff46a147c18d94e2d8899",
+      "oidShort": "a1e9ae8",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+  ],
+  "latest": Object {
+    "author": "colinjfw",
+    "body": "Update deploy.yml",
+    "branch": "master",
+    "check": Object {
+      "status": Object {
+        "color": "green",
+        "name": "SUCCESS",
+        "success": true,
+      },
+    },
+    "checks": Array [
+      Object {
+        "context": "deliverybot/promotion",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      Object {
+        "context": "build",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      Object {
+        "context": "deployment",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+    ],
+    "deployment": Object {
+      "lastDeployedAt": 1574737924000,
+      "lastDeployedAtWords": "a few seconds ago",
+      "latest": true,
+      "status": Object {
+        "color": "green",
+        "name": "SUCCESS",
+        "success": true,
+      },
+    },
+    "deployments": Array [
+      Object {
+        "createdAt": 1574737924000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "colinjfw",
+        "description": "",
+        "environment": "production",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+        "url": "https://github.com/colinjfw/deliverybot-example-local/commit/c57bb8ee26495cd7016f9adb87c0b5d6e79f7f5c/checks",
+      },
+      Object {
+        "createdAt": 1574139605000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "deliverybot-local",
+        "description": "",
+        "environment": "staging",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+        "url": "https://github.com/colinjfw/deliverybot-example-local/commit/c57bb8ee26495cd7016f9adb87c0b5d6e79f7f5c/checks",
+      },
+    ],
+    "hash": "6e9cf381d093ac4f12e27a1a7040222141c4445e",
+    "message": "Update deploy.yml",
+    "oid": "c57bb8ee26495cd7016f9adb87c0b5d6e79f7f5c",
+    "oidShort": "c57bb8e",
+    "owner": "colinjfw",
+    "promoted": true,
+    "repo": "deliverybot-example",
+    "undeployed": false,
+  },
+  "pagination": Object {
+    "next": "43aa699010bb9d3c3a2f5ec841f66f99434e4e0e%209",
+    "prev": false,
+  },
+  "previous": Object {
+    "author": "colinjfw",
+    "body": "Update deploy.yml",
+    "branch": "master",
+    "check": Object {
+      "status": Object {
+        "color": "green",
+        "name": "SUCCESS",
+        "success": true,
+      },
+    },
+    "checks": Array [
+      Object {
+        "context": "deliverybot/promotion",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      Object {
+        "context": "build",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+      Object {
+        "context": "deployment",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+      },
+    ],
+    "deployment": Object {
+      "lastDeployedAt": 1574139446000,
+      "lastDeployedAtWords": "a few seconds ago",
+      "status": Object {
+        "color": "green",
+        "name": "SUCCESS",
+        "success": true,
+      },
+    },
+    "deployments": Array [
+      Object {
+        "createdAt": 1574139446000,
+        "createdAtWords": "a few seconds ago",
+        "creator": "deliverybot-local",
+        "description": "",
+        "environment": "staging",
+        "status": Object {
+          "color": "green",
+          "name": "SUCCESS",
+          "success": true,
+        },
+        "url": "https://github.com/colinjfw/deliverybot-example-local/commit/43c6569dfd5cad3e45a5c8c908f44fda29c7dca5/checks",
+      },
+    ],
+    "hash": "4a3ab30cc157a4b6243b54a4e7a378bcade7df1c",
+    "message": "Update deploy.yml",
+    "oid": "43c6569dfd5cad3e45a5c8c908f44fda29c7dca5",
+    "oidShort": "43c6569",
+    "owner": "colinjfw",
+    "promoted": true,
+    "repo": "deliverybot-example",
+    "undeployed": false,
+  },
+}
+`;
+
+exports[`Queries runs commits minimal 1`] = `
+Object {
+  "branches": Array [
+    Object {
+      "active": false,
+      "name": "colinjfw-patch-1",
+    },
+    Object {
+      "active": true,
+      "name": "master",
+    },
+  ],
+  "commits": Array [
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "checks": Array [],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "250f0f01a7556c22496bf3a0ef88edb73056f13b",
+      "message": "Update README.md",
+      "oid": "43aa699010bb9d3c3a2f5ec841f66f99434e4e0e",
+      "oidShort": "43aa699",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update deploy.yml",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "checks": Array [],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "a62fd0196ebe5f455322dcdceac1e76cc61bb866",
+      "message": "Update deploy.yml",
+      "oid": "c57bb8ee26495cd7016f9adb87c0b5d6e79f7f5c",
+      "oidShort": "c57bb8e",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update deploy.yml",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "checks": Array [],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "a574c26266a48537aac8894c2ba89a4b6943395c",
+      "message": "Update deploy.yml",
+      "oid": "43c6569dfd5cad3e45a5c8c908f44fda29c7dca5",
+      "oidShort": "43c6569",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "checks": Array [],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "b3e8bb48ebbfda067fb674a58010fe2882b4679e",
+      "message": "Update README.md",
+      "oid": "515cc74fb79c5e29d49c85c4a304386996ab8285",
+      "oidShort": "515cc74",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "checks": Array [],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "0db0ccd57c2405cc9b14b035aabfb8d0f00c56ee",
+      "message": "Update README.md",
+      "oid": "7da5b87b7902e115854583c6e628c3a65de79f01",
+      "oidShort": "7da5b87",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "checks": Array [],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "e22e1af711a9843b5efb610002615d9658557f9c",
+      "message": "Update README.md",
+      "oid": "3815abcd2848e4b5dfbc864478caeee418e3ee29",
+      "oidShort": "3815abc",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "checks": Array [],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "8fdd36367e4479a219744ac22b019de1b3d8f3eb",
+      "message": "Update README.md",
+      "oid": "1a1b398530ca62b2aaad6cb86bf25ed71f909143",
+      "oidShort": "1a1b398",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "checks": Array [],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "a0b1f07a2ca5c29387cefb511934f03b86e57b0b",
+      "message": "Update README.md",
+      "oid": "4034349ab90bbb234cb94ff209fd02699d866705",
+      "oidShort": "4034349",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update README.md",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "checks": Array [],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "0f585176722f48028cdb84cc720ea2fac2efedde",
+      "message": "Update README.md",
+      "oid": "053d62886247d373ab8d76f83caf335635c7d0e3",
+      "oidShort": "053d628",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+    Object {
+      "author": "colinjfw",
+      "body": "Update deploy.yml",
+      "branch": "master",
+      "check": Object {
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "checks": Array [],
+      "deployment": Object {
+        "lastDeployedAt": undefined,
+        "lastDeployedAtWords": undefined,
+        "status": Object {
+          "color": "gray",
+          "name": "NOTHING",
+          "nothing": true,
+        },
+      },
+      "deployments": Array [],
+      "hash": "acd010d0ee3a548f5c375d3639bb7c021a0c38b3",
+      "message": "Update deploy.yml",
+      "oid": "a1e9ae8586213ea8ba8ff46a147c18d94e2d8899",
+      "oidShort": "a1e9ae8",
+      "owner": "colinjfw",
+      "promoted": false,
+      "repo": "deliverybot-example",
+      "undeployed": false,
+    },
+  ],
+  "latest": undefined,
+  "pagination": Object {
+    "next": "43aa699010bb9d3c3a2f5ec841f66f99434e4e0e%209",
+    "prev": false,
+  },
+  "previous": null,
+}
+`;

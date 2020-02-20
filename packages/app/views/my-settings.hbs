@@ -1,0 +1,33 @@
+{{> header}}
+</header>
+
+<main class="bg-white fill pt-5">
+  <div class="content">
+    <div class="Subhead mb-0 mt-5">
+      <h2 class="Subhead-heading">My profile</h2>
+    </div>
+    <div class="mt-3">
+      <p>Login: <code>{{user.username}}</code></p>
+    </div>
+
+    <div class="Subhead mt-5 mb-0">
+      <h2 class="Subhead-heading text-red">Remove information</h2>
+    </div>
+    <div class="mt-3">
+      <form action="/logout/remove" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrf}}">
+        <input type="submit" class="btn btn-danger mb-2" value="Remove my information">
+      </form>
+      <p>
+        Delete your account information from our systems. Does <b>not</b> remove
+        your repositories or installations.
+      </p>
+      <p>
+        When you log back in to Deliverybot we will store your account
+        information.
+      </p>
+    </div>
+  </div>
+</main>
+
+{{> footer}}

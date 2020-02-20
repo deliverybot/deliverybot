@@ -1,0 +1,29 @@
+<form
+  data-controller="form"
+  data-target="form.form"
+  class="d-inline-block"
+  method="POST"
+  action="/{{owner}}/{{repo}}/branch/{{branch}}/o/{{oid}}"
+  data-form-error="Failed to deploy '{{oidShort}}'."
+  data-form-success="Deployed '{{oidShort}}' successfully.">
+
+  <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+  <button data-target="form.button" data-track="deploy" data-action="click->analytics#trackEvent" type="submit" data-oid="{{oid}}"
+    class="deploy btn btn-primary"
+    name="button">
+    Deploy
+  </button>
+
+  <select name="target" class="form-select ml-2 text-gray-light" required>
+    <option disabled selected value="">Target</option>
+    {{#each @root.targets}}
+      <option value="{{name}}">{{name}}</option>
+    {{/each}}
+  </select>
+
+  <label class="ml-2 text-gray-light tooltipped tooltipped-n"
+    aria-label="Ignore checks and deploy anyway.">
+    <input type="checkbox" name="force">
+    Force
+  </label>
+</form>

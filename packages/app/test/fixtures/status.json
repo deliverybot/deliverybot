@@ -1,0 +1,23 @@
+{
+  "id": 1,
+  "sha": "0000000000000000000000000000000000000000",
+  "name": "Codertocat/Hello-World",
+  "target_url": null,
+  "context": "default",
+  "description": null,
+  "state": "success",
+  "commit": {
+    "sha": "0000000000000000000000000000000000000000"
+  },
+  "created_at": "2018-05-30T20:18:46+00:00",
+  "updated_at": "2018-05-30T20:18:46+00:00",
+  "repository": {
+    "id": 1,
+    "name": "Hello-World",
+    "full_name": "Codertocat/Hello-World",
+    "owner": {
+      "login": "Codertocat",
+      "id": 1
+    }
+  }
+}

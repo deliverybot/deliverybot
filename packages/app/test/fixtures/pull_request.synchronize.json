@@ -1,0 +1,22 @@
+{
+  "action": "synchronize",
+  "number": 1,
+  "repository": {
+    "id": 1,
+    "name": "Hello-World",
+    "full_name": "Codertocat/Hello-World",
+    "owner": {
+      "login": "Codertocat",
+      "id": 1
+    }
+  },
+  "pull_request": {
+    "id": 1,
+    "number": 1,
+    "body": "Please pull these awesome changes",
+    "head": {
+      "ref": "changes",
+      "sha": "0000000000000000000000000000000000000000"
+    }
+  }
+}

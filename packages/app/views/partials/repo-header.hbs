@@ -1,0 +1,17 @@
+{{> header}}
+
+<div class="content d-flex flex-justify-between mt-5">
+  <h2>
+    <a href="/{{owner}}">{{ owner }}</a> /
+    <a href="/{{owner}}/{{repo}}">{{ repo }}</a>
+    &nbsp;
+  </h2>
+  <div>
+    <a target="_blank" href="https://github.com/{{owner}}/{{repo}}" class="btn btn-default">
+      {{> icon_external}}
+    </a>
+    <a data-track="add-integration" data-action="click->analytics#trackEvent" target="_blank" href="{{info.integrations}}" class="btn btn-default">
+      + Integration
+    </a>
+  </div>
+</div>

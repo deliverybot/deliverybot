@@ -1,0 +1,42 @@
+{{#if lockable}}
+{{#if locked}}
+<form class="d-inline-block"
+  data-controller="form"
+  data-target="form.form"
+  data-form-error="Failed to unlock."
+  data-form-success="Successfully unlocked target."
+  data-form-modal="lock-modal"
+  method="POST"
+  action="/{{@root.owner}}/{{@root.repo}}/branch/{{@root.branch}}/unlock">
+  <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+  <input type="hidden" name="target" value="{{target}}">
+
+  <button data-track="lock" data-action="click->analytics#trackEvent" type="submit" aria-label="The environment {{environment}} is currently locked."
+    class="btn btn-danger tooltipped tooltipped-n" name="button">
+    Unlock
+  </button>
+</form>
+{{else}}
+<form class="d-inline-block"
+  data-controller="form"
+  data-target="form.form"
+  data-form-error="Failed to lock."
+  data-form-success="Successfully locked target."
+  data-form-modal="lock-modal"
+  method="POST"
+  action="/{{@root.owner}}/{{@root.repo}}/branch/{{@root.branch}}/lock">
+  <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+  <input type="hidden" name="target" value="{{target}}">
+
+  <button data-track="lock" data-action="click->analytics#trackEvent" type="submit" aria-label="The environment {{environment}} is unlocked."
+    class="btn tooltipped tooltipped-n" name="button">
+    Lock
+  </button>
+</form>
+{{/if}}
+{{else}}
+<button class="btn d-inline-block tooltipped tooltipped-n" aria-label="The environment {{environment}} is not lockable."
+  type="button" disabled>
+  Lock
+</button>
+{{/if}}

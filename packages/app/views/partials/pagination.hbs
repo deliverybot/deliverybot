@@ -1,0 +1,14 @@
+<nav class="paginate-container" aria-label="Pagination">
+  <div class="pagination">
+    {{#if pagination.prev}}
+    <a rel="prev" href="{{url.path}}?before={{pagination.prev}}" aria-label="Previous page">Prev</a>
+    {{else}}
+    <span class="disabled">Previous</span>
+    {{/if}}
+    {{#if pagination.next}}
+    <a rel="next" href="{{url.path}}?after={{pagination.next}}" aria-label="Next page">Next</a>
+    {{else}}
+    <span class="disabled">Next</span>
+    {{/if}}
+  </div>
+</nav>

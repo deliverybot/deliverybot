@@ -1,0 +1,85 @@
+{{> header}}
+
+<div class="content d-flex flex-justify-between mt-5">
+  <h2>
+    {{install.name}}
+  </h2>
+  <div>
+    <a data-track="add-integration" data-action="click->analytics#trackEvent" target="_blank"
+      href="{{info.integrations}}" class="btn btn-default">
+      + Integration
+    </a>
+    <a data-track="add-install" data-action="click->analytics#trackEvent" target="_blank" href="{{info.install}}"
+      class="btn btn-primary">
+      + Install
+    </a>
+  </div>
+</div>
+
+<nav class="UnderlineNav mt-2">
+  <div class="content">
+    <div class="UnderlineNav-body">
+      <a href="/{{install.name}}" role="tab" title="Repositories" class="UnderlineNav-item" aria-current="page">Repositories</a>
+      <a href="/settings/{{install.name}}" role="tab" title="Settings" class="UnderlineNav-item">Settings</a>
+    </div>
+  </div>
+</nav>
+</header>
+
+<main class="bg-white fill pt-3 pb-8">
+  <div class="content" data-controller="recents">
+    {{#if hasRepos}}
+    <div class="clearfix">
+      <div class="mt-5 p-4 col-12 col-md-8 float-left" data-target="repos.list">
+        {{#each repos}}
+        <div class="p-3 border-bottom">
+          <h4>
+            <a data-name="{{owner}}/{{repo}}" data-action="click->recents#addRecent"
+              href="/{{owner}}/{{repo}}"><strong>{{owner}}&nbsp;/&nbsp;{{repo}}</strong></a>
+          </h4>
+          {{#if description}}
+          <p>{{description}}</p>
+          {{/if}}
+          {{#if stats.lastDeploy}}
+          <p class="text-gray f6">
+            Last deployed {{stats.lastDeploy.createdAt}}
+            by {{stats.lastDeploy.creator}}
+            with status {{stats.lastDeploy.state}}
+          </p>
+          {{/if}}
+        </div>
+        {{/each}}
+        {{> pagination}}
+      </div>
+      <div class="mt-5 p-2 col-12 col-md-4 float-left">
+        <div class="Box mb-4" data-controller="recents">
+          <div class="Box-body">
+            <h4 class="mb-3">Recent repositories</h4>
+            <div data-target="recents.recents"></div>
+          </div>
+        </div>
+        <div class="Box">
+          <div class="Box-body">
+            <h4 class="mb-3">Welcome to Deliverybot!</h4>
+            <p>
+              Ready to get deploying? Visit one of your repositories to the left
+              or <a href="{{info.install}}">install</a> Deliverybot on a new account.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{else}}
+    <div class="text-center">
+      <p class="lead">
+        You don't have deliverybot installed on any repositories.
+      </p>
+      <a class="btn btn-outline" role="button" target="_blank" href="{{info.install}}">
+        Install now
+      </a>
+    </div>
+    {{/if}}
+  </div>
+</main>
+
+{{> footer}}

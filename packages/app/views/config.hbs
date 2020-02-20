@@ -1,0 +1,27 @@
+{{> repo_header}}
+
+<nav class="UnderlineNav mt-2">
+  <div class="content">
+    <div class="UnderlineNav-body">
+      <a href="/{{owner}}/{{repo}}" role="tab" title="Deploy" class="UnderlineNav-item">Commits</a>
+      <a href="/{{owner}}/{{repo}}/config" role="tab" title="Config" class="UnderlineNav-item" aria-current="page">Config</a>
+      <a href="/{{owner}}/{{repo}}/metrics" role="tab" title="Config" class="UnderlineNav-item">Metrics</a>
+    </div>
+  </div>
+</nav>
+</header>
+
+<main class="bg-white fill pt-3 pb-8">
+  <div class="content">
+    {{> config_alert}}
+
+    <div class="Box Box--condensed mt-3">
+      <div class="Box-header">Configuration</div>
+      <div class="Box-body">
+        <pre><code>{{config.yaml}}</code></pre>
+      </div>
+    </div>
+  </div>
+</main>
+
+{{> footer}}

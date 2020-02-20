@@ -1,0 +1,15 @@
+<form
+  data-controller="form"
+  data-target="form.form"
+  class="d-inline-block"
+  method="POST"
+  data-form-error="Failed to promote '{{oidShort}}'"
+  data-form-success="Commit promoted successfully."
+  action="/{{owner}}/{{repo}}/branch/{{branch}}/o/{{oid}}/promote">
+  <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+  <button data-track="promote" data-action="click->analytics#trackEvent" type="submit" data-oid="{{oid}}"
+    class="deploy btn btn-outline"
+    name="button">
+    Promote
+  </button>
+</form>

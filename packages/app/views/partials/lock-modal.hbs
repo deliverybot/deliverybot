@@ -1,0 +1,26 @@
+<details id="lock-modal" class="d-inline-block details-reset details-overlay details-overlay-dark">
+  <summary class="btn btn-sm" aria-haspopup="true">
+    Lock
+  </summary>
+  <div style="position: fixed; left: calc(50% - 300px); width: 600px; top: 200px; z-index: 100;">
+    <div class="Box">
+      <div class="Box-header"><h3 class="Box-title">Lock</h3></div>
+      <div class="flash flash-full">
+        Locking provides the ability to lock a given target to
+        halt deploys in case manual fixes or other work must be
+        applied.
+      </div>
+      {{#each locking.targets}}
+      <div class="Box-row d-flex flex-items-center">
+        <div class="flex-auto">
+          <h5 class="text-mono">
+            {{target}} {{#if locked}}{{> icon_lock}}{{/if}}
+          </h5>
+        </div>
+
+        {{> lock_button}}
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</details>

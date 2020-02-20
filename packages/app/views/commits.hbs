@@ -1,0 +1,61 @@
+{{> repo_header}}
+
+<nav class="UnderlineNav mt-2">
+  <div class="content">
+    <div class="UnderlineNav-body">
+      <a href="/{{owner}}/{{repo}}" role="tab" title="Deploy" class="UnderlineNav-item" aria-current="page">Commits</a>
+      <a href="/{{owner}}/{{repo}}/config" role="tab" title="Config" class="UnderlineNav-item">Config</a>
+      <a href="/{{owner}}/{{repo}}/metrics" role="tab" title="Config" class="UnderlineNav-item">Metrics</a>
+    </div>
+  </div>
+</nav>
+</header>
+
+<main class="bg-white fill pt-3 pb-10"
+  data-commits-owner="{{owner}}"
+  data-commits-repo="{{repo}}"
+  data-controller="commits">
+  <div class="content fill">
+
+    <div class="d-flex">
+      <div class="flex-auto">
+        <details class="dropdown details-reset details-overlay d-inline-block">
+          <summary class="btn btn-sm" aria-haspopup="true">
+            <div class="dropdown-caret"></div>
+            Branch: {{branch}}
+          </summary>
+          <ul class="dropdown-menu dropdown-menu-se">
+            {{#each branches}}
+            <li>
+              <a href="/{{../owner}}/{{../repo}}/branch/{{branchencode name}}" class="dropdown-item">
+                <code>{{name}}</code>
+              </a>
+            </li>
+            {{/each}}
+          </ul>
+        </details>
+
+        <div class="d-inline-block" data-target="commits.lock">
+          {{> lock_modal}}
+        </div>
+      </div>
+      <div data-target="commits.lockstates">
+        {{> lock_states}}
+      </div>
+      <div class="d-inline-block d-none ml-2" data-target="commits.new">
+        <a class="btn btn-outline btn-sm" href="/{{owner}}/{{repo}}/branch/{{branch}}">New commits available</a>
+      </div>
+    </div>
+
+    {{> config_alert}}
+
+    <div class="Box mt-3" data-target="commits.rows" id="commit_rows">
+      {{> commit_rows}}
+    </div>
+
+    {{> pagination}}
+  </div>
+
+</main>
+
+{{> footer}}

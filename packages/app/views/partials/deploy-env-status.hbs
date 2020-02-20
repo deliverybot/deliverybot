@@ -1,0 +1,11 @@
+{{#each deployments}}
+<div class="col-6 d-inline-block float-left" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+  <span class="text-{{status.color}}">
+    {{#if status.success}}{{> icon_check}}{{/if}}
+    {{#if status.pending}}{{> icon_dot}}{{/if}}
+    {{#if status.failure}}{{> icon_x}}{{/if}}
+    {{#if status.waiting}}{{> icon_clock}}{{/if}}
+  </span>
+  <strong>{{environment}}</strong>
+</div>
+{{/each}}

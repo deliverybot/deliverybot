@@ -1,0 +1,54 @@
+{{> repo_header}}
+
+<nav class="UnderlineNav mt-2">
+  <div class="content">
+    <div class="UnderlineNav-body">
+      <a href="/{{owner}}/{{repo}}" role="tab" title="Deploy" class="UnderlineNav-item">Commits</a>
+      <a href="/{{owner}}/{{repo}}/config" role="tab" title="Deploy" class="UnderlineNav-item">Config</a>
+      <a href="/{{owner}}/{{repo}}/metrics" role="tab" title="Config" class="UnderlineNav-item" aria-current="page">Metrics</a>
+    </div>
+  </div>
+</nav>
+</header>
+
+<main class="bg-white fill pt-3 pb-8" data-controller="metrics">
+  <div class="content">
+    <div class="Box Box--condensed mt-3">
+      <div class="Box-header">
+        Overview
+        <span class="float-right text-gray-light">
+          <small>last 7 days</small>
+        </span>
+      </div>
+      <div class="d-flex Box-row text-center">
+        <div class="p-2 flex-auto">
+          <p data-target="metrics.total" class="f2-light">-</p>
+          <p>Total deployments</p>
+        </div>
+        <div class="p-2 flex-auto">
+          <p data-target="metrics.day" class="f2-light">-</p>
+          <p>Average deploys per day</p>
+        </div>
+        <div class="p-2 flex-auto">
+          <p data-target="metrics.lead" class="f2-light">-</p>
+          <p>Average lead time per deploy</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="Box Box--condensed mt-3">
+      <div class="Box-header">
+        Deployments per day
+        <span class="float-right text-gray-light">
+          <small>last 7 days</small>
+        </span>
+      </div>
+      <div class="Box-body">
+        <h1 data-target="metrics.loader" class="p-4 loader text-center"></h1>
+        <div data-target="metrics.chart"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+{{> footer}}

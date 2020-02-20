@@ -1,0 +1,11 @@
+<span class="text-{{check.status.color}} tooltipped tooltipped-n" aria-label="Checks are {{check.status.color}}.">
+  {{#if check.status.success}}{{> icon_check}}{{/if}}
+  {{#if check.status.pending}}{{> icon_dot}}{{/if}}
+  {{#if check.status.failure}}{{> icon_x}}{{/if}}
+  {{#if check.status.waiting}}{{> icon_clock}}{{/if}}
+</span>
+{{#if promoted}}
+<span class="text-blue tooltipped tooltipped-n" aria-label="This commit is promoted.">
+  {{> icon_rocket}}
+</span>
+{{/if}}

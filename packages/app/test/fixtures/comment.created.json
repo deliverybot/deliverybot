@@ -1,0 +1,19 @@
+{
+  "action": "created",
+  "issue": {
+    "number": 1
+  },
+  "comment": {
+    "body": "FOOBAR",
+    "user": { "login": "Codertocat" }
+  },
+  "repository": {
+    "id": 1,
+    "name": "Hello-World",
+    "full_name": "Codertocat/Hello-World",
+    "owner": {
+      "login": "Codertocat",
+      "id": 1
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "deployment": {
+    "id": 123,
+    "sha": "0000000000000000000000000000000000000000",
+    "ref": "master",
+    "task": "deploy",
+    "payload": {},
+    "environment": "production",
+    "description": null
+  },
+  "repository": {
+    "id": 1,
+    "name": "Hello-World",
+    "full_name": "Codertocat/Hello-World",
+    "owner": {
+      "login": "Codertocat",
+      "id": 1
+    }
+  },
+  "installation": { "id": 2 }
+}

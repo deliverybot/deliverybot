@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" class="height-full">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{{title}}</title>
+  <link rel="icon" href="/static/logo.png">
+  <meta name="turbolinks-cache-control" content="no-cache">
+  <script>window.config = JSON.parse('{{{json info}}}');</script>
+  {{> scripts}}
+</head>
+
+<body class="height-full bg-gray-light" data-billing-login="{{owner}}" data-controller="firebase analytics billing toast">
+<header>
+<nav class="box-shadow navbar d-flex flex-justify-between">
+  <div>
+    <a href="/">
+      <h3 class="text-mono" style="display: inline;">deliverybot</h3>
+    </a>
+    <span class="Label Label--outline v-align-middle ml-2 text-gray-light">v{{info.version}}</span>
+  </div>
+  <div>
+    <a target="_blank" class="mr-2" href="{{info.documentation}}">Docs</a>
+    <a class="mr-2" data-action="click->analytics#openIntercom" href="mailto:{{info.support}}">Help</a>
+    <details class="dropdown details-reset details-overlay d-inline-block">
+      <summary class="text-gray p-2 d-inline" aria-haspopup="true">
+        <img alt="@{{user.login}}" class="avatar" src="{{user.avatar}}" height="20" width="20">
+      </summary>
+
+      <nav class="menu position-absolute right-0 mr-2 mt-2 box-shadow-medium" style="z-index: 1000; width: 200px;">
+        <a class="text-gray menu-item" href="/settings">Settings</a>
+        <a class="text-gray menu-item" href="/logout">Logout</a>
+      </nav>
+    </details>
+  </div>
+</nav>
