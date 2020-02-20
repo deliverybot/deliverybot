@@ -1,0 +1,49 @@
+{
+  "name": "@deliverybot/slackbot",
+  "version": "0.7.2",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "views/*",
+    "lib/*"
+  ],
+  "scripts": {
+    "clean": "mkdir -p lib && rm -r lib",
+    "build": "tsc",
+    "build:watch": "tsc --watch --preserveWatchOutput",
+    "test": "NODE_ENV=test jest"
+  },
+  "dependencies": {
+    "@deliverybot/core": "0.7.2",
+    "@deliverybot/deploybot": "0.7.2",
+    "node-fetch": "2.6.0"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "2.5.2",
+    "@types/nock": "11.1.0",
+    "@types/supertest": "2.0.8",
+    "@types/express": "4.17.1",
+    "@types/csurf": "1.9.36",
+    "@types/jest": "25.1.2",
+    "jest": "24.9.0",
+    "nock": "11.5.0",
+    "supertest": "4.0.2",
+    "ts-jest": "24.1.0",
+    "typescript": "3.7.2"
+  },
+  "description": "Controls and configures deployments using the GitHub API.",
+  "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",
+  "license": "MIT",
+  "support": "support@deliverybot.dev",
+  "repository": "https://github.com/deliverybot/deliverybot",
+  "homepage": "https://deliverybot.dev",
+  "documentation": "https://deliverybot.dev/docs/",
+  "bugs": "https://github.com/deliverybot/deliverybot/issues",
+  "community": "https://spectrum.chat/deliverybot/general",
+  "github": "https://github.com/deliverybot",
+  "keywords": [
+    "probot",
+    "github",
+    "probot-app"
+  ]
+}
