@@ -1,0 +1,40 @@
+{
+  "name": "@deliverybot/client",
+  "version": "0.7.2",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "styles/*",
+    "lib/*"
+  ],
+  "scripts": {
+    "clean": "mkdir -p lib && rm -r lib",
+    "build": "tsc",
+    "build:watch": "tsc --watch --preserveWatchOutput"
+  },
+  "dependencies": {
+    "apexcharts": "3.10.1",
+    "stimulus": "1.1.1",
+    "turbolinks": "5.2.0",
+    "handlebars": "4.3.5",
+    "@deliverybot/app": "0.7.2"
+  },
+  "devDependencies": {
+    "typescript": "3.7.2"
+  },
+  "description": "Controls and configures deployments using the GitHub API.",
+  "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",
+  "license": "MIT",
+  "support": "support@deliverybot.dev",
+  "repository": "https://github.com/deliverybot/deliverybot",
+  "homepage": "https://deliverybot.dev",
+  "documentation": "https://deliverybot.dev/docs/",
+  "bugs": "https://github.com/deliverybot/deliverybot/issues",
+  "community": "https://spectrum.chat/deliverybot/general",
+  "github": "https://github.com/deliverybot",
+  "keywords": [
+    "probot",
+    "github",
+    "probot-app"
+  ]
+}
