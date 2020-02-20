@@ -1,0 +1,60 @@
+{
+  "name": "@deliverybot/core",
+  "version": "0.7.2",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib/*"
+  ],
+  "scripts": {
+    "clean": "mkdir -p lib && rm -r lib",
+    "build": "tsc",
+    "build:watch": "tsc --watch --preserveWatchOutput",
+    "test": "NODE_ENV=test jest"
+  },
+  "dependencies": {
+    "@octokit/app": "4.1.0",
+    "@octokit/rest": "16.33.1",
+    "@octokit/webhooks": "6.3.2",
+    "bunyan": "1.8.12",
+    "bunyan-format": "0.2.1",
+    "cache-manager": "2.10.0",
+    "client-sessions": "0.8.0",
+    "csurf": "1.10.0",
+    "express": "4.17.1",
+    "express-async-errors": "3.1.1",
+    "handlebars": "4.3.5",
+    "hbs": "4.0.6",
+    "promise-events": "0.1.6",
+    "turbolinks-express": "1.0.0"
+  },
+  "devDependencies": {
+    "@types/bunyan": "1.8.6",
+    "@types/bunyan-format": "0.2.0",
+    "@types/cache-manager": "2.10.0",
+    "@types/client-sessions": "0.8.0",
+    "@types/supertest": "2.0.8",
+    "@types/csurf": "1.9.36",
+    "@types/express": "4.17.1",
+    "@types/jest": "24.0.19",
+    "jest": "24.9.0",
+    "supertest": "4.0.2",
+    "ts-jest": "24.1.0",
+    "typescript": "3.7.2"
+  },
+  "description": "Controls and configures deployments using the GitHub API.",
+  "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",
+  "license": "MIT",
+  "support": "support@deliverybot.dev",
+  "repository": "https://github.com/deliverybot/deliverybot",
+  "homepage": "https://deliverybot.dev",
+  "documentation": "https://deliverybot.dev/docs/",
+  "bugs": "https://github.com/deliverybot/deliverybot/issues",
+  "community": "https://spectrum.chat/deliverybot/general",
+  "github": "https://github.com/deliverybot",
+  "keywords": [
+    "probot",
+    "github",
+    "probot-app"
+  ]
+}
