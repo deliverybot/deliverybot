@@ -1,28 +1,20 @@
-# deploybot
+# Deliverybot
 
-Complete deployment automation for GitHub. https://deliverybot.dev
+https://deliverybot.dev
 
-## Features
+Simple Continuous Delivery for GitHub: Fast, safe and secure Continous Delivery
+pipelines you can setup in minutes. Fully open source.
 
-Deployment automation:
+![Product screenshot](https://deliverybot.dev/assets/images/deploy-list.png)
 
-- Automatic deployments on master or specific branches.
-- Wait for status checks to pass before deploying.
-- Review environments using `/deploy` commands in pull requests.
-- Validate a deploy has succeeded before merging.
-
-## Setup
-
-```sh
-# Install dependencies
-yarn install
-
-# Run typescript
-yarn run build
-
-# Run the bot
-yarn start
-```
+* Click to deploy: Click the latest commit in the Deliverybot dashboard to
+  deploy your code. It doesn't get any simpler than that.
+* Automatic deployments: Deploy automatically to multiple clusters and
+  environments given a specific branch.
+* Advanced deployment workflows: Orchestrate canary deployments to test code in
+  incremental steps. Push out environments per pull request.
+* Integrates with slack: Deploy from slack as well as deployments from a
+  dashboard.
 
 ## Contributing
 
@@ -31,6 +23,12 @@ a bug, open an issue! We'd love all and any contributions.
 
 For more, check out the [Contributing Guide](CONTRIBUTING.md).
 
+### Setup
+
+    yarn install
+    yarn start
+
 ## License
 
 [MIT](LICENSE) © 2019 Deliverybot (https://github.com/deliverybot/deliverybot)
+

@@ -1,0 +1,30 @@
+{
+  "private": true,
+  "version": "0.7.2",
+  "workspaces": [
+    "packages/app",
+    "packages/client",
+    "packages/firebase",
+    "packages/core",
+    "packages/deploybot",
+    "packages/slackbot",
+    "packages/run"
+  ],
+  "scripts": {
+    "bump": "./bump.sh",
+    "start": "node ./scripts/build.js --watch",
+    "test": "node ./scripts/build.js --test",
+    "server": "node ./scripts/server.js",
+    "format": "prettier --write 'packages/*/src/**/*.{ts,js}'",
+    "build": "node ./scripts/build.js",
+    "push": "node ./scripts/build.js --publish"
+  },
+  "prettier": {
+    "trailingComma": "all"
+  },
+  "devDependencies": {
+    "prettier": "1.19.1",
+    "smee-client": "^1.1.0",
+    "standard-version": "7.1.0"
+  }
+}
