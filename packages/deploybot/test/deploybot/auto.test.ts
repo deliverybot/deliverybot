@@ -1,17 +1,19 @@
-import * as factory from "./factory";
-import { match } from "../src/auto";
+import * as factory from "../factory";
+import { app, services } from "../app";
+import { match } from "../../src/auto";
+import { EnvLockStore } from "../../src/store";
+
+const probot = app.probot;
+const lockStore = new EnvLockStore(services.kvService);
 
 describe("auto", () => {
   jest.setTimeout(30000);
-  let probot: factory.Probot;
 
   afterEach(() => {
     factory.cleanAll();
-    factory.store.clear();
   });
 
   beforeEach(() => {
-    probot = factory.probot();
     factory.token();
     factory.deploymentStatus();
     factory.pr();
@@ -19,7 +21,6 @@ describe("auto", () => {
     factory.repo().persist();
     factory.gitCommit().persist();
     factory.gitRef().persist();
-    factory.changesRef().persist();
   });
 
   describe("Match", () => {
@@ -28,12 +29,12 @@ describe("auto", () => {
       ["refs/heads/*", "refs/heads/master"],
       ["refs/*", "refs/tags/simple-tag"],
       ["refs/tags/*", "refs/tags/simple-tag"],
-      ["refs/tags/v*", "refs/tags/v1.2.3"]
+      ["refs/tags/v*", "refs/tags/v1.2.3"],
     ];
     const unmatched = [
       ["refs/heads/staging", "refs/heads/master"],
       ["refs/tags/v", "refs/tags/v1.2.3"],
-      ["refs/heads/*", "refs/tags/simple-tag"]
+      ["refs/heads/*", "refs/tags/simple-tag"],
     ];
 
     matches.forEach(m => {
@@ -60,25 +61,25 @@ describe("auto", () => {
 
     await probot.receive(factory.prOpened());
     expect(deploy.isDone()).toBe(true);
-  })
+  });
 
-  test("creates a deployment on push to pull request", async () => {
+  test("creates a deployment on pull request push", async () => {
     const deploy = factory.deploy();
     factory.config({ valid: true });
     factory.noDeployments();
 
     await probot.receive(factory.prSync());
     expect(deploy.isDone()).toBe(true);
-  })
+  });
 
   test("no deployment if locked", async () => {
     const deploy = factory.deploy();
     factory.config({ valid: true });
     factory.noDeployments();
 
-    await factory.store.lockEnv(1, "production");
+    await lockStore.lock(1, "production");
     await probot.receive(factory.push());
-    await factory.store.unlockEnv(1, "production");
+    await lockStore.unlock(1, "production");
     expect(deploy.isDone()).toBe(false);
   });
 
@@ -87,9 +88,9 @@ describe("auto", () => {
     factory.config({ valid: true });
     factory.noDeployments();
 
-    await factory.store.lockEnv(1, "staging");
+    await lockStore.lock(1, "staging");
     await probot.receive(factory.push());
-    await factory.store.unlockEnv(1, "staging");
+    await lockStore.unlock(1, "staging");
     expect(deploy.isDone()).toBe(true);
   });
 

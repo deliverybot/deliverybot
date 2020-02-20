@@ -1,7 +1,9 @@
-import * as factory from "./factory";
+import * as factory from "../factory";
+import { app } from "../app";
+
+const probot = app.probot;
 
 describe("pr-deploy", () => {
-  let probot: factory.Probot;
   jest.setTimeout(30000);
 
   afterEach(() => {
@@ -9,7 +11,6 @@ describe("pr-deploy", () => {
   });
 
   beforeEach(() => {
-    probot = factory.probot();
     factory.token();
     factory.gitCommit();
     factory.repo();

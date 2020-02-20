@@ -1,11 +1,14 @@
-import Octokit from "@octokit/rest";
-import { LockStore } from "./store";
-import { Logger } from "probot";
-import { PullsGetResponse, ReposGetContentsParams } from "@octokit/rest";
-import { ConfigError, LockError, Targets, Target, DeployBody } from "./types";
+import {
+  Logger,
+  Octokit,
+  PullsGetResponse,
+  ReposGetContentsParams,
+} from "@deliverybot/core";
 import yaml from "js-yaml";
-import schema from "./schema.json";
 import { validate } from "jsonschema";
+import { EnvLockStore } from "./store";
+import { ConfigError, LockError, Targets, Target, DeployBody } from "./types";
+import schema from "./schema.json";
 import { render } from "./render";
 import { withPreview } from "./util";
 
@@ -14,17 +17,17 @@ export async function config(
   {
     owner,
     repo,
-    ref
+    ref,
   }: {
     owner: string;
     repo: string;
     ref?: string;
-  }
+  },
 ): Promise<Targets> {
   const params: ReposGetContentsParams = {
     owner,
     repo,
-    path: `.github/deploy.yml`
+    path: `.github/deploy.yml`,
   };
   if (ref) params.ref = ref;
   const content = await github.repos.getContents(params);
@@ -42,7 +45,7 @@ export async function config(
     "auto_merge",
     "payload",
     "environment",
-    "description"
+    "description",
   ];
   for (const key in conf) {
     if (conf[key].deployments && conf[key].deployments.length > 0) {
@@ -59,7 +62,7 @@ export async function config(
 
   const validation = validate(conf, schema, {
     propertyName: "config",
-    allowUnknownAttributes: true
+    allowUnknownAttributes: true,
   });
   if (validation.errors.length > 0) {
     const err = validation.errors[0];
@@ -75,7 +78,7 @@ function getDeployBody(
   target: Target,
   data: any,
   force?: boolean,
-  task?: string
+  task?: string,
 ): DeployBody {
   return withPreview({
     task: task || target.task || "deploy",
@@ -88,8 +91,8 @@ function getDeployBody(
     description: render(target.description, data),
     payload: {
       target: target.name,
-      ...render(target.payload, data)
-    }
+      ...render(target.payload, data),
+    },
   });
 }
 
@@ -104,7 +107,7 @@ function getDeployBody(
 export async function deploy(
   github: Octokit,
   log: Logger,
-  kv: LockStore,
+  kv: EnvLockStore,
   {
     owner,
     repo,
@@ -113,7 +116,7 @@ export async function deploy(
     sha,
     force,
     task,
-    pr
+    pr,
   }: {
     owner: string;
     repo: string;
@@ -123,11 +126,11 @@ export async function deploy(
     force?: boolean;
     task?: string;
     pr?: PullsGetResponse;
-  }
+  },
 ) {
   const logCtx = {
-    deploy: { target, ref, pr },
-    context: { repo: { owner, repo } }
+    deploy: { target, ref, pr: pr ? pr.number : undefined },
+    context: { repo: { owner, repo } },
   };
   const commit = await github.git.getCommit({ owner, repo, commit_sha: sha });
   const repository = await github.repos.get({ owner, repo });
@@ -142,7 +145,7 @@ export async function deploy(
     short_sha: sha.substr(0, 7),
     commit: commit.data,
     pr: pr ? pr.number : undefined,
-    pull_request: pr
+    pull_request: pr,
   };
 
   const conf = await config(github, { owner, repo, ref });
@@ -156,10 +159,10 @@ export async function deploy(
     owner,
     repo,
     ref,
-    ...getDeployBody(targetVal, params, force, task)
+    ...getDeployBody(targetVal, params, force, task),
   };
 
-  if (await kv.isLockedEnv(repository.data.id, body.environment)) {
+  if (await kv.isLocked(repository.data.id, body.environment)) {
     log.info(logCtx, "deploy: halted - environment locked");
     throw new LockError(`Deployment environment locked`);
   }

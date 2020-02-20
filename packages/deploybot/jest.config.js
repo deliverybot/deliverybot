@@ -1,5 +1,6 @@
 module.exports = {
   roots: ['<rootDir>/src/', '<rootDir>/test/'],
+  prettierPath: "../../node_modules/prettier",
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
   },

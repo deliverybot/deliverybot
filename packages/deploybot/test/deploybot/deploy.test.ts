@@ -1,18 +1,19 @@
-import * as factory from "./factory";
-import { deploy } from "../src/deploy";
-import Octokit from "@octokit/rest";
+import * as factory from "../factory";
+import { logger, Octokit } from "@deliverybot/core";
+import { deploy } from "../../src/deploy";
+import { EnvLockStore } from "../../src/store";
+import { services } from "../app";
+
+const lockStore = new EnvLockStore(services.kvService);
 
 describe("deploy", () => {
   jest.setTimeout(30000);
-  let probot: factory.Probot;
 
   afterEach(() => {
     factory.cleanAll();
-    factory.store.clear();
   });
 
   beforeEach(() => {
-    probot = factory.probot();
     factory.token();
     factory.permission({ admin: true });
     factory.repo().persist();
@@ -30,18 +31,18 @@ describe("deploy", () => {
       auto_merge: true,
       required_contexts: ["continuous-integration/travis-ci/push"],
       description: "A test environment based on Docker",
-      payload: { target: "production" }
+      payload: { target: "production" },
     });
     factory.config({ valid: true });
 
     const github = new Octokit({ auth: "test" });
 
-    await deploy(github, probot.logger, factory.store, {
+    await deploy(github, logger, lockStore, {
       owner: "Codertocat",
       repo: "Hello-World",
       ref: "refs/heads/featureA",
       sha: "0000000000000000000000000000000000000000",
-      target: "production"
+      target: "production",
     });
     expect(isDeployed.isDone()).toBe(true);
   });
@@ -56,19 +57,19 @@ describe("deploy", () => {
       auto_merge: true,
       required_contexts: ["continuous-integration/travis-ci/push"],
       description: "A test environment based on Docker",
-      payload: { target: "production" }
+      payload: { target: "production" },
     });
     factory.config({ valid: true });
 
     const github = new Octokit({ auth: "test" });
 
-    await deploy(github, probot.logger, factory.store, {
+    await deploy(github, logger, lockStore, {
       owner: "Codertocat",
       repo: "Hello-World",
       ref: "refs/heads/featureA",
       sha: "0000000000000000000000000000000000000000",
       target: "production",
-      task: "foobar"
+      task: "foobar",
     });
     expect(isDeployed.isDone()).toBe(true);
   });
@@ -83,13 +84,13 @@ describe("deploy", () => {
       auto_merge: true,
       required_contexts: [],
       description: "A test environment based on Docker",
-      payload: { target: "production" }
+      payload: { target: "production" },
     });
     factory.config({ valid: true });
 
     const github = new Octokit({ auth: "test" });
 
-    await deploy(github, probot.logger, factory.store, {
+    await deploy(github, logger, lockStore, {
       owner: "Codertocat",
       repo: "Hello-World",
       ref: "refs/heads/featureA",

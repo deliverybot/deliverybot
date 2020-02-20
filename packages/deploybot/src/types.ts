@@ -1,3 +1,5 @@
+import { PayloadRepository } from "@octokit/webhooks";
+
 export interface DeployBody {
   auto_merge: boolean;
   task: string;
@@ -36,4 +38,14 @@ export class ConfigError extends Error {
 
 export class LockError extends Error {
   public status = "LockError";
+}
+
+export interface Watch {
+  repository: PayloadRepository;
+  id: string;
+  target: string;
+  targetVal: Target;
+  sha: string;
+  ref: string;
+  prNumber?: number;
 }

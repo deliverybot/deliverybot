@@ -1,5 +1,5 @@
 import { createHash } from "crypto";
-import { Context, Octokit } from "probot";
+import { Context, Octokit } from "@deliverybot/core";
 
 export function hash(chunk: string[]) {
   const h = createHash("sha256");
@@ -19,20 +19,20 @@ export function logCtx(context: Context, params: any) {
   return {
     context: {
       installation: context.payload.installation,
-      repo: context.payload.repository ? context.repo() : undefined
+      repo: context.payload.repository ? context.repo() : undefined,
     },
-    ...params
+    ...params,
   };
 }
 
 export async function canWrite(
   gh: Octokit,
-  { owner, repo, username }: { owner: string; repo: string; username: string }
+  { owner, repo, username }: { owner: string; repo: string; username: string },
 ): Promise<boolean> {
   const perms = await gh.repos.getCollaboratorPermissionLevel({
     owner,
     repo,
-    username
+    username,
   });
   return ["admin", "write"].includes(perms.data.permission);
 }

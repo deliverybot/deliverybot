@@ -1,18 +1,43 @@
 {
   "name": "@deliverybot/deploybot",
-  "version": "0.6.3",
+  "version": "0.7.2",
   "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
   "files": [
-    "lib/*",
-    "views/*",
-    "static/*",
-    "app.yml"
+    "lib/*"
   ],
+  "scripts": {
+    "clean": "mkdir -p lib && rm -r lib",
+    "build": "tsc",
+    "build:watch": "tsc --watch --preserveWatchOutput",
+    "test": "NODE_ENV=test jest"
+  },
+  "dependencies": {
+    "@deliverybot/core": "0.7.2",
+    "js-yaml": "3.13.1",
+    "jsonschema": "1.2.5",
+    "mustache": "4.0.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "3.12.1",
+    "@types/jsonschema": "^1.1.1",
+    "@types/mustache": "^4.0.0",
+    "@types/nock": "11.1.0",
+    "@types/supertest": "2.0.8",
+    "@types/express": "4.17.1",
+    "@types/csurf": "1.9.36",
+    "@types/jest": "25.1.2",
+    "jest": "24.9.0",
+    "nock": "11.5.0",
+    "supertest": "4.0.2",
+    "ts-jest": "24.1.0",
+    "typescript": "3.7.2"
+  },
   "description": "Controls and configures deployments using the GitHub API.",
   "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",
   "license": "MIT",
   "support": "support@deliverybot.dev",
-  "repository": "https://github.com/deliverybot/deploybot",
+  "repository": "https://github.com/deliverybot/deliverybot",
   "homepage": "https://deliverybot.dev",
   "documentation": "https://deliverybot.dev/docs/",
   "bugs": "https://github.com/deliverybot/deliverybot/issues",
@@ -22,43 +47,5 @@
     "probot",
     "github",
     "probot-app"
-  ],
-  "scripts": {
-    "build": "(rm -r lib || true); tsc",
-    "start": "probot run ./lib/index.js",
-    "test": "LOG_LEVEL=fatal jest --verbose",
-    "prepack": "(rm -r lib || true); tsc"
-  },
-  "dependencies": {
-    "@octokit/rest": "16.33.1",
-    "js-yaml": "3.13.1",
-    "jsonschema": "1.2.4",
-    "mustache": "^3.1.0",
-    "uuid": "3.3.3"
-  },
-  "peerDependencies": {
-    "probot": "^9.5.3"
-  },
-  "devDependencies": {
-    "@types/jest": "^24.0.0",
-    "@types/js-yaml": "^3.12.1",
-    "@types/mustache": "^0.8.32",
-    "@types/nock": "^9.3.0",
-    "@types/node": "^11.9.0",
-    "@types/supertest": "^2.0.8",
-    "@types/uuid": "^3.4.6",
-    "jest": "^24.0.0",
-    "nock": "^10.0.0",
-    "probot": "9.5.3",
-    "smee-client": "^1.1.0",
-    "supertest": "^4.0.2",
-    "ts-jest": "^24.0.0",
-    "typescript": "^3.3.1"
-  },
-  "engines": {
-    "node": ">= 8.3.0"
-  },
-  "jest": {
-    "testEnvironment": "node"
-  }
+  ]
 }

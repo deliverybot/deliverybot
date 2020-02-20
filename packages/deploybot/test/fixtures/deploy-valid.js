@@ -25,7 +25,7 @@ canary:
       canary: 20%
 
 production:
-  auto_deploy_on: refs/tags/simple-tag
+  auto_deploy_on: refs/heads/changes
   transient_environment: false
   production_environment: true
   required_contexts:

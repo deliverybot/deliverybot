@@ -1,12 +1,12 @@
-import { Application, Context } from "probot";
-import { WatchStore, LockStore, Watch } from "./store";
+import Webhooks from "@octokit/webhooks";
+import { PayloadRepository } from "@octokit/webhooks";
+import { v4 as uuid } from "uuid";
+import { Application, Context, LockService } from "@deliverybot/core";
+import { WatchStore, EnvLockStore } from "./store";
+import { Watch } from "./types";
 import { logCtx } from "./util";
 import { config, deploy } from "./deploy";
 import { hash } from "./util";
-import { v4 as uuid } from "uuid";
-import { PayloadRepository } from "@octokit/webhooks";
-import Webhooks from "@octokit/webhooks";
-import { handlePRDeploy } from "./pr-deploy";
 
 export function match(auto: string | undefined, ref: string) {
   if (!auto) return false;
@@ -23,9 +23,10 @@ export function match(auto: string | undefined, ref: string) {
  */
 export function auto(
   app: Application,
-  lockStore: LockStore,
+  lockService: LockService,
   watchStore: WatchStore,
-  publish: (event: Webhooks.WebhookEvent<any>) => Promise<any>
+  envLockStore: EnvLockStore,
+  publish: (event: Webhooks.WebhookEvent<any>) => Promise<any>,
 ) {
   /**
    * Add watch adds a watch on a specific ref, sha and repository.
@@ -53,9 +54,9 @@ export function auto(
             ref,
             sha,
             target,
-            autoDeployOn: targetVal.auto_deploy_on
+            autoDeployOn: targetVal.auto_deploy_on,
           }),
-          "auto deploy: add watch"
+          "auto deploy: add watch",
         );
         const watch: Watch = {
           id: uuid(),
@@ -64,7 +65,7 @@ export function auto(
           sha,
           repository,
           target,
-          prNumber
+          prNumber,
         };
         anyAdded = true;
         await watchStore.addWatch(repository.id, watch);
@@ -82,13 +83,13 @@ export function auto(
         case 404:
           context.log.info(
             logCtx(context, { error }),
-            "auto deploy: no config"
+            "auto deploy: no config",
           );
           break;
         case "ConfigError":
           context.log.info(
             logCtx(context, { error }),
-            "auto deploy: config err"
+            "auto deploy: config err",
           );
           break;
         default:
@@ -109,7 +110,7 @@ export function auto(
    */
   async function processWatch(
     context: Context,
-    watch: Watch
+    watch: Watch,
   ): Promise<boolean> {
     const { sha, ref, target, targetVal } = watch;
 
@@ -117,29 +118,29 @@ export function auto(
     // multiple watches can be in progress we only want to process the latest
     // of them.
     const refreshed = await context.github.git.getRef(
-      context.repo({ ref: ref.replace("refs/", "") })
+      context.repo({ ref: ref.replace("refs/", "") }),
     );
     const currentSha = refreshed.data.object.sha;
     if (currentSha !== sha) {
       // This is an old watch, return true.
       context.log.info(
         logCtx(context, { ref, sha, currentSha }),
-        "auto deploy: old watch"
+        "auto deploy: old watch",
       );
       return true;
     }
 
     context.log.info(
       logCtx(context, { ref, sha, target, watchId: watch.id }),
-      "auto deploy: processing watch"
+      "auto deploy: processing watch",
     );
     const deploys = await context.github.repos.listDeployments(
-      context.repo({ sha })
+      context.repo({ sha }),
     );
     if (deploys.data.find(d => d.environment === targetVal.environment)) {
       context.log.info(
         logCtx(context, { ref }),
-        "auto deploy: already deployed"
+        "auto deploy: already deployed",
       );
       return true;
     }
@@ -149,7 +150,7 @@ export function auto(
       const prObject = await context.github.pulls.get({
         owner: context.payload.repository.owner.login,
         repo: context.payload.repository.name,
-        pull_number: watch.prNumber
+        pull_number: watch.prNumber,
       });
       pr = prObject.data;
     }
@@ -159,13 +160,13 @@ export function auto(
       await deploy(
         context.github,
         context.log,
-        lockStore,
+        envLockStore,
         context.repo({
           ref,
           sha,
           target,
-          pr
-        })
+          pr,
+        }),
       );
       context.log.info(logCtx(context, { ref }), "auto deploy: done");
       return true;
@@ -176,25 +177,25 @@ export function auto(
         case 409:
           context.log.info(
             logCtx(context, { target, ref, error }),
-            "auto deploy: checks not ready"
+            "auto deploy: checks not ready",
           );
           return false;
         case "LockError":
           context.log.info(
             logCtx(context, { target, ref, error }),
-            "auto deploy: environment locked"
+            "auto deploy: environment locked",
           );
           return true; // We don't wait for "unlock" events and redeploy.
         case "ConfigError":
           context.log.info(
             logCtx(context, { target, ref, error }),
-            "auto deploy: target config error"
+            "auto deploy: target config error",
           );
           return true;
         default:
           context.log.error(
             logCtx(context, { target, ref, error }),
-            "auto deploy: deploy attempt failed"
+            "auto deploy: deploy attempt failed",
           );
           throw error;
       }
@@ -216,11 +217,11 @@ export function auto(
         ref: watch.ref,
         repo: watch.repository.id,
         target: watch.target,
-        watchId: context.payload.id
+        watchId: context.payload.id,
       }),
-      "auto deploy: locking"
+      "auto deploy: locking",
     );
-    return lockStore.lock(key, async () => {
+    return lockService().lock(key, async () => {
       const done = await handle();
       if (done) {
         await watchStore.delWatch(watch.repository.id, watch);
@@ -243,10 +244,10 @@ export function auto(
           id: w.id,
           ref: w.ref,
           sha: w.sha,
-          repo: w.repository.id
-        }))
+          repo: w.repository.id,
+        })),
       }),
-      "auto deploy: emitting watches"
+      "auto deploy: emitting watches",
     );
     await Promise.all(
       watches.map(watch =>
@@ -255,13 +256,13 @@ export function auto(
           name: "push_watch",
           payload: {
             ...watch,
-            installation: context.payload.installation
+            installation: context.payload.installation,
           },
           protocol: context.protocol,
           host: context.host,
-          url: context.url
-        })
-      )
+          url: context.url,
+        }),
+      ),
     );
   }
 
@@ -270,7 +271,7 @@ export function auto(
     await emitWatches(
       context,
       context.payload.repository.id,
-      context.payload.sha
+      context.payload.sha,
     );
   });
 
@@ -279,7 +280,7 @@ export function auto(
     await emitWatches(
       context,
       context.payload.repository.id,
-      context.payload.check_run.check_suite.head_sha
+      context.payload.check_run.check_suite.head_sha,
     );
   });
 
@@ -291,8 +292,8 @@ export function auto(
       (): Promise<boolean> => {
         const watch = context.payload as Watch;
         return processWatch(context, watch);
-      }
-    )
+      },
+    ),
   );
 
   // Push handles creating new watches that need to appear.
@@ -302,7 +303,7 @@ export function auto(
       context.payload.ref,
       context.payload.ref,
       context.payload.after,
-      context.payload.repository
+      context.payload.repository,
     );
   });
 
@@ -314,8 +315,8 @@ export function auto(
       `heads/${context.payload.pull_request.head.ref}`,
       context.payload.pull_request.head.sha,
       context.payload.repository,
-      context.payload.number
-    )
+      context.payload.number,
+    );
   });
 
   // Auto deploy on push to PR
@@ -326,7 +327,7 @@ export function auto(
       `heads/${context.payload.pull_request.head.ref}`,
       context.payload.pull_request.head.sha,
       context.payload.repository,
-      context.payload.number
-    )
+      context.payload.number,
+    );
   });
 }

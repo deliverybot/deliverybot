@@ -1,4 +1,4 @@
-import { Application, Context } from "probot";
+import { Application, Context } from "@deliverybot/core";
 import { withPreview, logCtx } from "./util";
 
 export function prClose(app: Application) {
@@ -8,7 +8,7 @@ export function prClose(app: Application) {
   async function handlePRClose(context: Context) {
     const ref = context.payload.pull_request.head.ref;
     const deployments = await context.github.repos.listDeployments(
-      withPreview({ ...context.repo(), ref })
+      withPreview({ ...context.repo(), ref }),
     );
 
     context.log.info(logCtx(context, { ref }), "pr close: listed deploys");
@@ -16,7 +16,7 @@ export function prClose(app: Application) {
       if (!deployment.transient_environment) {
         context.log.info(
           logCtx(context, { ref, deployment: deployment.id }),
-          "pr close: not transient"
+          "pr close: not transient",
         );
         continue;
       }
@@ -24,19 +24,19 @@ export function prClose(app: Application) {
       try {
         context.log.info(
           logCtx(context, { ref, deployment: deployment.id }),
-          "pr close: mark inactive"
+          "pr close: mark inactive",
         );
         await context.github.repos.createDeploymentStatus(
           withPreview({
             ...context.repo(),
             deployment_id: deployment.id,
-            state: "inactive"
-          })
+            state: "inactive",
+          }),
         );
       } catch (error) {
         context.log.error(
           logCtx(context, { error, ref, deployment: deployment.id }),
-          "pr close: marking inactive failed"
+          "pr close: marking inactive failed",
         );
       }
     }

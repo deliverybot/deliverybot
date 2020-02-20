@@ -1,7 +1,9 @@
-import * as factory from "./factory";
+import * as factory from "../factory";
+import { app } from "../app";
+
+const probot = app.probot;
 
 describe("pr-close", () => {
-  let probot: factory.Probot;
   jest.setTimeout(30000);
 
   afterEach(() => {
@@ -9,7 +11,6 @@ describe("pr-close", () => {
   });
 
   beforeEach(() => {
-    probot = factory.probot();
     factory.token();
     factory.gitCommit();
     factory.repo();
@@ -21,7 +22,7 @@ describe("pr-close", () => {
   test("close status on pr close", async () => {
     const status = factory.deploymentStatus();
     factory.withDeployments([
-      { id: 1, environment: "production", transient_environment: true }
+      { id: 1, environment: "production", transient_environment: true },
     ]);
 
     await probot.receive(factory.prClosed());
@@ -31,7 +32,7 @@ describe("pr-close", () => {
   test("no status on non-transient pr close", async () => {
     const status = factory.deploymentStatus();
     factory.withDeployments([
-      { id: 1, environment: "production", transient_environment: false }
+      { id: 1, environment: "production", transient_environment: false },
     ]);
 
     await probot.receive(factory.prClosed());
@@ -42,12 +43,12 @@ describe("pr-close", () => {
     const statuses = [
       factory.deploymentStatus(),
       factory.deploymentStatus(),
-      factory.deploymentStatus()
+      factory.deploymentStatus(),
     ];
     factory.withDeployments([
       { id: 1, environment: "production", transient_environment: true },
       { id: 1, environment: "production", transient_environment: true },
-      { id: 1, environment: "production", transient_environment: true }
+      { id: 1, environment: "production", transient_environment: true },
     ]);
 
     await probot.receive(factory.prClosed());
