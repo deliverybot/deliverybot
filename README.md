@@ -25,8 +25,20 @@ For more, check out the [Contributing Guide](CONTRIBUTING.md).
 
 ### Setup
 
+#### Github
+
+1. setup "User authorization callback URL" to "https://smee.io/xxxxx"
+2. setup "Post installation / Setup URL" to "https://smee.io/xxxxx"
+3. setup "Webhook URL" to "https://smee.io/xxxxx"
+
+#### Local environment
+
+> Note: You do not need to start smee separately, the start script will do it.
+
+    # install tsc
+    npm install --global typescript
     yarn install
-    yarn start
+    BASE_URL=https://smee.io/xxxxx yarn start
 
 ## License
 
