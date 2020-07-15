@@ -1,3 +1,4 @@
 .env
+.idea
 /tmp
 /node_modules
