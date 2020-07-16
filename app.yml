@@ -126,10 +126,10 @@ default_permissions:
 
 
 # The name of the GitHub App. Defaults to the name specified in package.json
-name: deliverybot
+name: Pipeline Bot App
 
 # The homepage of your GitHub App.
-url: https://deliverybot.dev
+url: https://pipelinebot.com
 
 # A description of the GitHub App.
 description: Controls and configures deployments using the GitHub API.

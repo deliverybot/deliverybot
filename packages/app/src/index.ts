@@ -15,5 +15,5 @@ export const info: { [k: string]: string } = {
   github: "https://github.com/deliverybot/deliverybot",
   terms: "https://deliverybot.dev/terms/terms/",
   privacy: "https://deliverybot.dev/terms/privacy/",
-  install: "https://github.com/apps/deliverybot/installations/new",
+  install: "https://github.com/apps/pipeline-bot-app/installations/new",
 };
