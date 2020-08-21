@@ -8,4 +8,4 @@ cp -r ../app/public ./public
 mkdir -p lib/config
 mv public/static/bundle/scripts.html lib/config/scripts.html
 
-jq < package.json '.engines.node = 10' > lib/package.json
+jq < package.json '.engines.node = "10"' > lib/package.json
