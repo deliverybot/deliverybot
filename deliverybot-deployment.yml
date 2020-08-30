@@ -1,0 +1,61 @@
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: deliverybot
+  spec:
+    selector:
+      matchLabels:
+        app: deliverybot
+    replicas: 1
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          app: deliverybot
+      spec:
+        containers:
+        - name: deliverybot
+          image: ramene/deliverybot:0.7.2
+          ports:
+          - containerPort: 3000
+            name: http
+          resources: {}
+        restartPolicy: Always
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: deliverybot-service
+  spec:
+    ports:
+    - name: http
+      port: 80
+      targetPort: http
+    selector:
+      app: deliverybot
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: deliverybot-data-pvc
+    annotations: {}
+    labels:
+      app: deliverybot
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: deliverybot-configmap
+    labels:
+      app: deliverybot
+  data:
+    .env: |-
+kind: List
+metadata: {}

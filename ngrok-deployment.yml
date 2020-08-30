@@ -1,0 +1,40 @@
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: ngrok
+  spec:
+    selector:
+      matchLabels:
+        app: ngrok
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          app: ngrok
+      spec:
+        containers:
+        - name: ngrok
+          image: ramene/ngrok
+          command: ["ngrok"]
+          args: ["http", "-hostname=app.example.com", "deliverybot-service"]
+          ports:
+          - containerPort: 4040
+            name: http
+          resources: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: ngrok-service
+  spec:
+    type: NodePort
+    ports:
+      - name: http
+        port: 4040
+        targetPort: 4040
+        protocol: TCP
+    selector:
+      app: ngrok
+kind: List
+metadata: {}
