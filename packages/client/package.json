@@ -13,7 +13,7 @@
     "build:watch": "tsc --watch --preserveWatchOutput"
   },
   "dependencies": {
-    "apexcharts": "3.10.1",
+    "apexcharts": "3.24.0",
     "stimulus": "1.1.1",
     "turbolinks": "5.2.0",
     "handlebars": "4.3.5",
