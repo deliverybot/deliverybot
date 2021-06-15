@@ -13,6 +13,7 @@ export interface AppOptions {
   webhookPath: string;
   webhookSecret: string;
   logger: Logger;
+  baseUrl?: string;
 }
 
 const cache = createDefaultCache();
@@ -24,6 +25,7 @@ export function app(opts: AppOptions) {
     app: new OctokitApp({
       id: opts.id,
       privateKey: opts.privateKey,
+      baseUrl: opts.baseUrl ? `https://${opts.baseUrl}/api/v3` : undefined
     }),
     cache,
   });
