@@ -12,6 +12,7 @@ const opts: Options = {
   webhookSecret: env("WEBHOOK_SECRET"),
   appSecret: env("WEBHOOK_SECRET") || "development",
   privateKey: env("PRIVATE_KEY"),
+  baseUrl: env("GHE_HOST"),
   config: {
     slackLoginUrl: env("SLACK_LOGIN_URL"),
     slackClientId: env("SLACK_CLIENT_ID"),
