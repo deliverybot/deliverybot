@@ -79,7 +79,7 @@ export function auto(
     } catch (error) {
       // This error block will mostly catch configuration errors and simply
       // return until the next event comes a long with new configuration.
-      switch (error.status) {
+      switch ((error as any).status) {
         case 404:
           context.log.info(
             logCtx(context, { error }),
@@ -173,7 +173,7 @@ export function auto(
     } catch (error) {
       // Catch deploy errors and return if this is a normal scenario for an
       // auto deployment.
-      switch (error.status) {
+      switch ((error as any).status) {
         case 409:
           context.log.info(
             logCtx(context, { target, ref, error }),

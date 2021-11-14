@@ -175,7 +175,7 @@ export async function deploy(
     log.info({ ...logCtx, body }, "deploy: successful");
     return deploy.data;
   } catch (error) {
-    if (error.status === 409) {
+    if ((error as any).status === 409) {
       log.info({ ...logCtx, error, body }, "deploy: checks not ready");
     } else {
       log.error({ ...logCtx, error, body }, "deploy: unexpected failure");

@@ -2,21 +2,21 @@
   "private": true,
   "version": "0.7.2",
   "workspaces": [
+    "packages/core",
+    "packages/deploybot",
     "packages/app",
     "packages/client",
     "packages/firebase",
-    "packages/core",
-    "packages/deploybot",
     "packages/slackbot",
     "packages/run"
   ],
   "scripts": {
     "bump": "./bump.sh",
     "start": "node ./scripts/build.js --watch",
-    "test": "node ./scripts/build.js --test",
+    "test": "yarn workspaces run test",
     "server": "node ./scripts/server.js",
     "format": "prettier --write 'packages/*/src/**/*.{ts,js}'",
-    "build": "node ./scripts/build.js",
+    "build": "yarn workspaces run build",
     "push": "node ./scripts/build.js --publish"
   },
   "prettier": {

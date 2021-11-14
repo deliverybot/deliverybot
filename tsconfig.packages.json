@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "allowJs": false,
+    "lib": ["es2015", "es2017"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es5",
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": false,
+    "pretty": true,
+    "strict": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "resolveJsonModule": true
+  },
+  "compileOnSave": false
+}

@@ -9,24 +9,27 @@
     "config/*"
   ],
   "scripts": {
-    "clean": "mkdir -p lib && mkdir -p bundle && rm -r lib && rm -r bundle",
-    "build": "tsc",
+    "clean": "mkdir -p lib && mkdir -p bundle && rm -r lib && rm -r bundle && rm -f tsconfig.tsbuildinfo",
+    "build": "tsc --build tsconfig.json",
+    "prebuild": "yarn clean",
+    "postbuild": "yarn bundle",
     "build:watch": "tsc --watch --preserveWatchOutput",
     "bundle": "webpack --config config/webpack.config.js",
     "bundle:watch": "webpack --config config/webpack.config.js --watch",
-    "run": "node lib/index.js"
+    "run": "node lib/index.js",
+    "test": "echo 'No tests for @deliverybot/run'"
   },
   "dependencies": {
     "@deliverybot/app": "0.7.2",
-    "@deliverybot/core": "0.7.2",
     "@deliverybot/client": "0.7.2",
+    "@deliverybot/core": "0.7.2",
     "dotenv": "8.2.0"
   },
   "devDependencies": {
     "css-loader": "^3.4.2",
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.9.0",
-    "typescript": "3.7.2",
+    "typescript": "3.8.*",
     "webpack": "4.41.5",
     "webpack-cli": "3.3.10"
   },
