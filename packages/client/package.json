@@ -8,19 +8,21 @@
     "lib/*"
   ],
   "scripts": {
-    "clean": "mkdir -p lib && rm -r lib",
-    "build": "tsc",
-    "build:watch": "tsc --watch --preserveWatchOutput"
+    "clean": "mkdir -p lib && rm -r lib && rm -f tsconfig.tsbuildinfo",
+    "build": "tsc --build tsconfig.json",
+    "prebuild": "yarn clean",
+    "build:watch": "tsc --watch --preserveWatchOutput",
+    "test": "echo 'No tests for @deliverybot/client'"
   },
   "dependencies": {
+    "@deliverybot/app": "0.7.2",
     "apexcharts": "3.10.1",
-    "stimulus": "1.1.1",
-    "turbolinks": "5.2.0",
     "handlebars": "4.3.5",
-    "@deliverybot/app": "0.7.2"
+    "stimulus": "1.1.1",
+    "turbolinks": "5.2.0"
   },
   "devDependencies": {
-    "typescript": "3.7.2"
+    "typescript": "3.8.*"
   },
   "description": "Controls and configures deployments using the GitHub API.",
   "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",

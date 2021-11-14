@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-./node_modules/.bin/tsc
+./node_modules/.bin/tsc --build tsconfig.json
 cp -r ../app/public ./public
 ./node_modules/.bin/webpack --config config/webpack.config.js
 

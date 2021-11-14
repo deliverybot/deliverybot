@@ -1,0 +1,14 @@
+{
+  "references": [
+    { "path": "packages/app" },
+    { "path": "packages/client" },
+    { "path": "packages/firebase" },
+    { "path": "packages/core" },
+    { "path": "packages/deploybot" },
+    { "path": "packages/slackbot" },
+    { "path": "packages/run" }
+  ],
+  "files": [],
+  "include": [],
+  "exclude": ["**/node_modules"]
+}

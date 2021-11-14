@@ -1,9 +1,9 @@
 import { Response } from "express";
 import { Dependencies } from "@deliverybot/core";
-import { WatchStore, EnvLockStore } from "@deliverybot/deploybot";
+import { EnvLockStore, WatchStore } from "@deliverybot/deploybot";
 import { AuthedRequest, authenticate, verifyRepo } from "../auth";
-import { Commits, Watch, Config, Metrics } from "./views";
-import { Promote, Deploy, SetLock } from "./commands";
+import { Commits, Config, Metrics, Watch } from "./views";
+import { Deploy, Promote, SetLock } from "./commands";
 import { branch } from "../util";
 import { publishRepoUpdated } from "../watch";
 
@@ -135,12 +135,13 @@ export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
       res.json({ status: "Ok" });
     } catch (error) {
       req.log.error({ error }, "ui: deploy failed");
-      switch (error.status) {
+
+      switch ((error as any).status) {
         case 400:
         case 409:
         case "LockError":
         case "ConfigError":
-          res.status(400).json({ status: "BadRequest", error: error.message });
+          res.status(400).json({ status: "BadRequest", error: (error as any).message });
           break;
         default:
           res.status(500).json({ status: "ServerError" });
@@ -165,8 +166,8 @@ export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
       csrf: req.csrfToken(),
       options: {
         count: 10,
-        before: req.query.before,
-        after: req.query.after,
+        before: req.query.before as string,
+        after: req.query.after as string,
         minimal: req.headers["accept"] !== "application/json",
       },
     });

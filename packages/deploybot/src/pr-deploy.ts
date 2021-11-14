@@ -46,7 +46,7 @@ export async function handlePRDeploy(
       owner: context.payload.repository.owner.login,
       repo: context.payload.repository.name,
       issue_number: prNumber,
-      body: `:rotating_light: Failed to trigger deployment. :rotating_light:\n${error.message}`,
+      body: `:rotating_light: Failed to trigger deployment. :rotating_light:\n${(error as any).message}`,
     });
   }
 }

@@ -75,8 +75,7 @@ async function main() {
 
   const watch = process.argv[2] == '--watch';
   const publish = process.argv[2] == '--publish';
-  const test = process.argv[2] == '--test';
-
+  
   if (watch) {
     await Promise.all([
       run('.', 'server'),
@@ -87,33 +86,6 @@ async function main() {
       run('run', 'build:watch', restart),
       run('run', 'bundle:watch', restart),
     ]);
-  } else if (test) {
-    await Promise.all([
-      run('app', 'test'),
-    ]);
-  } else {
-    await Promise.all([
-      run('core', 'clean'),
-      run('app', 'clean'),
-      run('client', 'clean'),
-      run('run', 'clean'),
-      run('firebase', 'clean'),
-      run('deploybot', 'clean'),
-      run('slackbot', 'clean'),
-    ]);
-    await run('core', 'build');
-    await Promise.all([
-      await run('deploybot', 'build'),
-      await run('slackbot', 'build'),
-    ]);
-    await Promise.all([
-      run('app', 'build'),
-      run('app', 'partials'),
-      run('client', 'build'),
-    ]);
-    await run('run', 'build');
-    await run('run', 'bundle');
-    await run('firebase', 'build');
   }
 
   if (publish) {

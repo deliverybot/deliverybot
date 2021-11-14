@@ -7,10 +7,11 @@
     "lib/*"
   ],
   "scripts": {
-    "clean": "mkdir -p lib && rm -r lib",
-    "build": "tsc",
+    "clean": "mkdir -p lib && rm -r lib && rm -f tsconfig.tsbuildinfo",
+    "build": "tsc --build tsconfig.json",
+    "prebuild": "yarn clean",
     "build:watch": "tsc --watch --preserveWatchOutput",
-    "test": "NODE_ENV=test jest"
+    "test": "echo 'No tests for @deliverybot/core'"
   },
   "dependencies": {
     "@octokit/app": "4.1.0",
@@ -33,14 +34,14 @@
     "@types/bunyan-format": "0.2.0",
     "@types/cache-manager": "2.10.0",
     "@types/client-sessions": "0.8.0",
-    "@types/supertest": "2.0.8",
     "@types/csurf": "1.9.36",
     "@types/express": "4.17.1",
-    "@types/jest": "24.0.19",
-    "jest": "24.9.0",
+    "@types/jest": "27.0.2",
+    "@types/supertest": "2.0.8",
+    "jest": "27.3.1",
     "supertest": "4.0.2",
-    "ts-jest": "24.1.0",
-    "typescript": "3.7.2"
+    "ts-jest": "27.0.7",
+    "typescript": "3.8.*"
   },
   "description": "Controls and configures deployments using the GitHub API.",
   "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",

@@ -424,7 +424,7 @@ export class Application {
 
             await callback(context);
           } catch (err) {
-            if (err.retryable) {
+            if ((err as any).retryable) {
               log.warn({ err, event, retryable: true });
             } else {
               log.error({ err, event, retryable: false });

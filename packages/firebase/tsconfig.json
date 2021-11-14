@@ -1,26 +1,15 @@
 {
+  "extends": "../../tsconfig.packages.json",
   "compilerOptions": {
-    "allowJs": false,
-    "lib": ["es2015", "es2017", "dom"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "target": "es5",
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": false,
-    "pretty": true,
-    "strict": true,
-    "sourceMap": true,
+    "rootDir": "./src",
     "outDir": "./lib",
-    "skipLibCheck": true,
-    "noImplicitAny": true,
-    "esModuleInterop": true,
-    "declaration": true,
-    "resolveJsonModule": true,
-    "typeRoots": ["src/@types", "node_modules/@types"]
+    "lib": ["es2015", "es2017", "dom"]
   },
   "include": [
     "src/**/*"
   ],
-  "compileOnSave": false
+  "references": [
+    { "path": "../app" },
+    { "path": "../core" }
+  ]
 }
