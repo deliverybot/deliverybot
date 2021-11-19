@@ -8,7 +8,7 @@
     "build-copy-after": "mkdir -p lib/config && mv public/static/bundle/scripts.html lib/config/scripts.html",
     "build-typescript": "tsc",
     "build-webpack": "webpack --config config/webpack.config.js",
-    "build": "npm run build-copy-before && npm run build-typescript && npm run build-webpack && npm run build-copy-before",
+    "build": "npm run build-copy-before && npm run build-typescript && npm run build-webpack && npm run build-copy-after",
     "deploy:development": "./scripts/deploy.sh development",
     "deploy:production": "./scripts/deploy.sh production"
   },

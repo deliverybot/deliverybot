@@ -86,7 +86,7 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
   app.use(bodyParser.json({ verify: rawBodyBuffer }));
   opts.serve.forEach(val => {
     const handler = express.static(val[1]);
-    app.use(val[0], );
+    app.use(val[0], handler);
   });
 
   const root = opts.root;
