@@ -1,10 +1,10 @@
-import objectHash = require("object-hash");
+import objectHash from "object-hash";
 import yaml from "js-yaml";
 import { Dependencies } from "@deliverybot/core";
 
 export function yamlEncode(data: any) {
   try {
-    return yaml.safeDump(data);
+    return yaml.dump(data);
   } catch (error) {
     return null;
   }

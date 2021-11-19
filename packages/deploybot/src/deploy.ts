@@ -1,8 +1,6 @@
 import {
   Logger,
-  Octokit,
-  PullsGetResponse,
-  ReposGetContentsParams,
+  Octokit
 } from "@deliverybot/core";
 import yaml from "js-yaml";
 import { validate } from "jsonschema";
@@ -24,7 +22,7 @@ export async function config(
     ref?: string;
   },
 ): Promise<Targets> {
-  const params: ReposGetContentsParams = {
+  const params: Octokit.ReposGetContentsParams = {
     owner,
     repo,
     path: `.github/deploy.yml`,
@@ -38,7 +36,7 @@ export async function config(
     throw new ConfigError("content not found");
   }
   const conf =
-    yaml.safeLoad(Buffer.from(content.data.content, "base64").toString()) || {};
+    (yaml.safeLoad(Buffer.from(content.data.content, "base64").toString()) || {}) as Record<string, any>;
 
   const fields = [
     "task",
@@ -61,7 +59,6 @@ export async function config(
   // Disallow if dynamic + auto deploy.
 
   const validation = validate(conf, schema, {
-    propertyName: "config",
     allowUnknownAttributes: true,
   });
   if (validation.errors.length > 0) {
@@ -125,7 +122,7 @@ export async function deploy(
     sha: string;
     force?: boolean;
     task?: string;
-    pr?: PullsGetResponse;
+    pr?: Octokit.PullsGetResponse;
   },
 ) {
   const logCtx = {
@@ -175,7 +172,7 @@ export async function deploy(
     log.info({ ...logCtx, body }, "deploy: successful");
     return deploy.data;
   } catch (error) {
-    if (error.status === 409) {
+    if ((error as LockError).status == '409') {
       log.info({ ...logCtx, error, body }, "deploy: checks not ready");
     } else {
       log.error({ ...logCtx, error, body }, "deploy: unexpected failure");

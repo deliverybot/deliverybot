@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "allowJs": false,
-    "lib": ["es2015", "es2017"],
+    "lib": [
+      "es2015",
+      "es2017"
+    ],
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es5",
@@ -24,7 +27,8 @@
     ]
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "../../node_modules/jest-diff"
   ],
   "compileOnSave": false
 }

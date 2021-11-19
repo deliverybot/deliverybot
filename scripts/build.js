@@ -19,7 +19,7 @@ function run(pkg, cmd, onChange) {
   }
 
   return new Promise((resolve, reject) => {
-    const proc = spawn('yarn', [cmd], { cwd: pkg === '.' ? '.' : `./packages/${pkg}` });
+    const proc = spawn('npm', ['run', cmd], { cwd: pkg === '.' ? '.' : `./packages/${pkg}` });
     const name = pad(pkg, 10);
     procs.push(proc);
     proc.stdout.on('data', (data) => {
@@ -127,7 +127,8 @@ async function main() {
   process.exit(0);
 }
 
-main().catch(() => {
+main().catch((e) => {
+  console.error(e);
   shutdown();
 });
 

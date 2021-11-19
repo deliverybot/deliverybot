@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "allowJs": false,
-    "lib": ["es2015", "es2017"],
+    "lib": [
+      "es2015",
+      "es2017"
+    ],
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es5",
@@ -21,10 +24,7 @@
       "src/@types",
       "../../node_modules/@types",
       "node_modules/@types"
-    ]
+    ],
   },
-  "include": [
-    "src/**/*"
-  ],
   "compileOnSave": false
 }

@@ -1,6 +1,6 @@
 import { Dependencies, Octokit } from "@deliverybot/core";
 import { Response, Request, NextFunction } from "express";
-import fetch from "node-fetch";
+const fetch = require('node-fetch').default;
 
 export interface Repo {
   owner: string;
@@ -118,12 +118,12 @@ export function auth({ app, csrf, userService, config }: Dependencies) {
         code,
       }),
     });
-    const body = await resp.json();
+    const body = await resp.json() as Record<string, string>;
     return body["access_token"];
   }
 
   async function callback(req: Request, res: Response) {
-    const token = await accessToken(req.query.code);
+    const token = await accessToken(req.query.code as string);
     if (!token) {
       res.redirect("/login");
       return;

@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import { apps, info } from "@deliverybot/app";
-import { load, logger, Options, localServices } from "@deliverybot/core";
+import { load, logger, Options, localServices, RegisterFunc } from "@deliverybot/core";
 
 const services = localServices();
 const bundle = path.resolve(__dirname, "..", "bundle");
@@ -31,4 +31,4 @@ function env(n: string) {
   return process.env[n] || "";
 }
 
-export = load(services, apps, opts);
+export = load(services, apps as RegisterFunc[], opts);

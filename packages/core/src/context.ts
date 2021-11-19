@@ -1,5 +1,5 @@
 import Webhooks, { PayloadRepository } from "@octokit/webhooks";
-import Octokit from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 import { Logger } from "./logger";
 
 interface WebhookPayloadWithRepository {

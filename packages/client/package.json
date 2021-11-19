@@ -13,14 +13,14 @@
     "build:watch": "tsc --watch --preserveWatchOutput"
   },
   "dependencies": {
-    "apexcharts": "3.10.1",
-    "stimulus": "1.1.1",
-    "turbolinks": "5.2.0",
-    "handlebars": "4.3.5",
-    "@deliverybot/app": "0.7.2"
+    "apexcharts": "^3.30.0",
+    "stimulus": "^1.1.1",
+    "turbolinks": "^5.2.0",
+    "handlebars": "^4.7.7",
+    "@deliverybot/app": "../app"
   },
   "devDependencies": {
-    "typescript": "3.7.2"
+    "typescript": "^3.9.10"
   },
   "description": "Controls and configures deployments using the GitHub API.",
   "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",

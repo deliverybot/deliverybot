@@ -19,7 +19,7 @@ function proxy() {
 }
 
 function start() {
-  state.server = require('@deliverybot/run').express.listen(3000, () => {
+  state.server = require('../packages/run').express.listen(3000, () => {
     console.log('Listening on 3000');
   });
   state.server.on('connection', (socket) => {

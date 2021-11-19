@@ -1,6 +1,6 @@
 import { User } from "../auth";
 import { gql } from "../deploy/queries";
-import get = require("lodash.get");
+import get from "lodash.get";
 import { timeAgoInWords } from "../util";
 
 class NotFoundError extends Error {

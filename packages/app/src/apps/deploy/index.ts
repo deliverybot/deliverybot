@@ -135,12 +135,12 @@ export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
       res.json({ status: "Ok" });
     } catch (error) {
       req.log.error({ error }, "ui: deploy failed");
-      switch (error.status) {
+      switch ((error as Record<string, unknown>).status) {
         case 400:
         case 409:
         case "LockError":
         case "ConfigError":
-          res.status(400).json({ status: "BadRequest", error: error.message });
+          res.status(400).json({ status: "BadRequest", error: (error as Record<string, unknown>).message });
           break;
         default:
           res.status(500).json({ status: "ServerError" });
@@ -165,8 +165,8 @@ export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
       csrf: req.csrfToken(),
       options: {
         count: 10,
-        before: req.query.before,
-        after: req.query.after,
+        before: req.query.before as string,
+        after: req.query.after as string,
         minimal: req.headers["accept"] !== "application/json",
       },
     });

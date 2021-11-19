@@ -14,22 +14,22 @@
     "test": "NODE_ENV=test jest"
   },
   "dependencies": {
-    "@deliverybot/core": "0.7.2",
-    "@deliverybot/deploybot": "0.7.2",
-    "node-fetch": "2.6.0"
+    "@deliverybot/core": "../core",
+    "@deliverybot/deploybot": "../deploybot",
+    "node-fetch": "^2.6.6"
   },
   "devDependencies": {
-    "@types/node-fetch": "2.5.2",
-    "@types/nock": "11.1.0",
-    "@types/supertest": "2.0.8",
-    "@types/express": "4.17.1",
-    "@types/csurf": "1.9.36",
-    "@types/jest": "25.1.2",
-    "jest": "24.9.0",
-    "nock": "11.5.0",
-    "supertest": "4.0.2",
-    "ts-jest": "24.1.0",
-    "typescript": "3.7.2"
+    "@types/node-fetch": "^2.5.12",
+    "@types/nock": "^11.1.0",
+    "@types/supertest": "^2.0.11",
+    "@types/express": "^4.17.13",
+    "@types/csurf": "^1.11.2",
+    "@types/jest": "^25.2.3",
+    "jest": "^24.9.0",
+    "nock": "^11.9.1",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.3.0",
+    "typescript": "^3.9.10"
   },
   "description": "Controls and configures deployments using the GitHub API.",
   "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",
