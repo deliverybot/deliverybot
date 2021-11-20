@@ -26,5 +26,8 @@
       "node_modules/@types"
     ],
   },
+  "includes": [
+    "src/**/*"
+  ],
   "compileOnSave": false
 }
