@@ -6,6 +6,8 @@ import {
   WatchStore,
   Targets,
   Watch,
+  ConfigError,
+  LockError,
 } from "@deliverybot/deploybot";
 import get from "lodash.get";
 import { Repo } from "../auth";
@@ -465,7 +467,7 @@ interface Config {
   editFileUrl: string;
   notExists: boolean;
   yaml: string;
-  error: Error | null;
+  error: ConfigError | LockError | null;
   config: Targets | null;
 }
 
@@ -494,9 +496,9 @@ export async function config(
     });
     conf.yaml = yamlEncode(conf.config) || "";
     conf.notExists = false;
-  } catch (e) {
-    if (e.status !== 404) {
-      conf.error = e;
+  } catch (error) {
+    if ((error as LockError).status != '404') {
+      conf.error = error as LockError;
     }
   }
   return conf;

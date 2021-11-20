@@ -1,4 +1,3 @@
-import OctokitMain = require("@octokit/rest");
 import { Services } from "./services";
 import { RegisterFunc, Options, load } from "./app";
 import { logger } from "./logger";
@@ -50,5 +49,4 @@ export {
   KVStore,
 } from "./services";
 export { local as localServices } from "./local";
-export { PullsGetResponse, ReposGetContentsParams } from "@octokit/rest";
-export class Octokit extends OctokitMain {}
+export { Octokit } from "@octokit/rest";

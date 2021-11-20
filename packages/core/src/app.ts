@@ -85,11 +85,12 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
   app.use(bodyParser.urlencoded({ verify: rawBodyBuffer, extended: true }));
   app.use(bodyParser.json({ verify: rawBodyBuffer }));
   opts.serve.forEach(val => {
-    app.use(val[0], express.static(val[1]));
+    const handler = express.static(val[1]);
+    app.use(val[0], handler);
   });
 
   const root = opts.root;
-  app.use("/static/", express.static(path.join(root, "public", "static")));
+  app.use(express.static(path.join(root, "public", "static")));
 
   const error5xx = path.join(root, "public", "static", "5xx.html");
   const error404 = path.join(root, "public", "static", "404.html");
@@ -157,7 +158,7 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
     express: app,
     probot: robot,
     loaded: () => {
-      return new Promise((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
         app.on("app.partials-loaded", () => {
           resolve();
         });
@@ -170,7 +171,7 @@ export function rawBodyBuffer(
   req: Request,
   res: Response,
   buf: Buffer,
-  encoding: string,
+  encoding: BufferEncoding,
 ) {
   if (buf && buf.length) {
     req.rawBody = buf.toString(encoding || "utf8");

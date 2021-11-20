@@ -1,6 +1,6 @@
 import * as express from "express";
 import Webhooks from "@octokit/webhooks";
-import Octokit from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 import { App as OctokitApp } from "@octokit/app";
 import { Application } from "./application";
 import { createDefaultCache } from "./cache";

@@ -11,7 +11,7 @@
     "packages/run"
   ],
   "scripts": {
-    "bump": "./bump.sh",
+    "bump": "./scripts/bump.sh",
     "start": "node ./scripts/build.js --watch",
     "test": "node ./scripts/build.js --test",
     "server": "node ./scripts/server.js",
@@ -23,8 +23,9 @@
     "trailingComma": "all"
   },
   "devDependencies": {
-    "prettier": "1.19.1",
-    "smee-client": "^1.1.0",
-    "standard-version": "8.0.1"
+    "dotenv": "latest",
+    "prettier": "^2.4.1",
+    "smee-client": "^1.2.2",
+    "standard-version": "^9.3.2"
   }
 }

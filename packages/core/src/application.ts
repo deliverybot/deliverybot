@@ -1,5 +1,5 @@
 import { App as OctokitApp } from "@octokit/app";
-import Octokit from "@octokit/rest";
+import { Octokit } from '@octokit/rest';
 import Webhooks from "@octokit/webhooks";
 import { EventEmitter } from "promise-events";
 import { Cache } from "./cache";
@@ -424,7 +424,7 @@ export class Application {
 
             await callback(context);
           } catch (err) {
-            if (err.retryable) {
+            if ((err as any).retryable) {
               log.warn({ err, event, retryable: true });
             } else {
               log.error({ err, event, retryable: false });
@@ -483,7 +483,7 @@ export class Application {
         },
         baseUrl:
           process.env.GHE_HOST && `https://${process.env.GHE_HOST}/api/v3`,
-        logger: log.child({ component: "github", installation: String(id) }),
+        log: log.child({ component: "github", installation: String(id) }),
       });
       // Cache for 1 minute less than GitHub expiry
       // const installationTokenTTL = parseInt(process.env.INSTALLATION_TOKEN_TTL || '3540', 10)
@@ -494,7 +494,7 @@ export class Application {
     return new this.Octokit({
       auth: `Bearer ${token}`,
       baseUrl: process.env.GHE_HOST && `https://${process.env.GHE_HOST}/api/v3`,
-      logger: log.child({ component: "github" }),
+      log: log.child({ component: "github" }),
     });
   }
 

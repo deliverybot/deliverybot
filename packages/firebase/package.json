@@ -4,25 +4,32 @@
   "version": "0.7.2",
   "scripts": {
     "clean": "mkdir -p lib && mkdir -p public && rm -r lib && rm -r public",
-    "build": "./scripts/build.sh",
+    "build-copy-before": "cp -r ../app/public ./public",
+    "build-copy-after": "mkdir -p lib/config && mv public/static/bundle/scripts.html lib/config/scripts.html",
+    "build-typescript": "tsc",
+    "build-webpack": "webpack --config config/webpack.config.js",
+    "build": "npm run build-copy-before && npm run build-typescript && npm run build-webpack && npm run build-copy-after",
     "deploy:development": "./scripts/deploy.sh development",
     "deploy:production": "./scripts/deploy.sh production"
   },
   "dependencies": {
-    "@deliverybot/app": "0.7.2",
-    "@deliverybot/core": "0.7.2",
-    "@google-cloud/logging-bunyan": "1.2.3",
-    "@google-cloud/pubsub": "1.1.1",
-    "firebase-admin": "8.3.0",
-    "stackdriver-errors-js": "0.7.0",
-    "firebase-functions": "3.2.0"
+    "@deliverybot/app": "../app",
+    "@deliverybot/core": "../core",
+    "@google-cloud/logging-bunyan": "^1.2.3",
+    "@google-cloud/pubsub": "^1.7.3",
+    "firebase-admin": "^8.13.0",
+    "firebase-functions": "^3.16.0",
+    "stackdriver-errors-js": "^0.12.0"
   },
   "devDependencies": {
-    "firebase": "7.3.0",
-    "firebase-tools": "7.2.4",
-    "typescript": "3.7.2",
-    "webpack": "4.41.5",
-    "webpack-cli": "3.3.10"
+    "css-loader": "^3.6.0",
+    "firebase": "^9.4.1",
+    "firebase-tools": "^9.23.0",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.12.0",
+    "typescript": "^4.5.2",
+    "webpack": "^4.46.0",
+    "webpack-cli": "^3.3.12"
   },
   "description": "Controls and configures deployments using the GitHub API.",
   "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",
