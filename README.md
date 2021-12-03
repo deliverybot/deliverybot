@@ -26,6 +26,7 @@ For more, check out the [Contributing Guide](CONTRIBUTING.md).
 ### Setup
 
     yarn install
+    yarn build
     yarn start
 
 ## License
