@@ -1,13 +1,13 @@
 # Hosting
 
-As of September 20th 2020, DeliveryBot transitioned to be a [project that you will deploy yourself on your own infrastructure](https://deliverybot.dev/2020/02/14/deliverybot-goes-open-source/). This document explains a simple path to hosting DeliveryBot yourself.
+As of September 20th 2020, DeliveryBot transitioned to be a "[project that you will deploy yourself on your own infrastructure](https://deliverybot.dev/2020/02/14/deliverybot-goes-open-source/)". This document explains a simple path to hosting DeliveryBot yourself.
 
 ## Create a GitHub App
-The first step is to create a [GitHub App](https://docs.github.com/en/developers/apps/getting-started-with-apps/about-apps). The app mostly a set of permissions and integration points.
+The first step is to create a [GitHub App](https://docs.github.com/en/developers/apps/getting-started-with-apps/about-apps).
 
-1. Navigate through GitHub's UI or [New GitHub App](https://github.com/settings/apps/new)
+1. [New GitHub App](https://github.com/settings/apps/new)
 2. `GitHub App Name` - Name the app, maybe something like `DeliveryBot (Hosted by your.org)`
-3. `Homepage URL` - The URL where you expect to be hosting delivery bot (eg. `https://deliverybot.your.org`)
+3. `Homepage URL` - The URL where you expect to be hosting DeliveryBot (eg. `https://deliverybot.your.org`)
 4. `Callback URL` - An absolute URL with path `/login/cb` (eg. `https://deliverybot.your.org/login/cb`)
 5. `Expire user authorization tokens` - Check this
 6. **Permissions and Events** - [This Manifest](https://github.com/deliverybot/deliverybot/blob/master/app.yml) describes the exact permissions which should be granted. You can [use Probot](https://docs.github.com/en/developers/apps/building-github-apps/creating-a-github-app-from-a-manifest) to actually create the app from the manifest, but learning Probot takes more than the one minute it takes to set the permissions manually.
@@ -49,3 +49,5 @@ yarn install
 yarn build
 yarn start
 ```
+
+The service should be running on port 3000.
