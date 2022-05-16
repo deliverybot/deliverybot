@@ -22,7 +22,7 @@
     "@deliverybot/slackbot": "0.7.2",
     "lodash.get": "4.4.2",
     "js-yaml": "3.13.1",
-    "node-fetch": "2.6.0",
+    "node-fetch": "2.6.7",
     "object-hash": "2.0.0",
     "promise-events": "0.1.6",
     "uuid": "3.3.3"
