@@ -51,7 +51,7 @@ export async function config(
     if (conf[key].deployments && conf[key].deployments.length > 0) {
       const dep = conf[key].deployments[0];
       const tar = conf[key];
-      fields.forEach(field => {
+      fields.forEach((field) => {
         tar[field] = tar[field] || dep[field];
       });
       delete conf[key].deployments;

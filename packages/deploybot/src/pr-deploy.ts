@@ -52,7 +52,7 @@ export async function handlePRDeploy(
 }
 
 export function prDeploy(app: Application, locker: EnvLockStore) {
-  app.on("issue_comment.created", async context => {
+  app.on("issue_comment.created", async (context) => {
     if (context.payload.comment.body.startsWith("/deploy")) {
       await handlePRDeploy(
         context,

@@ -141,7 +141,7 @@ export function auto(
     const deploys = await context.octokit.repos.listDeployments(
       context.repo({ sha }),
     );
-    if (deploys.data.find(d => d.environment === targetVal.environment)) {
+    if (deploys.data.find((d) => d.environment === targetVal.environment)) {
       context.log.info(
         logCtx(context, { ref }),
         "auto deploy: already deployed",
@@ -243,7 +243,7 @@ export function auto(
       logCtx(context, {
         repoId,
         sha,
-        watches: watches.map(w => ({
+        watches: watches.map((w) => ({
           target: w.target,
           id: w.id,
           ref: w.ref,
@@ -254,7 +254,7 @@ export function auto(
       "auto deploy: emitting watches",
     );
     await Promise.all(
-      watches.map(watch =>
+      watches.map((watch) =>
         publish({
           id: uuid(),
           name: "push_watch",
@@ -268,7 +268,7 @@ export function auto(
   }
 
   // Status events emit different watches to auto-deploy code.
-  app.on("status", async context => {
+  app.on("status", async (context) => {
     await emitWatches(
       context,
       context.payload.repository.id,
@@ -277,7 +277,7 @@ export function auto(
   });
 
   // Check run events emit different watches to auto-deploy code.
-  app.on("check_run", async context => {
+  app.on("check_run", async (context) => {
     await emitWatches(
       context,
       context.payload.repository.id,
@@ -287,18 +287,15 @@ export function auto(
 
   // Handles a synthetic push watch event. This fires whenever a change happens
   // to a specific commit where a watch exists on that commit.
-  app.onCustom("push_watch", context =>
-    lockWatch(
-      context,
-      (): Promise<boolean> => {
-        const watch = context.payload as unknown as Watch;
-        return processWatch(context, watch);
-      },
-    ),
+  app.onCustom("push_watch", (context) =>
+    lockWatch(context, (): Promise<boolean> => {
+      const watch = context.payload as unknown as Watch;
+      return processWatch(context, watch);
+    }),
   );
 
   // Push handles creating new watches that need to appear.
-  app.on("push", async context => {
+  app.on("push", async (context) => {
     await addWatch(
       context,
       context.payload.ref,
@@ -309,7 +306,7 @@ export function auto(
   });
 
   // Auto deploy on open PR event
-  app.on("pull_request.opened", async context => {
+  app.on("pull_request.opened", async (context) => {
     await addWatch(
       context,
       "pr",
@@ -321,7 +318,7 @@ export function auto(
   });
 
   // Auto deploy on push to PR
-  app.on("pull_request.synchronize", async context => {
+  app.on("pull_request.synchronize", async (context) => {
     await addWatch(
       context,
       "pr",

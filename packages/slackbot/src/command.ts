@@ -46,7 +46,7 @@ const handlers: {
           text: `Deploy \`${rawRef}\` to \`${target}\` queued`,
         }),
       )
-      .catch(err =>
+      .catch((err) =>
         respond(ctx, {
           response_type: "in_channel",
           mrkdwn_in: ["text"],

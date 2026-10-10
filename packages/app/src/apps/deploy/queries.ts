@@ -113,8 +113,8 @@ interface Watches {
 }
 
 async function getWatches(watch: WatchStore, repoId: number, shas: string[]) {
-  return Promise.all(shas.map(sha => watch.listWatchBySha(repoId, sha))).then(
-    watches =>
+  return Promise.all(shas.map((sha) => watch.listWatchBySha(repoId, sha))).then(
+    (watches) =>
       shas.reduce<Watches>((acc, sha, i) => {
         acc[sha] = watches[i];
         return acc;
@@ -233,16 +233,16 @@ const success = ["SUCCESS"];
 const waiting = ["WAITING"];
 
 export function AggregateStatus(statuses: string[]) {
-  if (statuses.find(s => failing.includes(s.toUpperCase()))) {
+  if (statuses.find((s) => failing.includes(s.toUpperCase()))) {
     return "FAILURE";
   }
-  if (statuses.find(s => pending.includes(s.toUpperCase()))) {
+  if (statuses.find((s) => pending.includes(s.toUpperCase()))) {
     return "PENDING";
   }
-  if (statuses.find(s => success.includes(s.toUpperCase()))) {
+  if (statuses.find((s) => success.includes(s.toUpperCase()))) {
     return "SUCCESS";
   }
-  if (statuses.find(s => waiting.includes(s.toUpperCase()))) {
+  if (statuses.find((s) => waiting.includes(s.toUpperCase()))) {
     return "WAITING";
   }
   return "NOTHING";
@@ -252,7 +252,7 @@ export function Checks(
   node: any,
 ): Array<{ context: string; status: ReturnType<typeof Status> }> {
   return (((node.status && node.status.contexts) || []) as any[])
-    .map(ctx => ({
+    .map((ctx) => ({
       context: ctx.context as string,
       status: Status(ctx.state),
     }))
@@ -269,13 +269,13 @@ export function Checks(
         })),
     )
     .filter(
-      (el, i, arr) => arr.findIndex(el2 => el2.context === el.context) == i,
+      (el, i, arr) => arr.findIndex((el2) => el2.context === el.context) == i,
     );
 }
 
 export function Check(node: any) {
   return {
-    status: Status(AggregateStatus(Checks(node).map(c => c.status.name))),
+    status: Status(AggregateStatus(Checks(node).map((c) => c.status.name))),
   };
 }
 
@@ -342,7 +342,7 @@ export function Deployments(node: any) {
     .sort((a, b) => b.createdAt - a.createdAt)
     .filter(
       (el, i, arr) =>
-        arr.findIndex(el2 => el2.environment === el.environment) == i,
+        arr.findIndex((el2) => el2.environment === el.environment) == i,
     );
 }
 
@@ -361,7 +361,7 @@ export function Previous(commits: any[]) {
   if (!latest) {
     return null;
   }
-  const latestIdx = commits.findIndex(c => c.oid === latest.oid);
+  const latestIdx = commits.findIndex((c) => c.oid === latest.oid);
   return commits[latestIdx + 1] || null;
 }
 
@@ -445,7 +445,7 @@ export function Branches(
   active: string,
   branches: any[],
 ): Array<{ name: string; active: boolean }> {
-  return branches.map(n => ({
+  return branches.map((n) => ({
     name: n.name,
     active: active === n.name,
   }));
@@ -504,7 +504,7 @@ export async function config(
 
 export async function locks(config: Config, repo: Repo, lock: EnvLockStore) {
   const locked = await lock.list(repo.id);
-  const targets = Object.keys(config.config || {}).map(target => {
+  const targets = Object.keys(config.config || {}).map((target) => {
     const environment = get(config, `config.${target}.environment`, "");
     return {
       target,

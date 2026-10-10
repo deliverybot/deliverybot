@@ -17,7 +17,7 @@ export function publishRepoUpdated(
       id: repo.id,
       updatedAt: new Date().toISOString(),
     })
-    .catch(err => {
+    .catch((err) => {
       logger.error({ error: err }, "failed to publish repo update");
     });
 }

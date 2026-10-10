@@ -42,7 +42,7 @@ export function prClose(app: Application) {
     }
   }
 
-  app.on("pull_request.closed", async context => {
+  app.on("pull_request.closed", async (context) => {
     await handlePRClose(context);
   });
 }

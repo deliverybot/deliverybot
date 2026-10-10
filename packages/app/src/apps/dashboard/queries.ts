@@ -35,7 +35,7 @@ export async function repos(
 
 export async function install(user: User, name: string) {
   const installList = await installs(user);
-  const install = installList.find(i => i.name === name);
+  const install = installList.find((i) => i.name === name);
   if (!install) {
     throw new NotFoundError("Installation not found");
   }
@@ -43,10 +43,9 @@ export async function install(user: User, name: string) {
 }
 
 export async function installs(user: User) {
-  const installations = await user.github.apps.listInstallationsForAuthenticatedUser(
-    {},
-  );
-  return installations.data.installations.map(install => {
+  const installations =
+    await user.github.apps.listInstallationsForAuthenticatedUser({});
+  return installations.data.installations.map((install) => {
     // Enterprise installations have no login or type.
     const account =
       install.account && "login" in install.account ? install.account : null;

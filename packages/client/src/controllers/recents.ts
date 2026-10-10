@@ -27,7 +27,7 @@ export class RecentsController extends Controller {
   }
 
   recentsToObjects() {
-    return this.getRecents().map(r => ({
+    return this.getRecents().map((r) => ({
       owner: r.split("/")[0],
       repo: r.split("/")[1],
     }));

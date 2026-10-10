@@ -23,8 +23,8 @@ export class KVStore {
 
   async list<T>(prefix: string): Promise<T[]> {
     return Object.keys(this.store)
-      .filter(k => k.startsWith(prefix))
-      .map(k => this.store[k]!);
+      .filter((k) => k.startsWith(prefix))
+      .map((k) => this.store[k]!);
   }
 
   clear() {
