@@ -37,6 +37,15 @@ export const migrations: string[] = [
   );
   CREATE INDEX jobs_ready ON jobs (run_at, id) WHERE state = 'queued';
   `,
+  `
+  -- Schema expected by connect-pg-simple.
+  CREATE TABLE session (
+    sid varchar NOT NULL PRIMARY KEY,
+    sess json NOT NULL,
+    expire timestamp(6) NOT NULL
+  );
+  CREATE INDEX session_expire ON session (expire);
+  `,
 ];
 
 // Arbitrary constant so concurrent processes don't migrate at the same time.

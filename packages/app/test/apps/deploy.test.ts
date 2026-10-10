@@ -125,6 +125,25 @@ describe("Deploy", () => {
     expect(response.body).toEqual({ status: "Ok" });
   });
 
+  it("rejects a request without a csrf token", async () => {
+    const response = await factory
+      .request(app)
+      .post("/Codertocat/Hello-World/branch/master/o/foo/promote")
+      .set("cookie", session)
+      .send("target=production");
+    expect(response.status).toBe(403);
+  });
+
+  it("rejects a request with the wrong csrf token", async () => {
+    const response = await factory
+      .request(app)
+      .post("/Codertocat/Hello-World/branch/master/o/foo/promote")
+      .set("csrf-token", "x".repeat(csrf.length))
+      .set("cookie", session)
+      .send("target=production");
+    expect(response.status).toBe(403);
+  });
+
   it("fails to promote", async () => {
     factory.commitFullGql();
     factory.errorCreateStatus("foo");

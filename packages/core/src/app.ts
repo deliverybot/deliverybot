@@ -1,4 +1,3 @@
-import session from "client-sessions";
 import * as turbolinks from "turbolinks-express";
 import bodyParser from "body-parser";
 import express, {
@@ -9,10 +8,11 @@ import express, {
   Handler,
 } from "express";
 import path from "path";
-import csurf from "csurf";
+import { Store } from "express-session";
 import "express-async-errors";
 
 import { logRequests } from "./middleware";
+import { sessions, csrf } from "./session";
 import {
   Application,
   AppOptions,
@@ -44,6 +44,8 @@ export interface Options extends AppOptions {
   locals: any;
   config: { [k: string]: string | undefined };
   dispatcher?: Dispatcher;
+  /** Where sessions are kept. Defaults to memory. */
+  sessionStore?: Store;
 }
 
 export function load(services: Services, apps: RegisterFunc[], opts: Options) {
@@ -56,13 +58,6 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
 
   // Attach the probot log to the request object.
   app.use(logRequests);
-
-  // Hack for client-sessions. It uses a different field to query whether the
-  // connection is secure.
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    if (req.secure) (req.connection as any).proxySecure = true;
-    next();
-  });
 
   app.locals.info = opts.locals;
 
@@ -77,19 +72,11 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
     next();
   });
 
-  // Initialize the client-sessions. For deployment to firebase the cookie must
-  // be __session.
   app.use(
-    session({
-      requestKey: "session",
-      cookieName: "__session",
+    sessions({
       secret: opts.appSecret,
-      duration: 24 * 60 * 60 * 1000,
-      cookie: {
-        maxAge: 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        secure: opts.production,
-      },
+      production: opts.production,
+      store: opts.sessionStore,
     }),
   );
 
@@ -134,7 +121,7 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
       registerHelper: hbs.registerHelper.bind(hbs),
       registerPartial: hbs.registerPartial.bind(hbs),
       config: opts.config,
-      csrf: csurf(),
+      csrf: csrf(),
       app,
       robot,
     }),
@@ -144,6 +131,10 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
   app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     if (err.status === 404) {
       res.status(404).sendFile(error404);
+      return;
+    }
+    if (err.code === "EBADCSRFTOKEN") {
+      res.status(403).sendFile(error5xx);
       return;
     }
     next(err);

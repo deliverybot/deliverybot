@@ -29,6 +29,6 @@ describe("Auth", () => {
       .request(app)
       .get("/_/me")
       .set("cookie", session[0]);
-    expect(me.body.id).toEqual(1);
+    expect(me.body.id).toEqual("1");
   });
 });

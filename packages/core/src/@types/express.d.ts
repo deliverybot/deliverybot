@@ -5,7 +5,7 @@ declare namespace Express {
 }
 
 interface RequestExtras {
-  session?: any;
+  csrfToken: () => string;
   context: any;
   requestId: string;
   rawBody?: string;

@@ -39,6 +39,7 @@ export {
 } from "./github";
 export type { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 export { Logger, logger } from "./logger";
+export { sessions, csrf, EncryptedStore } from "./session";
 export { Dependencies, RegisterFunc, Options, load } from "./app";
 export {
   Services,

@@ -9,4 +9,5 @@ const queue = db && opts.production ? db.queue : undefined;
 export = load(services, apps, {
   ...opts,
   dispatcher: queue && queue.dispatcher,
+  sessionStore: db && db.sessionStore(),
 });

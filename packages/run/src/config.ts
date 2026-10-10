@@ -10,7 +10,7 @@ export const opts: Options = {
   id: Number(env("APP_ID")),
   webhookPath: env("WEBHOOK_PATH"),
   webhookSecret: env("WEBHOOK_SECRET"),
-  appSecret: env("WEBHOOK_SECRET") || "development",
+  appSecret: env("SESSION_SECRET") || env("WEBHOOK_SECRET") || "development",
   privateKey: env("PRIVATE_KEY"),
   config: {
     slackLoginUrl: env("SLACK_LOGIN_URL"),

@@ -42,12 +42,12 @@ export function slackbot({ app, kvService, config }: Dependencies) {
     }
     req.log.info({ user: body.user_id }, "slack got user");
     // Sends a success page -- includes a link to /slack/associate.
-    req.session!.slackId = body.user_id;
+    req.session.slackId = body.user_id;
     res.render(views.connect, {});
   });
 
   app.get("/slack/associate", authenticate, async (req: AuthedRequest, res) => {
-    if (req.session && req.session.slackId && req.user && req.user.id) {
+    if (req.session.slackId && req.user && req.user.id) {
       await store.associate({
         slack: { id: req.session.slackId },
         github: {
