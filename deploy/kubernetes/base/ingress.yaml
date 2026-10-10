@@ -1,11 +1,11 @@
-# Assumes ingress-nginx and a cert-manager ClusterIssuer named `letsencrypt`.
+# Assumes ingress-nginx and a cert-manager ClusterIssuer named `letsencrypt-prod`.
 # The overlays set the host.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: web
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: nginx
   tls:

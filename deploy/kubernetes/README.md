@@ -26,7 +26,7 @@ The manifests expect these to be installed in the cluster already:
   `kubectl apply --server-side -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.27/releases/cnpg-1.27.0.yaml`
 - [ingress-nginx](https://kubernetes.github.io/ingress-nginx/) and
   [cert-manager](https://cert-manager.io) with a `ClusterIssuer` named
-  `letsencrypt`. If the cluster uses a different ingress controller or issuer,
+  `letsencrypt-prod`. If the cluster uses a different ingress controller or issuer,
   change `base/ingress.yaml`.
 
 Point DNS for `staging.deliverybot.dev` and `app.deliverybot.dev` at the
