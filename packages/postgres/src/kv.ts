@@ -28,6 +28,12 @@ export class PostgresKVStore<T> implements KVStore<T> {
     await this.pool.query("DELETE FROM kv WHERE key = $1", [key]);
   }
 
+  async delPrefix(prefix: string) {
+    await this.pool.query("DELETE FROM kv WHERE key LIKE $1", [
+      `${escapeLike(prefix)}%`,
+    ]);
+  }
+
   /**
    * Lists the direct children of `prefix`, like a Firestore collection:
    * `list("repos/1/locks")` returns `repos/1/locks/prod` but not

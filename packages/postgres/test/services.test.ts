@@ -15,7 +15,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  await db.pool.query("TRUNCATE kv, users, jobs");
+  await db.pool.query("TRUNCATE kv, users, jobs, installations");
 });
 
 describe("migrate", () => {
@@ -47,6 +47,19 @@ describe("kv", () => {
       { env: "prod" },
       { env: "staging" },
     ]);
+  });
+
+  test("delPrefix deletes keys with the prefix only", async () => {
+    const kv = db.services.kvService<number>();
+    await kv.put("queue/1-a/jobs/1", 1);
+    await kv.put("queue/1-b/jobs/2", 2);
+    await kv.put("queue/10-a/jobs/3", 3);
+    await kv.put("queue/1_x", 4);
+    await kv.delPrefix("queue/1-");
+    expect(await kv.get("queue/1-a/jobs/1")).toBeUndefined();
+    expect(await kv.get("queue/1-b/jobs/2")).toBeUndefined();
+    expect(await kv.get("queue/10-a/jobs/3")).toEqual(3);
+    expect(await kv.get("queue/1_x")).toEqual(4);
   });
 
   test("list treats LIKE wildcards literally", async () => {
@@ -133,5 +146,24 @@ describe("users", () => {
     expect(rows).toEqual([{ username: "octocat2" }]);
     await users.delete("1");
     expect((await db.pool.query("SELECT * FROM users")).rowCount).toBe(0);
+  });
+});
+
+describe("installations", () => {
+  test("upserts, reads and deletes", async () => {
+    const store = db.services.installationService();
+    const i = {
+      id: 42,
+      account: "octo-org",
+      accountType: "Organization",
+      repositorySelection: "all",
+      suspended: false,
+    };
+    expect(await store.get(42)).toBeUndefined();
+    await store.upsert(i);
+    await store.upsert({ ...i, suspended: true });
+    expect(await store.get(42)).toEqual({ ...i, suspended: true });
+    await store.delete(42);
+    expect(await store.get(42)).toBeUndefined();
   });
 });

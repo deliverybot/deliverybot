@@ -8,9 +8,10 @@ import { PostgresMessageBus } from "./message";
 import { PostgresUserStore } from "./user";
 import { migrate } from "./migrate";
 import { PostgresQueue, QueueOptions } from "./queue";
+import { PostgresInstallationStore } from "./installation";
 
 export { migrate, PostgresKVStore, PostgresLockStore, PostgresMessageBus };
-export { PostgresUserStore, PostgresQueue };
+export { PostgresUserStore, PostgresQueue, PostgresInstallationStore };
 
 export interface PostgresOptions extends PoolConfig {
   lock?: Partial<LockOptions>;
@@ -27,11 +28,13 @@ export function postgresServices(opts: PostgresOptions = {}) {
   const lock = new PostgresLockStore(pool, lockOpts);
   const msg = new PostgresMessageBus<any>(pool);
   const user = new PostgresUserStore(pool);
+  const installation = new PostgresInstallationStore(pool);
   const services: Services = {
     kvService: () => kv,
     lockService: () => lock,
     messageService: () => msg,
     userService: () => user,
+    installationService: () => installation,
   };
   const queue = new PostgresQueue(pool, queueOpts);
   const PgStore = connectPgSimple(session);

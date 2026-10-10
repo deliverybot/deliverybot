@@ -21,6 +21,13 @@ export class KVStore {
     this.flush();
   }
 
+  async delPrefix(prefix: string) {
+    Object.keys(this.store)
+      .filter((k) => k.startsWith(prefix))
+      .forEach((k) => delete this.store[k]);
+    this.flush();
+  }
+
   async list<T>(prefix: string): Promise<T[]> {
     return Object.keys(this.store)
       .filter((k) => k.startsWith(prefix))
