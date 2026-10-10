@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@deliverybot/core": "0.7.2",
-    "js-yaml": "4.1.0",
+    "js-yaml": "4.3.2",
     "jsonschema": "1.2.5",
     "mustache": "4.0.0"
   },
