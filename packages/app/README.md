@@ -9,7 +9,7 @@ All functionality is structured into apps which have the following files:
 - `views`: Holds logic that calls queries and returns results to be formatted
   by the UI.
 - `queries`: Queries the store for data.
-- `store`: Storage in firebase or other mechanisms.
+- `store`: Storage in Postgres (`@deliverybot/postgres`) or in memory.
 - `commands`: Commands mutate state.
 
 The `@deliverybot/core` package contains all the main interfaces for working

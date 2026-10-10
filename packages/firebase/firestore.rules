@@ -1,8 +1,0 @@
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /repos/{repo} {
-      // Make sure a 'users' document exists for the requesting user before
-      allow read: if exists(/databases/$(database)/documents/repos/$(repo)/users/$(request.auth.uid))
-    }
-  }
-}
