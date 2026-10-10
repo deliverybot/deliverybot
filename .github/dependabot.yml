@@ -1,0 +1,49 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    ignore:
+      # CI and production run Node 22; the type definitions must match the runtime major.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+    groups:
+      # Probot is built on Octokit and they should move together.
+      probot:
+        patterns:
+          - probot
+          - "@probot/*"
+          - "@octokit/*"
+      webpack:
+        patterns:
+          - webpack
+          - webpack-cli
+          - "*-loader"
+          - "*-webpack-plugin"
+      vitest:
+        patterns:
+          - vitest
+          - "@vitest/*"
+      # Everything else that is a minor or patch bump lands in one PR.
+      # Major bumps still get their own PR.
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+      # Bundle security fixes for transitive dependencies into one PR.
+      security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
