@@ -38,7 +38,9 @@ export async function config(
     throw new ConfigError("content not found");
   }
   const conf =
-    yaml.safeLoad(Buffer.from(content.data.content, "base64").toString()) || {};
+    (yaml.load(
+      Buffer.from(content.data.content, "base64").toString(),
+    ) as any) || {};
 
   const fields = [
     "task",

@@ -16,7 +16,7 @@
   "dependencies": {
     "@deliverybot/core": "0.7.2",
     "@deliverybot/deploybot": "0.7.2",
-    "node-fetch": "2.6.0"
+    "node-fetch": "2.7.0"
   },
   "devDependencies": {
     "@types/csurf": "1.9.36",
