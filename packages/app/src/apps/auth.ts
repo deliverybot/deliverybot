@@ -21,16 +21,16 @@ export interface AuthedRequest extends Request {
 }
 
 export function setUser(req: AuthedRequest, res: Response, next: NextFunction) {
-  const token = req.session && req.session.token;
+  const token = req.session.token;
   if (!token) {
     return next();
   }
-  const { id, avatar, login: username } = req.session!;
+  const { userId: id, avatar, login: username } = req.session;
   if (!id || !username) {
     return next();
   }
   const github = new Octokit({ auth: token });
-  req.user = { id, avatar, github, token, username };
+  req.user = { id, avatar: avatar || "", github, token, username };
   next();
 }
 
@@ -39,7 +39,7 @@ export function authenticate(
   res: Response,
   next: NextFunction,
 ) {
-  const token = req.session && req.session.token;
+  const token = req.session.token;
   if (!token) {
     (req as any).log.info("unauthenticated access redirecting");
     req.session.next = req.url;
@@ -69,11 +69,7 @@ export async function verifyRepo(
   const { owner, repo } = req.params;
   const username = req.user!.username;
   const octokit = req.user!.github;
-  if (
-    req.session &&
-    req.session.verified &&
-    req.session.verified[`${owner}/${repo}`]
-  ) {
+  if (req.session.verified && req.session.verified[`${owner}/${repo}`]) {
     const id = req.session.verified[`${owner}/${repo}`];
     req.user!.repo = { owner, repo, id };
     next();
@@ -88,7 +84,7 @@ export async function verifyRepo(
     res.redirect("/login");
     return;
   }
-  req.session!.verified = req.session.verified || {};
+  req.session.verified = req.session.verified || {};
   req.session.verified[`${owner}/${repo}`] = id;
   req.user!.repo = { owner, repo, id };
   next();
@@ -133,15 +129,18 @@ export function auth({ app, csrf, userService, config }: Dependencies) {
     const octokit = new Octokit({ auth: token });
     const user = await octokit.users.getAuthenticated({});
 
+    // A fresh session id on sign in prevents session fixation.
+    const { next, slackId } = req.session;
+    await new Promise<void>((resolve, reject) =>
+      req.session.regenerate((err) => (err ? reject(err) : resolve())),
+    );
     req.session.avatar = user.data.avatar_url;
     req.session.token = token;
-    req.session.id = user.data.id;
+    req.session.userId = `${user.data.id}`;
     req.session.login = user.data.login;
-    const url = req.session.next ? req.session.next : "/";
-    if (req.session.next) {
-      delete req.session.next;
-    }
+    if (slackId) req.session.slackId = slackId;
     res.set("csrf-token", req.csrfToken());
+    const url = next || "/";
     res.redirect(url);
   }
 
@@ -159,12 +158,10 @@ export function auth({ app, csrf, userService, config }: Dependencies) {
       if (user) {
         await userService().delete(`${user.id}`);
       }
-      req.session = {};
-      res.redirect("https://deliverybot.dev");
+      req.session.destroy(() => res.redirect("https://deliverybot.dev"));
     },
   );
   app.get("/logout", (req: Request, res: Response) => {
-    req.session = {};
-    res.redirect("https://deliverybot.dev");
+    req.session.destroy(() => res.redirect("https://deliverybot.dev"));
   });
 }

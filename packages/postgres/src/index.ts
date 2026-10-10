@@ -1,4 +1,6 @@
 import { Pool, PoolConfig } from "pg";
+import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
 import { Services } from "@deliverybot/core";
 import { PostgresKVStore } from "./kv";
 import { PostgresLockStore, LockOptions } from "./lock";
@@ -32,5 +34,9 @@ export function postgresServices(opts: PostgresOptions = {}) {
     userService: () => user,
   };
   const queue = new PostgresQueue(pool, queueOpts);
-  return { pool, services, queue };
+  const PgStore = connectPgSimple(session);
+  // Created lazily so processes that don't serve requests don't prune.
+  const sessionStore = (opts: { pruneSessionInterval?: number | false } = {}) =>
+    new PgStore({ pool, tableName: "session", ...opts });
+  return { pool, services, queue, sessionStore };
 }
