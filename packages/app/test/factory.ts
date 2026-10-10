@@ -4,19 +4,21 @@ process.env.LOG_LEVEL = "fatal";
 
 import nock from "nock";
 import supertest from "supertest";
-import "./app";
+import "./app.js";
 import { Application } from "express";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
 
 // Keep tests clean by exporting mocking tools here;
 export { Scope } from "nock";
-export { app } from "./app";
+export { app } from "./app.js";
 export const request = supertest;
 export const cleanAll = nock.cleanAll;
 
-
 export const fixtures = {
-  deployValid: require("./fixtures/deploy-valid"),
-  deployInvalid: require("./fixtures/deploy-invalid"),
+  deployValid: require("./fixtures/deploy-valid.cjs"),
+  deployInvalid: require("./fixtures/deploy-invalid.cjs"),
   deployment: require("./fixtures/deployment.json"),
   commentCreated: require("./fixtures/comment.created.json"),
   pullRequest: require("./fixtures/pull-request.json"),
@@ -54,9 +56,7 @@ export const currentUser = () =>
     .reply(200, { id: 1, login: "Codertocat" });
 
 export const gql = (data: any) =>
-  nock("https://api.github.com")
-    .post("/graphql")
-    .reply(200, { data });
+  nock("https://api.github.com").post("/graphql").reply(200, { data });
 
 export const commitMinimalGql = () => gql(fixtures.commitMinimal);
 export const commitFullGql = () => gql(fixtures.commitFull);
@@ -125,7 +125,9 @@ export const permission = ({ admin }: { admin: boolean }) =>
 export const config = ({ valid }: { valid?: boolean }) =>
   nock("https://api.github.com")
     .persist()
-    .get(/^\/repos\/Codertocat\/Hello-World\/contents\/\.github(\/|%2F)deploy\.yml/)
+    .get(
+      /^\/repos\/Codertocat\/Hello-World\/contents\/\.github(\/|%2F)deploy\.yml/,
+    )
     .query(() => true)
     .reply(200, {
       content: Buffer.from(
@@ -156,7 +158,9 @@ export const errorDeploy = () =>
 export const noConfig = () =>
   nock("https://api.github.com")
     .persist()
-    .get(/^\/repos\/Codertocat\/Hello-World\/contents\/\.github(\/|%2F)deploy\.yml/)
+    .get(
+      /^\/repos\/Codertocat\/Hello-World\/contents\/\.github(\/|%2F)deploy\.yml/,
+    )
     .reply(404);
 
 export const deployConflict = () =>

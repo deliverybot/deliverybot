@@ -1,6 +1,5 @@
 import { Dependencies, Octokit } from "@deliverybot/core";
 import { Response, Request, NextFunction } from "express";
-import fetch from "node-fetch";
 
 export interface Repo {
   owner: string;
@@ -53,7 +52,7 @@ export async function canWrite(
   gh: Octokit,
   { owner, repo, username }: { owner: string; repo: string; username: string },
 ): Promise<boolean> {
-  const perms = await gh.repos.getCollaboratorPermissionLevel({
+  const perms = await gh.rest.repos.getCollaboratorPermissionLevel({
     owner,
     repo,
     username,
@@ -76,7 +75,7 @@ export async function verifyRepo(
     return;
   }
 
-  const repoData = await octokit.repos.get({ owner, repo });
+  const repoData = await octokit.rest.repos.get({ owner, repo });
   const id = repoData.data.id;
   const write = await canWrite(octokit, { owner, repo, username });
   if (!write) {
@@ -127,7 +126,7 @@ export function auth({ app, csrf, userService, config }: Dependencies) {
     }
 
     const octokit = new Octokit({ auth: token });
-    const user = await octokit.users.getAuthenticated({});
+    const user = await octokit.rest.users.getAuthenticated({});
 
     // A fresh session id on sign in prevents session fixation.
     const { next, slackId } = req.session;

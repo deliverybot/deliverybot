@@ -1,4 +1,4 @@
-import { postgresServices, migrate } from "../src";
+import { postgresServices, migrate } from "../src/index.js";
 
 export const DATABASE_URL =
   process.env.DATABASE_URL ||

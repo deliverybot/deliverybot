@@ -1,7 +1,7 @@
 import { EnvLockStore, WatchStore } from "@deliverybot/deploybot";
-import { Repo, User } from "../auth";
-import { hash, daysAgo, today } from "../util";
-import * as queries from "./queries";
+import { Repo, User } from "../auth.js";
+import { hash, daysAgo, today } from "../util.js";
+import * as queries from "./queries.js";
 
 interface BaseProps {
   user: User;

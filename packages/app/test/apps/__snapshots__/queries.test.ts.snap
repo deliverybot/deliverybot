@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Queries runs commits blank 1`] = `
+exports[`Queries > runs commits blank 1`] = `
 Object {
   "branches": Array [],
   "commits": Array [],
@@ -13,7 +13,7 @@ Object {
 }
 `;
 
-exports[`Queries runs commits full 1`] = `
+exports[`Queries > runs commits full 1`] = `
 Object {
   "branches": Array [
     Object {
@@ -784,7 +784,7 @@ Object {
 }
 `;
 
-exports[`Queries runs commits minimal 1`] = `
+exports[`Queries > runs commits minimal 1`] = `
 Object {
   "branches": Array [
     Object {

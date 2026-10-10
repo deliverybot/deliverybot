@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
     "allowJs": false,
-    "lib": ["es2019"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "target": "es2019",
+    "lib": [
+      "es2022"
+    ],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "es2022",
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": false,
@@ -18,7 +20,10 @@
     "esModuleInterop": true,
     "declaration": true,
     "resolveJsonModule": true,
-    "typeRoots": ["src/@types", "node_modules/@types"]
+    "typeRoots": [
+      "src/@types",
+      "node_modules/@types"
+    ]
   },
   "include": [
     "src/**/*"

@@ -1,5 +1,5 @@
-import { User } from "../auth";
-import * as queries from "./queries";
+import { User } from "../auth.js";
+import * as queries from "./queries.js";
 
 interface BaseProps {
   user: User;

@@ -1,11 +1,11 @@
 import { Response } from "express";
 import { Dependencies } from "@deliverybot/core";
 import { WatchStore, EnvLockStore } from "@deliverybot/deploybot";
-import { AuthedRequest, authenticate, verifyRepo } from "../auth";
-import { Commits, Watch, Config, Metrics } from "./views";
-import { Promote, Deploy, SetLock } from "./commands";
-import { branch } from "../util";
-import { publishRepoUpdated } from "../watch";
+import { AuthedRequest, authenticate, verifyRepo } from "../auth.js";
+import { Commits, Watch, Config, Metrics } from "./views.js";
+import { Promote, Deploy, SetLock } from "./commands.js";
+import { branch } from "../util.js";
+import { publishRepoUpdated } from "../watch.js";
 
 export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
   const watchStore = new WatchStore(kvService);

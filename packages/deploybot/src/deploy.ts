@@ -1,11 +1,17 @@
 import { Logger, Octokit, RestEndpointMethodTypes } from "@deliverybot/core";
 import yaml from "js-yaml";
 import { validate } from "jsonschema";
-import { EnvLockStore } from "./store";
-import { ConfigError, LockError, Targets, Target, DeployBody } from "./types";
-import schema from "./schema.json";
-import { render } from "./render";
-import { withPreview } from "./util";
+import { EnvLockStore } from "./store.js";
+import {
+  ConfigError,
+  LockError,
+  Targets,
+  Target,
+  DeployBody,
+} from "./types.js";
+import schema from "./schema.json" with { type: "json" };
+import { render } from "./render.js";
+import { withPreview } from "./util.js";
 
 type ReposGetContentParams =
   RestEndpointMethodTypes["repos"]["getContent"]["parameters"];
@@ -30,7 +36,7 @@ export async function config(
     path: `.github/deploy.yml`,
   };
   if (ref) params.ref = ref;
-  const content = await github.repos.getContent(params);
+  const content = await github.rest.repos.getContent(params);
   if (Array.isArray(content.data)) {
     throw new ConfigError(".github/deploy.yml is a folder");
   }
@@ -134,8 +140,12 @@ export async function deploy(
     deploy: { target, ref, pr: pr ? pr.number : undefined },
     context: { repo: { owner, repo } },
   };
-  const commit = await github.git.getCommit({ owner, repo, commit_sha: sha });
-  const repository = await github.repos.get({ owner, repo });
+  const commit = await github.rest.git.getCommit({
+    owner,
+    repo,
+    commit_sha: sha,
+  });
+  const repository = await github.rest.repos.get({ owner, repo });
 
   // Params are the payload that goes into every deployment - change these in a
   // backwards compatible way always.
@@ -173,7 +183,7 @@ export async function deploy(
     log.info({ ...logCtx, body }, "deploy: deploying");
     // TODO: Handle auto_merge case correctly here.
     // https://developer.github.com/v3/repos/deployments/#merged-branch-response
-    const deploy = await github.repos.createDeployment(body);
+    const deploy = await github.rest.repos.createDeployment(body);
     log.info({ ...logCtx, body }, "deploy: successful");
     return deploy.data;
   } catch (error) {

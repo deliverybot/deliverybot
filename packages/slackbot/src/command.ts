@@ -1,7 +1,6 @@
 import { Octokit } from "@deliverybot/core";
-import fetch from "node-fetch";
 import { deploy, EnvLockStore } from "@deliverybot/deploybot";
-import { SlackUser } from "./store";
+import { SlackUser } from "./store.js";
 
 interface Context {
   lock: EnvLockStore;
@@ -130,7 +129,7 @@ async function doDeploy(
   const github = new Octokit({ auth: ctx.user.github.token });
   let gitRef: any;
   try {
-    gitRef = await github.git.getRef(ref);
+    gitRef = await github.rest.git.getRef(ref);
   } catch (err) {
     throw new Error(`Ref not found ${ref.ref}`);
   }

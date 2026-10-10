@@ -8,7 +8,6 @@ interface RequestExtras {
   csrfToken: () => string;
   context: any;
   requestId: string;
-  rawBody?: string;
 }
 
 declare module "turbolinks-express" {

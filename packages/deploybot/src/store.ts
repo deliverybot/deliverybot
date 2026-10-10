@@ -1,5 +1,5 @@
 import { KVStore, KVService } from "@deliverybot/core";
-import { Watch } from "./types";
+import { Watch } from "./types.js";
 
 // Watches must be stored as JSON to avoid messing with type
 // information.

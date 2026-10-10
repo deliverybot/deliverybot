@@ -1,9 +1,9 @@
-import { Services } from "../";
-import { KVStore } from "./kv";
-import { LockStore } from "./lock";
-import { MessageBus } from "./message";
-import { UserStore } from "./user";
-import { InstallationStore } from "./installation";
+import { Services } from "../index.js";
+import { KVStore } from "./kv.js";
+import { LockStore } from "./lock.js";
+import { MessageBus } from "./message.js";
+import { UserStore } from "./user.js";
+import { InstallationStore } from "./installation.js";
 
 export function local(): Services {
   const kv = new KVStore();

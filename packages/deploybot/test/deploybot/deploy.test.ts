@@ -1,14 +1,12 @@
-import * as factory from "../factory";
+import * as factory from "../factory.js";
 import { logger, Octokit } from "@deliverybot/core";
-import { deploy } from "../../src/deploy";
-import { EnvLockStore } from "../../src/store";
-import { services } from "../app";
+import { deploy } from "../../src/deploy.js";
+import { EnvLockStore } from "../../src/store.js";
+import { services } from "../app.js";
 
 const lockStore = new EnvLockStore(services.kvService);
 
 describe("deploy", () => {
-  jest.setTimeout(30000);
-
   afterEach(() => {
     factory.cleanAll();
   });

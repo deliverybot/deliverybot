@@ -1,11 +1,9 @@
-import * as factory from "../factory";
-import { app } from "../app";
+import * as factory from "../factory.js";
+import { app } from "../app.js";
 
 const probot = app.probot;
 
 describe("pr-deploy", () => {
-  jest.setTimeout(30000);
-
   afterEach(() => {
     factory.cleanAll();
   });

@@ -1,11 +1,9 @@
-import * as factory from "../factory";
-import { app } from "../app";
+import * as factory from "../factory.js";
+import { app } from "../app.js";
 
 const probot = app.probot;
 
 describe("pr-close", () => {
-  jest.setTimeout(30000);
-
   afterEach(() => {
     factory.cleanAll();
   });
@@ -52,6 +50,6 @@ describe("pr-close", () => {
     ]);
 
     await probot.receive(factory.prClosed());
-    statuses.forEach(status => expect(status.isDone()).toBe(true));
+    statuses.forEach((status) => expect(status.isDone()).toBe(true));
   });
 });

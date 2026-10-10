@@ -1,4 +1,4 @@
-import { dateInWords, isoDate, distanceInWords } from "../util";
+import { dateInWords, isoDate, distanceInWords } from "../util.js";
 
 export interface Measure {
   createdAt: Date;

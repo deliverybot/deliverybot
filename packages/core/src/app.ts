@@ -8,20 +8,21 @@ import express, {
   Handler,
 } from "express";
 import path from "path";
+import hbs from "hbs";
 import { Store } from "express-session";
 import "express-async-errors";
 
-import { logRequests } from "./middleware";
-import { sessions, csrf } from "./session";
+import { logRequests } from "./middleware.js";
+import { sessions, csrf } from "./session.js";
 import {
   Application,
   AppOptions,
   Dispatcher,
   application,
   webhooks,
-} from "./github";
-import { Services } from "./services";
-import { Logger } from "./logger";
+} from "./github.js";
+import { Services } from "./services.js";
+import { Logger } from "./logger.js";
 
 export interface Dependencies extends Services {
   robot: Application;
@@ -100,7 +101,6 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
   app.set("view engine", "hbs");
   app.set("views", path.join(root, "views"));
 
-  const hbs = require("hbs");
   hbs.localsAsTemplateData(app);
   hbs.registerPartial("scripts", opts.scripts);
   hbs.registerPartials(
@@ -175,6 +175,6 @@ export function rawBodyBuffer(
   encoding: string,
 ) {
   if (buf && buf.length) {
-    req.rawBody = buf.toString(encoding || "utf8");
+    req.rawBody = buf;
   }
 }

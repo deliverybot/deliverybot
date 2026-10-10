@@ -1,8 +1,11 @@
+import * as fs from "fs";
 import * as path from "path";
-export { apps, main, slack, jobs } from "./apps";
+export { apps, main, slack, jobs } from "./apps/index.js";
 export { load, logger } from "@deliverybot/core";
 
-const pkg = require(path.join(__dirname, "..", "package.json"));
+const pkg = JSON.parse(
+  fs.readFileSync(path.join(import.meta.dirname, "..", "package.json"), "utf8"),
+);
 export const info: { [k: string]: string } = {
   version: pkg.version,
   homepage: "https://deliverybot.dev",

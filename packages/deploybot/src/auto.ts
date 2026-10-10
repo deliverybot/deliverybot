@@ -1,16 +1,15 @@
-import { Repository as PayloadRepository } from "@octokit/webhooks-types";
-import { v4 as uuid } from "uuid";
+import { randomUUID as uuid } from "crypto";
 import {
   Application,
   Context,
   LockService,
   WebhookEvent,
 } from "@deliverybot/core";
-import { WatchStore, EnvLockStore } from "./store";
-import { Watch } from "./types";
-import { logCtx } from "./util";
-import { config, deploy } from "./deploy";
-import { hash } from "./util";
+import { WatchStore, EnvLockStore } from "./store.js";
+import { PayloadRepository, Watch } from "./types.js";
+import { logCtx } from "./util.js";
+import { config, deploy } from "./deploy.js";
+import { hash } from "./util.js";
 
 export function match(auto: string | undefined, ref: string) {
   if (!auto) return false;
@@ -121,7 +120,7 @@ export function auto(
     // Check if the current sha for this ref is equal to this watch. Since
     // multiple watches can be in progress we only want to process the latest
     // of them.
-    const refreshed = await context.octokit.git.getRef(
+    const refreshed = await context.octokit.rest.git.getRef(
       context.repo({ ref: ref.replace("refs/", "") }),
     );
     const currentSha = refreshed.data.object.sha;
@@ -138,7 +137,7 @@ export function auto(
       logCtx(context, { ref, sha, target, watchId: watch.id }),
       "auto deploy: processing watch",
     );
-    const deploys = await context.octokit.repos.listDeployments(
+    const deploys = await context.octokit.rest.repos.listDeployments(
       context.repo({ sha }),
     );
     if (deploys.data.find((d) => d.environment === targetVal.environment)) {
@@ -151,7 +150,7 @@ export function auto(
 
     let pr = undefined;
     if (watch.prNumber) {
-      const prObject = await context.octokit.pulls.get({
+      const prObject = await context.octokit.rest.pulls.get({
         owner: context.payload.repository.owner.login,
         repo: context.payload.repository.name,
         pull_number: watch.prNumber,
@@ -278,11 +277,9 @@ export function auto(
 
   // Check run events emit different watches to auto-deploy code.
   app.on("check_run", async (context) => {
-    await emitWatches(
-      context,
-      context.payload.repository.id,
-      context.payload.check_run.check_suite.head_sha,
-    );
+    const sha = context.payload.check_run.check_suite.head_sha;
+    if (!sha) return;
+    await emitWatches(context, context.payload.repository.id, sha);
   });
 
   // Handles a synthetic push watch event. This fires whenever a change happens

@@ -1,4 +1,4 @@
-import { parseRef } from "../src/command";
+import { parseRef } from "../src/command.js";
 
 describe("Slackbot", () => {
   describe(parseRef, () => {

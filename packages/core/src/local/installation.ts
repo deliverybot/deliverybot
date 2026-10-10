@@ -1,4 +1,4 @@
-import { Installation } from "../services";
+import { Installation } from "../services.js";
 
 export class InstallationStore {
   private installations: { [id: number]: Installation } = {};

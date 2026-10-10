@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { AuthedRequest, authenticate, verifyRepo } from "./auth";
+import { AuthedRequest, authenticate, verifyRepo } from "./auth.js";
 import { Dependencies, MessageService, logger } from "@deliverybot/core";
 
 export interface RepoUpdatedMessage {

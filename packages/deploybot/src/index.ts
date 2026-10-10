@@ -1,8 +1,8 @@
 import { Dependencies } from "@deliverybot/core";
-import { prClose } from "./pr-close";
-import { prDeploy } from "./pr-deploy";
-import { auto } from "./auto";
-import { EnvLockStore, WatchStore } from "./store";
+import { prClose } from "./pr-close.js";
+import { prDeploy } from "./pr-deploy.js";
+import { auto } from "./auto.js";
+import { EnvLockStore, WatchStore } from "./store.js";
 
 export function deploybot({ robot, kvService, lockService }: Dependencies) {
   const lockStore = new EnvLockStore(kvService);
@@ -12,8 +12,8 @@ export function deploybot({ robot, kvService, lockService }: Dependencies) {
   auto(robot, lockService, watchStore, lockStore, robot.receive.bind(robot));
 }
 
-export { config, deploy } from "./deploy";
-export { EnvLockStore, WatchStore } from "./store";
+export { config, deploy } from "./deploy.js";
+export { EnvLockStore, WatchStore } from "./store.js";
 export {
   Watch,
   Target,
@@ -21,4 +21,4 @@ export {
   LockError,
   ConfigError,
   DeployBody,
-} from "./types";
+} from "./types.js";

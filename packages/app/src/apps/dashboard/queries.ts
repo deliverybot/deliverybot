@@ -1,7 +1,7 @@
-import { User } from "../auth";
-import { gql } from "../deploy/queries";
-import get = require("lodash.get");
-import { timeAgoInWords } from "../util";
+import { User } from "../auth.js";
+import { gql } from "../deploy/queries.js";
+import get from "lodash.get";
+import { timeAgoInWords } from "../util.js";
 
 class NotFoundError extends Error {
   status = 404;
@@ -12,13 +12,12 @@ export async function repos(
   install: { id: number },
   page?: number,
 ) {
-  const resp = await user.github.apps.listInstallationReposForAuthenticatedUser(
-    {
+  const resp =
+    await user.github.rest.apps.listInstallationReposForAuthenticatedUser({
       page,
       per_page: 50,
       installation_id: install.id,
-    },
-  );
+    });
   const stats = await repoStats(user.token, resp.data.repositories);
   const result = resp.data.repositories.map((repo, i) => ({
     owner: repo.owner.login,
@@ -44,7 +43,7 @@ export async function install(user: User, name: string) {
 
 export async function installs(user: User) {
   const installations =
-    await user.github.apps.listInstallationsForAuthenticatedUser({});
+    await user.github.rest.apps.listInstallationsForAuthenticatedUser({});
   return installations.data.installations.map((install) => {
     // Enterprise installations have no login or type.
     const account =

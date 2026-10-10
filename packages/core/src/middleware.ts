@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { v4 as uuid } from "uuid";
-import { logger } from "./logger";
+import { randomUUID as uuid } from "crypto";
+import { logger } from "./logger.js";
 
 export function logRequests(req: Request, res: Response, next: NextFunction) {
   const start = Date.now();
