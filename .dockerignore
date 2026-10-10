@@ -1,0 +1,9 @@
+**/node_modules
+**/lib
+packages/run/bundle
+packages/app/src/views
+tmp
+.env
+.git
+.github
+*.md

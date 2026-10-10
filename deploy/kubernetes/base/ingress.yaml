@@ -1,0 +1,24 @@
+# Assumes ingress-nginx and a cert-manager ClusterIssuer named `letsencrypt`.
+# The overlays set the host.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: [HOST]
+      secretName: web-tls
+  rules:
+    - host: HOST
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  name: http
