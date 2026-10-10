@@ -2,7 +2,7 @@ import Webhooks, { PayloadRepository } from "@octokit/webhooks";
 import Octokit from "@octokit/rest";
 import { Logger } from "./logger";
 
-interface WebhookPayloadWithRepository {
+export interface WebhookPayloadWithRepository {
   [key: string]: any;
   repository?: PayloadRepository;
   issue?: {

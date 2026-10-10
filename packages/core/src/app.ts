@@ -157,7 +157,7 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
     express: app,
     probot: robot,
     loaded: () => {
-      return new Promise((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
         app.on("app.partials-loaded", () => {
           resolve();
         });

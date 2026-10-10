@@ -10,6 +10,7 @@
     "noUnusedLocals": false,
     "pretty": true,
     "strict": true,
+    "useUnknownInCatchVariables": false,
     "sourceMap": true,
     "outDir": "./lib",
     "skipLibCheck": true,

@@ -134,6 +134,14 @@ export class Measurements {
       }
       obj[key] = val;
     }
+    // Class getters are non-enumerable, so `for...in` skips them.
+    const proto = Object.getPrototypeOf(this);
+    for (const key of Object.getOwnPropertyNames(proto)) {
+      const desc = Object.getOwnPropertyDescriptor(proto, key);
+      if (desc && desc.get) {
+        obj[key] = (this as any)[key];
+      }
+    }
     return obj;
   }
 }

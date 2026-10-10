@@ -28,6 +28,6 @@ export class FirebaseMessageBus<T> implements MessageBus<T> {
   }
 
   async publish(topic: string, message: T): Promise<void> {
-    await this.store.doc(topic).set(message);
+    await this.store.doc(topic).set(message as admin.firestore.DocumentData);
   }
 }

@@ -11,7 +11,7 @@ export class FirebaseKVStore<T> implements KVStore<T> {
   }
 
   async put(key: string, val: T) {
-    await this.store.doc(key).set(val);
+    await this.store.doc(key).set(val as admin.firestore.DocumentData);
   }
 
   async get(key: string): Promise<T | undefined> {
