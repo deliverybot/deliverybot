@@ -8,6 +8,7 @@
     "packages/core",
     "packages/deploybot",
     "packages/slackbot",
+    "packages/postgres",
     "packages/run"
   ],
   "scripts": {

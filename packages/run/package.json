@@ -20,6 +20,7 @@
     "@deliverybot/app": "0.7.2",
     "@deliverybot/client": "0.7.2",
     "@deliverybot/core": "0.7.2",
+    "@deliverybot/postgres": "0.7.2",
     "dotenv": "8.2.0"
   },
   "devDependencies": {

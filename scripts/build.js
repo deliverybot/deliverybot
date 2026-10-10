@@ -81,6 +81,7 @@ async function main() {
     await Promise.all([
       run('.', 'server'),
       run('core', 'build:watch', restart),
+      run('postgres', 'build:watch', restart),
       run('app', 'build:watch', restart),
       run('app', 'partials:watch', restart),
       run('client', 'build:watch', restart),
@@ -92,6 +93,7 @@ async function main() {
       run('deploybot', 'test'),
       run('slackbot', 'test'),
       run('app', 'test'),
+      run('postgres', 'test'),
     ]);
   } else {
     await Promise.all([
@@ -102,8 +104,10 @@ async function main() {
       run('firebase', 'clean'),
       run('deploybot', 'clean'),
       run('slackbot', 'clean'),
+      run('postgres', 'clean'),
     ]);
     await run('core', 'build');
+    await run('postgres', 'build');
     await Promise.all([
       await run('deploybot', 'build'),
       await run('slackbot', 'build'),
