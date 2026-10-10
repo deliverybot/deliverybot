@@ -17,11 +17,14 @@
     "stackdriver-errors-js": "0.7.0"
   },
   "devDependencies": {
+    "css-loader": "7.1.2",
     "firebase": "7.24.0",
     "firebase-tools": "7.2.4",
+    "html-webpack-plugin": "5.6.3",
+    "mini-css-extract-plugin": "2.9.2",
     "typescript": "5.6.3",
-    "webpack": "4.47.0",
-    "webpack-cli": "3.3.10"
+    "webpack": "5.97.1",
+    "webpack-cli": "5.1.4"
   },
   "description": "Controls and configures deployments using the GitHub API.",
   "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",
