@@ -22,8 +22,8 @@ Run workflow, environment `production`.
 
 The manifests expect these to be installed in the cluster already:
 
-- The CloudNativePG operator:
-  `kubectl apply --server-side -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.27/releases/cnpg-1.27.0.yaml`
+- The CloudNativePG operator, for example with its Helm chart:
+  `helm install cnpg cloudnative-pg --repo https://cloudnative-pg.github.io/charts --namespace cnpg-system --create-namespace`
 - [ingress-nginx](https://kubernetes.github.io/ingress-nginx/) and
   [cert-manager](https://cert-manager.io) with a `ClusterIssuer` named
   `letsencrypt-prod`. If the cluster uses a different ingress controller or issuer,
