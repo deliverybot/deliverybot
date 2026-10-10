@@ -72,7 +72,8 @@ export function auth({ app, csrf, config }: Dependencies) {
   }
 
   async function callback(req: Request, res: Response) {
-    const token = await accessToken(req.query.code);
+    const code = typeof req.query.code === "string" ? req.query.code : "";
+    const token = code && (await accessToken(code));
     if (!token) {
       res.redirect("/login");
       return;
