@@ -19,7 +19,7 @@
     "express": "4.22.3",
     "express-async-errors": "3.1.1",
     "express-session": "1.19.0",
-    "handlebars": "4.7.9",
+    "handlebars": "4.7.10",
     "hbs": "4.2.0",
     "pino": "10.3.1",
     "probot": "14.3.2",
