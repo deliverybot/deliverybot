@@ -27,7 +27,7 @@ export class WatchStore {
   listWatchBySha(repoId: number, sha: string) {
     return this.store
       .list(`queue/${repoId}-${sha}/jobs`)
-      .then(r => r.map(w => JSON.parse(w.json) as Watch));
+      .then((r) => r.map((w) => JSON.parse(w.json) as Watch));
   }
 }
 
@@ -41,7 +41,7 @@ export class EnvLockStore {
   list(repoId: number): Promise<string[]> {
     return this.store
       .list(`repos/${repoId}/locks`)
-      .then(l => l.map(r => r.env));
+      .then((l) => l.map((r) => r.env));
   }
 
   lock(repoId: number, env: string): Promise<void> {
@@ -56,6 +56,6 @@ export class EnvLockStore {
   }
 
   isLocked(repoId: number, env: string): Promise<boolean> {
-    return this.store.get(`repos/${repoId}/locks/${env}`).then(x => !!x);
+    return this.store.get(`repos/${repoId}/locks/${env}`).then((x) => !!x);
   }
 }

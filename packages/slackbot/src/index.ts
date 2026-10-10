@@ -32,7 +32,7 @@ export function slackbot({ app, kvService, config }: Dependencies) {
 
   app.get("/slack/callback", async (req, res) => {
     const resp = await fetch(
-      `https://slack.com/api/oauth.access?code=${req.query.code}&client_id=${config.slackClientId}&client_secret=${config.slackClientSecret}`,
+      `https://slack.com/api/oauth.access?code=${encodeURIComponent(String(req.query.code || ""))}&client_id=${config.slackClientId}&client_secret=${config.slackClientSecret}`,
     );
     const body = await resp.json();
     if (!body.ok) {

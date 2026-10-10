@@ -1,9 +1,9 @@
 production:
   auto_deploy_on: refs/heads/master
   environment: production
-  required_contexts: ["build (10.x)", "deliverybot/promotion"]
+  required_contexts: ["build (22.x)", "deliverybot/promotion"]
 
 development:
   auto_deploy_on: refs/heads/master
   environment: development
-  required_contexts: ["build (10.x)"]
+  required_contexts: ["build (22.x)"]

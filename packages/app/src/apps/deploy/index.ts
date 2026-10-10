@@ -165,8 +165,8 @@ export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
       csrf: req.csrfToken(),
       options: {
         count: 10,
-        before: req.query.before,
-        after: req.query.after,
+        before: queryString(req.query.before),
+        after: queryString(req.query.after),
         minimal: req.headers["accept"] !== "application/json",
       },
     });
@@ -184,4 +184,8 @@ export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
     const branch = "master";
     res.redirect(`/${owner}/${repo}/branch/${branch}`);
   }
+}
+
+function queryString(val: unknown): string | undefined {
+  return typeof val === "string" ? val : undefined;
 }

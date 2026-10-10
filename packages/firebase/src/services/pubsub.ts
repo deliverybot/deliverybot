@@ -1,14 +1,11 @@
 import * as admin from "firebase-admin";
 import { PubSub, Topic } from "@google-cloud/pubsub";
 import { Message } from "firebase-functions/lib/providers/pubsub";
-import Webhooks from "@octokit/webhooks";
-import { logger } from "@deliverybot/core";
+import { logger, Dispatcher, WebhookEvent } from "@deliverybot/core";
 
-interface Event extends Webhooks.WebhookEvent<any> {
+type Event = WebhookEvent & {
   attempts?: number;
-}
-
-type Dispatcher = (event: Webhooks.WebhookEvent<any>) => Promise<void>;
+};
 
 interface Application {
   receive: (payload: any) => Promise<any>;
@@ -87,4 +84,4 @@ export class FirebasePubSubStore {
   }
 }
 
-const sleep = (n: number) => new Promise(resolve => setTimeout(resolve, n));
+const sleep = (n: number) => new Promise((resolve) => setTimeout(resolve, n));

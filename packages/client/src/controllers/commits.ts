@@ -11,7 +11,7 @@ export class CommitsController extends RefreshController {
     });
 
     const update = (name: string, partial: string) => {
-      this.targets.findAll(name).forEach(el => {
+      this.targets.findAll(name).forEach((el) => {
         const oid = el.id.replace(name + "-", "");
         const commit = commits[oid];
         if (!commit) {

@@ -1,9 +1,4 @@
-import {
-  Logger,
-  Octokit,
-  PullsGetResponse,
-  ReposGetContentsParams,
-} from "@deliverybot/core";
+import { Logger, Octokit, RestEndpointMethodTypes } from "@deliverybot/core";
 import yaml from "js-yaml";
 import { validate } from "jsonschema";
 import { EnvLockStore } from "./store";
@@ -11,6 +6,11 @@ import { ConfigError, LockError, Targets, Target, DeployBody } from "./types";
 import schema from "./schema.json";
 import { render } from "./render";
 import { withPreview } from "./util";
+
+type ReposGetContentParams =
+  RestEndpointMethodTypes["repos"]["getContent"]["parameters"];
+type PullsGetResponse =
+  RestEndpointMethodTypes["pulls"]["get"]["response"]["data"];
 
 export async function config(
   github: Octokit,
@@ -24,21 +24,23 @@ export async function config(
     ref?: string;
   },
 ): Promise<Targets> {
-  const params: ReposGetContentsParams = {
+  const params: ReposGetContentParams = {
     owner,
     repo,
     path: `.github/deploy.yml`,
   };
   if (ref) params.ref = ref;
-  const content = await github.repos.getContents(params);
+  const content = await github.repos.getContent(params);
   if (Array.isArray(content.data)) {
     throw new ConfigError(".github/deploy.yml is a folder");
   }
-  if (!content.data.content) {
+  if (!("content" in content.data) || !content.data.content) {
     throw new ConfigError("content not found");
   }
   const conf =
-    yaml.safeLoad(Buffer.from(content.data.content, "base64").toString()) || {};
+    (yaml.load(
+      Buffer.from(content.data.content, "base64").toString(),
+    ) as any) || {};
 
   const fields = [
     "task",
@@ -51,7 +53,7 @@ export async function config(
     if (conf[key].deployments && conf[key].deployments.length > 0) {
       const dep = conf[key].deployments[0];
       const tar = conf[key];
-      fields.forEach(field => {
+      fields.forEach((field) => {
         tar[field] = tar[field] || dep[field];
       });
       delete conf[key].deployments;

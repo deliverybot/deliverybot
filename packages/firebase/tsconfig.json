@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
     "allowJs": false,
-    "lib": ["es2015", "es2017", "dom"],
+    "lib": ["es2019", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "es2019",
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": false,
     "pretty": true,
     "strict": true,
+    "useUnknownInCatchVariables": false,
     "sourceMap": true,
     "outDir": "./lib",
     "skipLibCheck": true,

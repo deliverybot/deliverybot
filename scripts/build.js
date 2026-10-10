@@ -89,6 +89,8 @@ async function main() {
     ]);
   } else if (test) {
     await Promise.all([
+      run('deploybot', 'test'),
+      run('slackbot', 'test'),
       run('app', 'test'),
     ]);
   } else {
@@ -129,6 +131,7 @@ async function main() {
 
 main().catch(() => {
   shutdown();
+  process.exit(1);
 });
 
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(sig => process.on(sig, () => {

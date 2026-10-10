@@ -1,4 +1,4 @@
-import { PayloadRepository } from "@octokit/webhooks";
+import { Repository as PayloadRepository } from "@octokit/webhooks-types";
 
 export interface DeployBody {
   auto_merge: boolean;

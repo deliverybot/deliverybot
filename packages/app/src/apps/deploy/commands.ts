@@ -16,7 +16,7 @@ export async function Promote({
   repo: Repo;
   sha: string;
 }) {
-  await user.github.repos.createStatus({
+  await user.github.repos.createCommitStatus({
     owner: repo.owner,
     repo: repo.repo,
     sha,

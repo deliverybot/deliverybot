@@ -7,7 +7,6 @@ declare namespace Express {
 interface RequestExtras {
   session?: any;
   context: any;
-  log: Logger;
   requestId: string;
   rawBody?: string;
 }

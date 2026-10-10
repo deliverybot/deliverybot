@@ -19,7 +19,7 @@ export class FirebaseLockStore implements LockStore {
   }
 
   private lockKey(key: string): Promise<boolean> {
-    return this.store.runTransaction(async tx => {
+    return this.store.runTransaction(async (tx) => {
       const doc = this.store.doc(`locks/${key}`);
       const cur = await tx.get(doc);
       const data = cur.data();
@@ -77,7 +77,7 @@ export class FirebaseLockStore implements LockStore {
         }
         logger.info({ key }, "unlock key");
 
-        this.unlockKey(key).catch(error => {
+        this.unlockKey(key).catch((error) => {
           logger.warn({ error }, "unlock failed");
         });
       };

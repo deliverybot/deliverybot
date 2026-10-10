@@ -13,9 +13,15 @@ import csurf from "csurf";
 import "express-async-errors";
 
 import { logRequests } from "./middleware";
-import { Application, probot, AppOptions } from "./probot";
-import { Dispatcher } from "./application";
+import {
+  Application,
+  AppOptions,
+  Dispatcher,
+  application,
+  webhooks,
+} from "./github";
 import { Services } from "./services";
+import { Logger } from "./logger";
 
 export interface Dependencies extends Services {
   robot: Application;
@@ -29,6 +35,8 @@ export interface Dependencies extends Services {
 export type RegisterFunc = (d: Dependencies) => void;
 
 export interface Options extends AppOptions {
+  appSecret: string;
+  logger: Logger;
   production: boolean;
   root: string;
   scripts: string;
@@ -40,7 +48,11 @@ export interface Options extends AppOptions {
 
 export function load(services: Services, apps: RegisterFunc[], opts: Options) {
   const app = express();
-  const robot = probot(opts, app);
+  const robot = application(opts);
+  if (opts.dispatcher) robot.withDispatcher(opts.dispatcher);
+
+  // Webhooks read the raw body to verify signatures, so they go first.
+  app.post(opts.webhookPath, ...webhooks(robot));
 
   // Attach the probot log to the request object.
   app.use(logRequests);
@@ -84,7 +96,7 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
   // Application and parsing middleware.
   app.use(bodyParser.urlencoded({ verify: rawBodyBuffer, extended: true }));
   app.use(bodyParser.json({ verify: rawBodyBuffer }));
-  opts.serve.forEach(val => {
+  opts.serve.forEach((val) => {
     app.use(val[0], express.static(val[1]));
   });
 
@@ -116,7 +128,7 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
   app.use(turbolinks.redirect);
   app.use(turbolinks.location);
 
-  apps.forEach(register =>
+  apps.forEach((register) =>
     register({
       ...services,
       registerHelper: hbs.registerHelper.bind(hbs),
@@ -152,12 +164,11 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
     res.status(404).sendFile(error404);
   });
 
-  if (opts.dispatcher) robot.withDispatcher(opts.dispatcher);
   return {
     express: app,
     probot: robot,
     loaded: () => {
-      return new Promise((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
         app.on("app.partials-loaded", () => {
           resolve();
         });

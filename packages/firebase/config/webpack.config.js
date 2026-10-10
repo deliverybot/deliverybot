@@ -26,6 +26,10 @@ module.exports = {
   optimization: {
     splitChunks: {},
   },
+  resolve: {
+    // Templates are precompiled, so the browser only needs the runtime.
+    alias: { handlebars$: "handlebars/runtime" },
+  },
   performance: {
     hints: false,
   },
@@ -33,7 +37,14 @@ module.exports = {
     rules: [
       {
         test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: "css-loader",
+            // Root-relative URLs (/fonts, /images) are served as-is.
+            options: { url: { filter: url => !url.startsWith("/") } },
+          },
+        ],
       },
     ],
   },

@@ -23,8 +23,14 @@
     "trailingComma": "all"
   },
   "devDependencies": {
-    "prettier": "1.19.1",
+    "prettier": "3.3.3",
     "smee-client": "^1.1.0",
     "standard-version": "8.0.1"
+  },
+  "resolutions": {
+    "@types/express": "4.17.21",
+    "@types/express-serve-static-core": "4.19.6",
+    "@types/serve-static": "1.15.7",
+    "handlebars": "4.7.9"
   }
 }

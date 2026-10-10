@@ -4,7 +4,7 @@ process.env.LOG_LEVEL = "fatal";
 
 import nock from "nock";
 import supertest from "supertest";
-import { app as deliverybot } from "./app";
+import "./app";
 import { Application } from "express";
 
 // Keep tests clean by exporting mocking tools here;
@@ -13,12 +13,6 @@ export { app } from "./app";
 export const request = supertest;
 export const cleanAll = nock.cleanAll;
 
-// Global mocks, always import factory first:
-deliverybot.probot.githubToken = "test";
-(deliverybot.probot as any).app = {
-  getSignedJsonWebToken: (option?: any) => "test",
-  getInstallationAccessToken: (option: any) => Promise.resolve("test"),
-};
 
 export const fixtures = {
   deployValid: require("./fixtures/deploy-valid"),
@@ -87,7 +81,7 @@ export const errorCreateStatus = (commit: string) =>
 
 export const gitRef = () =>
   nock("https://api.github.com")
-    .get("/repos/Codertocat/Hello-World/git/refs/heads/changes")
+    .get(/^\/repos\/Codertocat\/Hello-World\/git\/ref\/heads(\/|%2F)changes$/)
     .reply(200, fixtures.ref);
 
 export const noDeployments = () =>
@@ -131,7 +125,7 @@ export const permission = ({ admin }: { admin: boolean }) =>
 export const config = ({ valid }: { valid?: boolean }) =>
   nock("https://api.github.com")
     .persist()
-    .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+    .get(/^\/repos\/Codertocat\/Hello-World\/contents\/\.github(\/|%2F)deploy\.yml/)
     .query(() => true)
     .reply(200, {
       content: Buffer.from(
@@ -162,7 +156,7 @@ export const errorDeploy = () =>
 export const noConfig = () =>
   nock("https://api.github.com")
     .persist()
-    .get("/repos/Codertocat/Hello-World/contents/.github/deploy.yml")
+    .get(/^\/repos\/Codertocat\/Hello-World\/contents\/\.github(\/|%2F)deploy\.yml/)
     .reply(404);
 
 export const deployConflict = () =>

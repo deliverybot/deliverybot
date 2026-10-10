@@ -30,7 +30,7 @@ export class Measurements {
 
   get environments(): string[] {
     return this.measures
-      .map(m => m.env)
+      .map((m) => m.env)
       .filter((x, i, a) => a.indexOf(x) === i)
       .sort();
   }
@@ -49,7 +49,7 @@ export class Measurements {
 
   get allDays(): string[] {
     const days: string[] = [];
-    this.eachDay(day => {
+    this.eachDay((day) => {
       days.push(isoDate(day));
     });
     return days;
@@ -57,7 +57,7 @@ export class Measurements {
 
   get allDaysWords(): string[] {
     const days: string[] = [];
-    this.eachDay(day => {
+    this.eachDay((day) => {
       days.push(dateInWords(day));
     });
     return days;
@@ -99,7 +99,7 @@ export class Measurements {
     const days: { [d: string]: number } = {};
     for (const day of this.allDays) {
       days[day] = this.measures.filter(
-        d => isoDate(d.createdAt) === day,
+        (d) => isoDate(d.createdAt) === day,
       ).length;
     }
     return days;
@@ -108,7 +108,7 @@ export class Measurements {
   get deploysByEnv(): { [d: string]: number } {
     const envs: { [d: string]: number } = {};
     for (const env of this.environments) {
-      envs[env] = this.measures.filter(d => d.env === env).length;
+      envs[env] = this.measures.filter((d) => d.env === env).length;
     }
     return envs;
   }
@@ -118,7 +118,7 @@ export class Measurements {
     for (const env of this.environments) {
       for (const day of this.allDays) {
         results[`${day}.${env}`] = this.measures.filter(
-          d => d.env === env && isoDate(d.createdAt) === day,
+          (d) => d.env === env && isoDate(d.createdAt) === day,
         ).length;
       }
     }
@@ -133,6 +133,14 @@ export class Measurements {
         continue;
       }
       obj[key] = val;
+    }
+    // Class getters are non-enumerable, so `for...in` skips them.
+    const proto = Object.getPrototypeOf(this);
+    for (const key of Object.getOwnPropertyNames(proto)) {
+      const desc = Object.getOwnPropertyDescriptor(proto, key);
+      if (desc && desc.get) {
+        obj[key] = (this as any)[key];
+      }
     }
     return obj;
   }

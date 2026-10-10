@@ -7,7 +7,7 @@ export function prClose(app: Application) {
    */
   async function handlePRClose(context: Context) {
     const ref = context.payload.pull_request.head.ref;
-    const deployments = await context.github.repos.listDeployments(
+    const deployments = await context.octokit.repos.listDeployments(
       withPreview({ ...context.repo(), ref }),
     );
 
@@ -26,7 +26,7 @@ export function prClose(app: Application) {
           logCtx(context, { ref, deployment: deployment.id }),
           "pr close: mark inactive",
         );
-        await context.github.repos.createDeploymentStatus(
+        await context.octokit.repos.createDeploymentStatus(
           withPreview({
             ...context.repo(),
             deployment_id: deployment.id,
@@ -42,7 +42,7 @@ export function prClose(app: Application) {
     }
   }
 
-  app.on("pull_request.closed", async context => {
+  app.on("pull_request.closed", async (context) => {
     await handlePRClose(context);
   });
 }

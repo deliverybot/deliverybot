@@ -4,7 +4,7 @@ import { Dependencies } from "@deliverybot/core";
 
 export function yamlEncode(data: any) {
   try {
-    return yaml.safeDump(data);
+    return yaml.dump(data);
   } catch (error) {
     return null;
   }

@@ -11,12 +11,9 @@ import * as path from "path";
 import * as fs from "fs";
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { LoggingBunyan } from "@google-cloud/logging-bunyan";
 import * as apps from "@deliverybot/app";
 import { load, logger, Options } from "@deliverybot/core";
 import { firebase } from "./services";
-
-logger.addStream(new LoggingBunyan().stream("info"));
 
 const services = firebase(admin.initializeApp());
 const pubsub = services.pubsubService();

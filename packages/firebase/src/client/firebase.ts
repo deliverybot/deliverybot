@@ -1,10 +1,10 @@
-import firebase from "@firebase/app";
-import "@firebase/auth";
-import "@firebase/firestore";
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/firestore";
 
 firebase.initializeApp((window as any).config.firebase);
-const auth = firebase.auth!();
-const store = firebase.firestore!();
+const auth = firebase.auth();
+const store = firebase.firestore();
 
 export async function watcher(token: string, repo: string, cb: () => void) {
   try {
