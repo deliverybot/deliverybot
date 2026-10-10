@@ -46,6 +46,22 @@ export const migrations: string[] = [
   );
   CREATE INDEX session_expire ON session (expire);
   `,
+  `
+  CREATE TABLE installations (
+    id bigint PRIMARY KEY,
+    account text NOT NULL,
+    account_type text NOT NULL,
+    repository_selection text NOT NULL,
+    suspended boolean NOT NULL DEFAULT false,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now()
+  );
+
+  -- Lets the queue cap how many jobs of one installation run at once.
+  ALTER TABLE jobs ADD COLUMN installation_id bigint;
+  CREATE INDEX jobs_running ON jobs (installation_id)
+    WHERE locked_until IS NOT NULL;
+  `,
 ];
 
 // Arbitrary constant so concurrent processes don't migrate at the same time.

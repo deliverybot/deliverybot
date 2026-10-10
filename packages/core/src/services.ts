@@ -3,12 +3,14 @@ export interface Services {
   kvService: KVService;
   messageService: MessageService;
   userService: UserService;
+  installationService: InstallationService;
 }
 
 export type LockService = () => LockStore;
 export type KVService = <T>() => KVStore<T>;
 export type MessageService = <T>() => MessageBus<T>;
 export type UserService = () => UserStore;
+export type InstallationService = () => InstallationStore;
 
 export class LockError extends Error {
   status = "LockError";
@@ -24,6 +26,8 @@ export interface KVStore<T> {
   put(key: string, val: T): Promise<void>;
   get(key: string): Promise<T | undefined>;
   del(key: string): Promise<void>;
+  /** Deletes every key that starts with `prefix`. */
+  delPrefix(prefix: string): Promise<void>;
   list(prefix: string): Promise<T[]>;
 }
 
@@ -47,4 +51,22 @@ export interface User {
 export interface UserStore {
   update(user: User): Promise<User>;
   delete(id: string): Promise<void>;
+}
+
+/**
+ * A GitHub App installation on a user or organization account. Each one is
+ * a tenant of Deliverybot.
+ */
+export interface Installation {
+  id: number;
+  account: string;
+  accountType: string;
+  repositorySelection: string;
+  suspended: boolean;
+}
+
+export interface InstallationStore {
+  upsert(installation: Installation): Promise<void>;
+  get(id: number): Promise<Installation | undefined>;
+  delete(id: number): Promise<void>;
 }

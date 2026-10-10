@@ -54,5 +54,8 @@ export {
   UserStore,
   KVService,
   KVStore,
+  Installation,
+  InstallationService,
+  InstallationStore,
 } from "./services";
 export { local as localServices } from "./local";

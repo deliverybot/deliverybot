@@ -12,6 +12,12 @@ export interface QueueOptions {
   pollInterval: number;
   /** Jobs processed at the same time by one worker. */
   concurrency: number;
+  /**
+   * Jobs of one installation running at the same time across all workers,
+   * so one busy installation can't hold up everyone else. Best effort: two
+   * workers claiming at the same moment can exceed it by one.
+   */
+  perInstallation: number;
 }
 
 const defaults: QueueOptions = {
@@ -20,6 +26,7 @@ const defaults: QueueOptions = {
   lease: 1000 * 60 * 5,
   pollInterval: 1000,
   concurrency: 5,
+  perInstallation: 2,
 };
 
 interface Job {
@@ -55,8 +62,14 @@ export class PostgresQueue {
 
   dispatcher: Dispatcher = async (event: WebhookEvent) => {
     await this.pool.query(
-      "INSERT INTO jobs (name, data, max_attempts) VALUES ($1, $2, $3)",
-      [event.name, JSON.stringify(event), this.opts.maxAttempts],
+      `INSERT INTO jobs (name, data, max_attempts, installation_id)
+       VALUES ($1, $2, $3, $4)`,
+      [
+        event.name,
+        JSON.stringify(event),
+        this.opts.maxAttempts,
+        installationId(event),
+      ],
     );
   };
 
@@ -113,15 +126,22 @@ export class PostgresQueue {
        SET attempts = attempts + 1,
            locked_until = now() + $1 * interval '1 millisecond'
        WHERE id = (
-         SELECT id FROM jobs
+         SELECT id FROM jobs j
          WHERE state = 'queued' AND run_at <= now()
            AND (locked_until IS NULL OR locked_until < now())
+           AND (
+             installation_id IS NULL OR (
+               SELECT count(*) FROM jobs r
+               WHERE r.installation_id = j.installation_id
+                 AND r.locked_until > now()
+             ) < $2
+           )
          ORDER BY run_at, id
          FOR UPDATE SKIP LOCKED
          LIMIT 1
        )
        RETURNING id, data, attempts, max_attempts`,
-      [this.opts.lease],
+      [this.opts.lease, this.opts.perInstallation],
     );
     return rows[0];
   }
@@ -164,4 +184,9 @@ export class PostgresQueue {
         .catch((error) => log.error({ ...ctx, error }, "queue: update failed"));
     }
   }
+}
+
+function installationId(event: WebhookEvent): number | null {
+  const payload: any = event.payload;
+  return (payload && payload.installation && payload.installation.id) || null;
 }

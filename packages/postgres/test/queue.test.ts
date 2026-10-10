@@ -16,8 +16,10 @@ function queue(opts = {}) {
   return q;
 }
 
-function event(n: number): WebhookEvent {
-  return { id: `${n}`, name: "push", payload: { n } } as any;
+function event(n: number, installation?: number): WebhookEvent {
+  const payload: any = { n };
+  if (installation) payload.installation = { id: installation };
+  return { id: `${n}`, name: "push", payload } as any;
 }
 
 async function until(fn: () => boolean | Promise<boolean>) {
@@ -134,4 +136,29 @@ test("stop waits for jobs in progress", async () => {
   await until(async () => (await jobs())[0]?.attempts === 1);
   await q.stop();
   expect(finished).toBe(true);
+});
+
+test("limits how many jobs of one installation run at once", async () => {
+  const q = queue({ concurrency: 10, perInstallation: 2 });
+  for (let i = 0; i < 6; i++) await q.dispatcher(event(i, 1));
+  await q.dispatcher(event(100, 2));
+  let running: { [i: string]: number } = {};
+  let maxBusy = 0;
+  let otherStarted = false;
+  let release!: () => void;
+  const gate = new Promise<void>((r) => (release = r));
+  q.work(async (e: any) => {
+    const inst = e.payload.installation.id;
+    running[inst] = (running[inst] || 0) + 1;
+    if (inst === 1) maxBusy = Math.max(maxBusy, running[inst]);
+    if (inst === 2) otherStarted = true;
+    await gate;
+    running[inst]--;
+  });
+  // The other installation starts even though installation 1 has a backlog.
+  await until(() => otherStarted);
+  expect(running[1]).toBe(2);
+  release();
+  await until(async () => (await jobs()).length === 0);
+  expect(maxBusy).toBe(2);
 });
