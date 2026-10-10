@@ -1536,7 +1536,7 @@
     "@opentelemetry/instrumentation" "^0.49 || ^0.50 || ^0.51 || ^0.52.0 || ^0.53.0"
     "@opentelemetry/sdk-trace-base" "^1.22"
 
-"@probot/get-private-key@^1.1.2":
+"@probot/get-private-key@1.2.1", "@probot/get-private-key@^1.1.2":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@probot/get-private-key/-/get-private-key-1.2.1.tgz#9bbf3a79947ac8e38d0afbe9ce66fe356ecb4831"
   integrity sha512-ejh5fK4d0zJES+3aR2IiD8+afuzgpe4Nr3UzTSKbBVU8+u8R/nVCQJawJ5s3QilzgXFftjYkGxZFvXkZ0+u4wA==

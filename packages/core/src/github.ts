@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { Probot, ProbotOctokit, Context as ProbotContext } from "probot";
+import { getPrivateKey } from "@probot/get-private-key";
 import type {
   EmitterWebhookEvent,
   EmitterWebhookEventName,
@@ -65,7 +66,12 @@ export class Octokit extends ProbotOctokit {
 export function application(opts: AppOptions) {
   return new Application({
     appId: opts.id,
-    privateKey: opts.privateKey,
+    // Accepts the .pem contents as-is, base64 encoded, or with escaped
+    // newlines, so it fits in a single-line environment variable.
+    privateKey:
+      opts.privateKey && !opts.githubToken
+        ? getPrivateKey({ env: { PRIVATE_KEY: opts.privateKey } }) || undefined
+        : opts.privateKey,
     secret: opts.webhookSecret,
     githubToken: opts.githubToken,
     log: opts.logger,
