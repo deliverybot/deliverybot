@@ -22,6 +22,21 @@ export const migrations: string[] = [
     updated_at timestamptz NOT NULL DEFAULT now()
   );
   `,
+  `
+  CREATE TABLE jobs (
+    id bigserial PRIMARY KEY,
+    name text NOT NULL,
+    data jsonb NOT NULL,
+    state text NOT NULL DEFAULT 'queued',
+    attempts integer NOT NULL DEFAULT 0,
+    max_attempts integer NOT NULL,
+    run_at timestamptz NOT NULL DEFAULT now(),
+    locked_until timestamptz,
+    last_error text,
+    created_at timestamptz NOT NULL DEFAULT now()
+  );
+  CREATE INDEX jobs_ready ON jobs (run_at, id) WHERE state = 'queued';
+  `,
 ];
 
 // Arbitrary constant so concurrent processes don't migrate at the same time.

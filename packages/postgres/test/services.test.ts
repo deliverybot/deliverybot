@@ -15,7 +15,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  await db.pool.query("TRUNCATE kv, users");
+  await db.pool.query("TRUNCATE kv, users, jobs");
 });
 
 describe("migrate", () => {

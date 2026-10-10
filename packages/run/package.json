@@ -14,7 +14,8 @@
     "build:watch": "tsc --watch --preserveWatchOutput",
     "bundle": "webpack --config config/webpack.config.js",
     "bundle:watch": "webpack --config config/webpack.config.js --watch",
-    "run": "node lib/index.js"
+    "run": "node lib/index.js",
+    "worker": "node lib/worker.js"
   },
   "dependencies": {
     "@deliverybot/app": "0.7.2",
