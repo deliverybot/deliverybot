@@ -1,11 +1,11 @@
-import { auth } from "./auth";
-import { deploy } from "./deploy";
-import { dashboard } from "./dashboard";
-import { watch } from "./watch";
+import { auth } from "./auth.js";
+import { deploy } from "./deploy/index.js";
+import { dashboard } from "./dashboard/index.js";
+import { watch } from "./watch.js";
 import { slackbot } from "@deliverybot/slackbot";
 import { deploybot } from "@deliverybot/deploybot";
-import { util } from "./util";
-import { installations } from "./installations";
+import { util } from "./util.js";
+import { installations } from "./installations.js";
 
 /**
  * Url structure is similar to GitHub in that you reach a org/user and repo with

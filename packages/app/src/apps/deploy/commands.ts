@@ -1,7 +1,7 @@
 import { Logger } from "@deliverybot/core";
 import { deploy as deployCommit, EnvLockStore } from "@deliverybot/deploybot";
-import { User, Repo } from "../auth";
-import { config } from "./queries";
+import { User, Repo } from "../auth.js";
+import { config } from "./queries.js";
 
 class ValidationError extends Error {
   public status = "ValidationError";
@@ -16,7 +16,7 @@ export async function Promote({
   repo: Repo;
   sha: string;
 }) {
-  await user.github.repos.createCommitStatus({
+  await user.github.rest.repos.createCommitStatus({
     owner: repo.owner,
     repo: repo.repo,
     sha,

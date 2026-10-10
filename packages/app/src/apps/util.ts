@@ -1,4 +1,4 @@
-import objectHash = require("object-hash");
+import objectHash from "object-hash";
 import yaml from "js-yaml";
 import { Dependencies } from "@deliverybot/core";
 

@@ -1,7 +1,7 @@
-import { AuthedRequest, authenticate } from "../auth";
+import { AuthedRequest, authenticate } from "../auth.js";
 import { Response } from "express";
 import { Dependencies } from "@deliverybot/core";
-import { Index, Repos, InstallSettings, MySettings } from "./views";
+import { Index, Repos, InstallSettings, MySettings } from "./views.js";
 
 export function dashboard({ app, csrf }: Dependencies) {
   async function index(req: AuthedRequest, res: Response) {

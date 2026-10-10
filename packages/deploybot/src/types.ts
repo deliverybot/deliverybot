@@ -1,4 +1,9 @@
-import { Repository as PayloadRepository } from "@octokit/webhooks-types";
+import { WebhookPayload } from "@deliverybot/core";
+
+/** The repository of a push or pull request event. */
+export type PayloadRepository =
+  | WebhookPayload<"push">["repository"]
+  | WebhookPayload<"pull_request">["repository"];
 
 export interface DeployBody {
   auto_merge: boolean;

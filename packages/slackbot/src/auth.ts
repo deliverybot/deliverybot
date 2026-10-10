@@ -1,6 +1,5 @@
 import { Dependencies, Octokit } from "@deliverybot/core";
 import { Response, Request, NextFunction } from "express";
-import fetch from "node-fetch";
 
 export interface User {
   id: string;
@@ -80,7 +79,7 @@ export function auth({ app, csrf, config }: Dependencies) {
     }
 
     const octokit = new Octokit({ auth: token });
-    const user = await octokit.users.getAuthenticated({});
+    const user = await octokit.rest.users.getAuthenticated({});
 
     // A fresh session id on sign in prevents session fixation.
     const { next, slackId } = req.session;

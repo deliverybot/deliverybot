@@ -5,7 +5,7 @@ import type {
   EmitterWebhookEvent,
   EmitterWebhookEventName,
 } from "@octokit/webhooks";
-import { Logger } from "./logger";
+import { Logger } from "./logger.js";
 
 /**
  * Webhook event context. Without a type argument the payload is untyped,
@@ -14,6 +14,8 @@ import { Logger } from "./logger";
 export type Context<E extends EmitterWebhookEventName = any> = ProbotContext<E>;
 
 export type WebhookEvent = EmitterWebhookEvent;
+export type WebhookPayload<E extends EmitterWebhookEventName> =
+  EmitterWebhookEvent<E>["payload"];
 export type Dispatcher = (event: WebhookEvent) => Promise<void>;
 
 export interface AppOptions {
@@ -43,7 +45,7 @@ export class Application extends Probot {
    * code sends through `receive`.
    */
   public onCustom(name: string, callback: (context: Context) => Promise<void>) {
-    this.webhooks.on(name as any, callback as any);
+    this.on(name as any, callback as any);
   }
 
   public async receive(event: WebhookEvent): Promise<void> {
@@ -90,15 +92,12 @@ export function webhooks(app: Application) {
       const id = req.get("x-github-delivery");
       const name = req.get("x-github-event");
       const signature = req.get("x-hub-signature-256");
-      // Some hosts (Cloud Functions) parse the body before we see it and
-      // keep the original as a buffer on `rawBody`.
-      const raw = (req as any).rawBody;
-      const body =
-        typeof req.body === "string" ? req.body : raw && raw.toString("utf8");
+      const body = typeof req.body === "string" ? req.body : "";
       if (!id || !name || !signature || !body) {
         res.status(400).json({ error: "missing webhook headers" });
         return;
       }
+      await app.ready();
       if (!(await app.webhooks.verify(body, signature))) {
         res.status(401).json({ error: "signature does not match" });
         return;

@@ -1,5 +1,8 @@
-import { Measurements, Measure } from "../../src/apps/deploy/metrics";
-import { Measures } from "../../src/apps/deploy/queries";
+import { Measurements, Measure } from "../../src/apps/deploy/metrics.js";
+import { Measures } from "../../src/apps/deploy/queries.js";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
 
 const start = new Date("2019-10-28T00:00:00.460Z");
 const end = new Date("2019-11-04T00:00:00.460Z");

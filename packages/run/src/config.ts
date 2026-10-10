@@ -1,14 +1,15 @@
 import * as path from "path";
 import * as fs from "fs";
+import { fileURLToPath } from "url";
 import { info } from "@deliverybot/app";
 import { logger, Options, localServices } from "@deliverybot/core";
 import { postgresServices, migrate } from "@deliverybot/postgres";
 
-const bundle = path.resolve(__dirname, "..", "bundle");
+const bundle = path.resolve(import.meta.dirname, "..", "bundle");
 export const opts: Options = {
   logger,
   id: Number(env("APP_ID")),
-  webhookPath: env("WEBHOOK_PATH"),
+  webhookPath: env("WEBHOOK_PATH") || "/api/github/webhooks",
   webhookSecret: env("WEBHOOK_SECRET"),
   appSecret: env("SESSION_SECRET") || env("WEBHOOK_SECRET") || "development",
   privateKey: env("PRIVATE_KEY"),
@@ -21,7 +22,9 @@ export const opts: Options = {
     githubClientSecret: env("CLIENT_SECRET"),
   },
   locals: info as any,
-  root: path.dirname(require.resolve("@deliverybot/app/package.json")),
+  root: path.dirname(
+    fileURLToPath(import.meta.resolve("@deliverybot/app/package.json")),
+  ),
   production: process.env.NODE_ENV === "production",
   scripts: fs.readFileSync(path.resolve(bundle, "scripts.html")).toString(),
   serve: [["/static/bundle/", path.resolve(bundle)]],

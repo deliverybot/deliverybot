@@ -1,7 +1,7 @@
 import { Application, Context } from "@deliverybot/core";
-import { EnvLockStore } from "./store";
-import { deploy } from "./deploy";
-import { logCtx, canWrite } from "./util";
+import { EnvLockStore } from "./store.js";
+import { deploy } from "./deploy.js";
+import { logCtx, canWrite } from "./util.js";
 
 /**
  * Handles /deploy commands inside a pull request.
@@ -16,7 +16,7 @@ export async function handlePRDeploy(
   context.log.info(logCtx(context, { command }), "pr deploy: handling command");
   try {
     const target = command.split(" ")[1];
-    const pr = await context.octokit.pulls.get({
+    const pr = await context.octokit.rest.pulls.get({
       owner: context.payload.repository.owner.login,
       repo: context.payload.repository.name,
       pull_number: prNumber,
@@ -42,7 +42,7 @@ export async function handlePRDeploy(
       }),
     );
   } catch (error) {
-    await context.octokit.issues.createComment({
+    await context.octokit.rest.issues.createComment({
       owner: context.payload.repository.owner.login,
       repo: context.payload.repository.name,
       issue_number: prNumber,
@@ -58,7 +58,7 @@ export function prDeploy(app: Application, locker: EnvLockStore) {
         context,
         context.payload.comment.body,
         context.payload.issue.number,
-        context.payload.comment.user.login,
+        context.payload.comment.user?.login || "",
         locker,
       );
     }

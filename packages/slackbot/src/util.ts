@@ -25,7 +25,7 @@ export function verifySignature(secret: string, req: Request) {
     }
 
     const hmac = crypto.createHmac("sha256", secret);
-    hmac.update(`${version}:${timestamp}:${req.rawBody}`);
+    hmac.update(`${version}:${timestamp}:${req.rawBody || ""}`);
 
     // Timing safe comparison.
     const tssc = (a: string, b: string) => {

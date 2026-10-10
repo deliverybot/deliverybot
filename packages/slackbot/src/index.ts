@@ -1,13 +1,12 @@
 import { EnvLockStore } from "@deliverybot/deploybot";
-import fetch from "node-fetch";
 import { Dependencies } from "@deliverybot/core";
-import { AuthedRequest, authenticate } from "./auth";
-import { verifySignature } from "./util";
+import { AuthedRequest, authenticate } from "./auth.js";
+import { verifySignature } from "./util.js";
 import * as path from "path";
-import { associateError, handle } from "./command";
-import { SlackUserStore } from "./store";
+import { associateError, handle } from "./command.js";
+import { SlackUserStore } from "./store.js";
 
-const dir = path.join(__dirname, "..", "views");
+const dir = path.join(import.meta.dirname, "..", "views");
 const views = {
   success: path.join(dir, "success.hbs"),
   connect: path.join(dir, "connect.hbs"),

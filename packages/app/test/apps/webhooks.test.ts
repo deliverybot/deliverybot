@@ -1,6 +1,6 @@
-import * as factory from "../factory";
+import * as factory from "../factory.js";
 import { createHmac } from "crypto";
-import { app as deliverybot } from "../app";
+import { app as deliverybot } from "../app.js";
 
 const app = deliverybot.express;
 const body = JSON.stringify({ zen: "Keep it logically awesome." });

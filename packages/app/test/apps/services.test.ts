@@ -1,5 +1,5 @@
-import "../factory";
-import { services } from "../app";
+import "../factory.js";
+import { services } from "../app.js";
 
 describe("Services", () => {
   it("counts sequentially", async () => {

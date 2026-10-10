@@ -1,4 +1,4 @@
-import { User } from "../services";
+import { User } from "../services.js";
 
 export class UserStore {
   private users: { [k: string]: User } = {};

@@ -1,68 +1,27 @@
-const fs = require("fs");
-const path = require("path");
+// Development server: runs packages/run with Node's watch mode, so it
+// restarts whenever the compiled output changes, and proxies webhooks from
+// smee.io when WEBHOOK_PROXY_URL is set.
+const { spawn } = require("child_process");
 
 require("dotenv").config();
 
-const prefix = path.resolve(__dirname, "..", "packages");
-const state = {
-  server: null,
-  sockets: [],
-};
-
-function proxy() {
+if (process.env.WEBHOOK_PROXY_URL) {
   const SmeeClient = require("smee-client");
-  const smee = new SmeeClient({
+  new SmeeClient({
     source: process.env.WEBHOOK_PROXY_URL,
-    target: `http://localhost:3000`
-  });
-  smee.start();
+    target: `http://localhost:${process.env.PORT || 3000}`,
+  }).start();
 }
 
-function start() {
-  state.server = require('@deliverybot/run').express.listen(3000, () => {
-    console.log('Listening on 3000');
-  });
-  state.server.on('connection', (socket) => {
-    state.sockets.push(socket);
-  });
-}
+const server = spawn(
+  process.execPath,
+  ["--watch", "packages/run/lib/server.js"],
+  { stdio: "inherit", env: process.env },
+);
 
-function stop(cb) {
-  state.sockets.forEach((socket) => {
-    if (!socket.destroyed) socket.destroy();
-  });
-  state.sockets = [];
-  state.server.close(() => {
-    cb();
-  });
-}
-
-function clearCache() {
-  Object.keys(require.cache).forEach((id) => {
-    if (id.startsWith(prefix)) {
-      delete require.cache[id];
-    }
-  });
-}
-
-function shutdown() {
-  ["SIGINT", "SIGTERM", "SIGQUIT"].forEach(sig =>
-    process.on(sig, () => stop(() => process.exit(0)))
-  );
-}
-
-function restart() {
-  console.log("Restarting");
-  stop(() => {
-    clearCache();
-    start();
-  });
-}
-
-fs.watchFile("tmp/restart.txt", () => {
-  restart();
-});
-
-start();
-proxy();
-shutdown();
+["SIGINT", "SIGTERM", "SIGQUIT"].forEach((sig) =>
+  process.on(sig, () => {
+    server.kill("SIGTERM");
+    process.exit(0);
+  }),
+);

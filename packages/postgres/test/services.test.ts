@@ -1,8 +1,8 @@
 import { Client } from "pg";
 import { LockError } from "@deliverybot/core";
-import { setup, DATABASE_URL } from "./db";
-import { migrate } from "../src";
-import { CHANNEL } from "../src/message";
+import { setup, DATABASE_URL } from "./db.js";
+import { migrate } from "../src/index.js";
+import { CHANNEL } from "../src/message.js";
 
 let db: Awaited<ReturnType<typeof setup>>;
 

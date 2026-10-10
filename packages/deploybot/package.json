@@ -1,6 +1,7 @@
 {
   "name": "@deliverybot/deploybot",
   "version": "0.7.2",
+  "type": "module",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -10,7 +11,7 @@
     "clean": "mkdir -p lib && rm -r lib",
     "build": "tsc",
     "build:watch": "tsc --watch --preserveWatchOutput",
-    "test": "NODE_ENV=test jest"
+    "test": "NODE_ENV=test vitest run"
   },
   "dependencies": {
     "@deliverybot/core": "0.7.2",
@@ -19,19 +20,16 @@
     "mustache": "4.0.0"
   },
   "devDependencies": {
-    "@octokit/webhooks-types": "7.6.1",
     "@types/express": "4.17.21",
-    "@types/jest": "29.5.14",
     "@types/js-yaml": "4.0.9",
     "@types/jsonschema": "^1.1.1",
     "@types/mustache": "^4.0.0",
     "@types/supertest": "2.0.8",
-    "jest": "29.7.0",
     "nock": "14.0.10",
-    "probot": "13.4.7",
+    "probot": "14.3.2",
     "supertest": "4.0.2",
-    "ts-jest": "29.2.5",
-    "typescript": "5.6.3"
+    "typescript": "5.6.3",
+    "vitest": "4.1.11"
   },
   "description": "Controls and configures deployments using the GitHub API.",
   "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",

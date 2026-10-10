@@ -1,6 +1,7 @@
 {
   "name": "@deliverybot/run",
   "version": "0.7.2",
+  "type": "module",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -12,9 +13,9 @@
     "clean": "mkdir -p lib && mkdir -p bundle && rm -r lib && rm -r bundle",
     "build": "tsc",
     "build:watch": "tsc --watch --preserveWatchOutput",
-    "bundle": "webpack --config config/webpack.config.js",
-    "bundle:watch": "webpack --config config/webpack.config.js --watch",
-    "run": "node lib/index.js",
+    "bundle": "webpack --config config/webpack.config.cjs",
+    "bundle:watch": "webpack --config config/webpack.config.cjs --watch",
+    "run": "node lib/server.js",
     "worker": "node lib/worker.js"
   },
   "dependencies": {

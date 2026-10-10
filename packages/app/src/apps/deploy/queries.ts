@@ -8,10 +8,10 @@ import {
   Watch,
 } from "@deliverybot/deploybot";
 import get from "lodash.get";
-import { Repo } from "../auth";
-import { timeAgoInWords, hash } from "../util";
-import { Measure, Measurements } from "./metrics";
-import { newDeployFileUrl, editDeployFileUrl, yamlEncode } from "../util";
+import { Repo } from "../auth.js";
+import { timeAgoInWords, hash } from "../util.js";
+import { Measure, Measurements } from "./metrics.js";
+import { newDeployFileUrl, editDeployFileUrl, yamlEncode } from "../util.js";
 
 export async function gql(token: string, query: string, variables: any) {
   const resp = await ghRequest({

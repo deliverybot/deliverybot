@@ -1,4 +1,4 @@
-import { app, services } from "../app";
+import { app, services } from "../app.js";
 
 const installation = {
   id: 42,

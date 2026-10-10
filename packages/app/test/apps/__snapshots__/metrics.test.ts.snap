@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Measurements loads measurements 1`] = `
+exports[`Measurements > loads measurements 1`] = `
 Object {
   "allDays": Array [
     "2019-10-28",
@@ -174,7 +174,7 @@ Object {
 }
 `;
 
-exports[`Measurements loads measurements from query 1`] = `
+exports[`Measurements > loads measurements from query 1`] = `
 Object {
   "allDays": Array [
     "2019-10-28",
@@ -292,7 +292,7 @@ Object {
 }
 `;
 
-exports[`Measurements loads query 1`] = `
+exports[`Measurements > loads query 1`] = `
 Array [
   Object {
     "committedAt": 2019-10-28T02:36:55.000Z,

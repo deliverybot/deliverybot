@@ -1,6 +1,6 @@
 import { jobs } from "@deliverybot/app";
 import { load, logger } from "@deliverybot/core";
-import { db, opts, services } from "./config";
+import { db, opts, services } from "./config.js";
 
 if (!db) {
   logger.error("the worker needs DATABASE_URL");

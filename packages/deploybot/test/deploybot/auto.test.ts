@@ -1,14 +1,12 @@
-import * as factory from "../factory";
-import { app, services } from "../app";
-import { match } from "../../src/auto";
-import { EnvLockStore } from "../../src/store";
+import * as factory from "../factory.js";
+import { app, services } from "../app.js";
+import { match } from "../../src/auto.js";
+import { EnvLockStore } from "../../src/store.js";
 
 const probot = app.probot;
 const lockStore = new EnvLockStore(services.kvService);
 
 describe("auto", () => {
-  jest.setTimeout(30000);
-
   afterEach(() => {
     factory.cleanAll();
   });
@@ -37,10 +35,10 @@ describe("auto", () => {
       ["refs/heads/*", "refs/tags/simple-tag"],
     ];
 
-    matches.forEach(m => {
+    matches.forEach((m) => {
       it(`matches ${m[0]}`, () => expect(match(m[0], m[1])).toBe(true));
     });
-    unmatched.forEach(m => {
+    unmatched.forEach((m) => {
       it(`unmatched ${m[0]}`, () => expect(match(m[0], m[1])).toBe(false));
     });
   });

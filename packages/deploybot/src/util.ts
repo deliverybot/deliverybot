@@ -29,7 +29,7 @@ export async function canWrite(
   gh: Octokit,
   { owner, repo, username }: { owner: string; repo: string; username: string },
 ): Promise<boolean> {
-  const perms = await gh.repos.getCollaboratorPermissionLevel({
+  const perms = await gh.rest.repos.getCollaboratorPermissionLevel({
     owner,
     repo,
     username,

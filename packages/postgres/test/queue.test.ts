@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { WebhookEvent } from "@deliverybot/core";
-import { setup, DATABASE_URL } from "./db";
-import { PostgresQueue } from "../src";
+import { setup, DATABASE_URL } from "./db.js";
+import { PostgresQueue } from "../src/index.js";
 
 let db: Awaited<ReturnType<typeof setup>>;
 const queues: PostgresQueue[] = [];

@@ -1,7 +1,10 @@
-import * as factory from "../factory";
+import * as factory from "../factory.js";
 import { WatchStore } from "@deliverybot/deploybot";
-import { services } from "../app";
-import { commits } from "../../src/apps/deploy/queries";
+import { services } from "../app.js";
+import { commits } from "../../src/apps/deploy/queries.js";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
 
 const watchStore = new WatchStore(services.kvService);
 

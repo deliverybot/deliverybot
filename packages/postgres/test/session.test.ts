@@ -1,6 +1,6 @@
 import session from "express-session";
 import { EncryptedStore } from "@deliverybot/core";
-import { setup } from "./db";
+import { setup } from "./db.js";
 
 let db: Awaited<ReturnType<typeof setup>>;
 let store: session.Store;

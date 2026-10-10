@@ -1,6 +1,7 @@
 {
   "name": "@deliverybot/slackbot",
   "version": "0.7.2",
+  "type": "module",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -11,23 +12,19 @@
     "clean": "mkdir -p lib && rm -r lib",
     "build": "tsc",
     "build:watch": "tsc --watch --preserveWatchOutput",
-    "test": "NODE_ENV=test jest"
+    "test": "NODE_ENV=test vitest run"
   },
   "dependencies": {
     "@deliverybot/core": "0.7.2",
-    "@deliverybot/deploybot": "0.7.2",
-    "node-fetch": "2.7.0"
+    "@deliverybot/deploybot": "0.7.2"
   },
   "devDependencies": {
     "@types/express": "4.17.21",
-    "@types/jest": "29.5.14",
-    "@types/node-fetch": "2.5.2",
     "@types/supertest": "2.0.8",
-    "jest": "29.7.0",
     "nock": "14.0.10",
     "supertest": "4.0.2",
-    "ts-jest": "29.2.5",
-    "typescript": "5.6.3"
+    "typescript": "5.6.3",
+    "vitest": "4.1.11"
   },
   "description": "Controls and configures deployments using the GitHub API.",
   "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",

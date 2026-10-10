@@ -1,5 +1,5 @@
-import * as factory from "../factory";
-import { app as deliverybot } from "../app";
+import * as factory from "../factory.js";
+import { app as deliverybot } from "../app.js";
 
 const app = deliverybot.express;
 const json = "application/json; charset=utf-8";

@@ -1,6 +1,6 @@
-import { Services } from "./services";
-import { RegisterFunc, Options, load } from "./app";
-import { logger } from "./logger";
+import { Services } from "./services.js";
+import { RegisterFunc, Options, load } from "./app.js";
+import { logger } from "./logger.js";
 
 export function serve(
   services: Services,
@@ -36,11 +36,12 @@ export {
   Dispatcher,
   Octokit,
   WebhookEvent,
-} from "./github";
+  WebhookPayload,
+} from "./github.js";
 export type { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
-export { Logger, logger } from "./logger";
-export { sessions, csrf, EncryptedStore } from "./session";
-export { Dependencies, RegisterFunc, Options, load } from "./app";
+export { Logger, logger } from "./logger.js";
+export { sessions, csrf, EncryptedStore } from "./session.js";
+export { Dependencies, RegisterFunc, Options, load } from "./app.js";
 export {
   Services,
   User,
@@ -57,5 +58,5 @@ export {
   Installation,
   InstallationService,
   InstallationStore,
-} from "./services";
-export { local as localServices } from "./local";
+} from "./services.js";
+export { local as localServices } from "./local/index.js";

@@ -1,6 +1,7 @@
 {
   "name": "@deliverybot/core",
   "version": "0.7.2",
+  "type": "module",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -9,32 +10,27 @@
   "scripts": {
     "clean": "mkdir -p lib && rm -r lib",
     "build": "tsc",
-    "build:watch": "tsc --watch --preserveWatchOutput",
-    "test": "NODE_ENV=test jest"
+    "build:watch": "tsc --watch --preserveWatchOutput"
   },
   "dependencies": {
-    "@octokit/plugin-rest-endpoint-methods": "13.3.2-cjs.1",
-    "@octokit/webhooks": "12.3.2",
-    "@octokit/webhooks-types": "7.6.1",
-    "@probot/get-private-key": "1.2.1",
+    "@octokit/plugin-rest-endpoint-methods": "17.0.0",
+    "@octokit/webhooks": "14.2.0",
+    "@probot/get-private-key": "2.1.1",
     "express": "4.22.3",
     "express-async-errors": "3.1.1",
     "express-session": "1.19.0",
     "handlebars": "4.7.9",
     "hbs": "4.2.0",
-    "pino": "9.14.0",
-    "probot": "13.4.7",
-    "turbolinks-express": "1.0.0",
-    "uuid": "3.3.3"
+    "pino": "10.3.1",
+    "probot": "14.3.2",
+    "turbolinks-express": "1.0.0"
   },
   "devDependencies": {
     "@types/express": "4.17.21",
     "@types/express-session": "1.19.0",
-    "@types/jest": "29.5.14",
+    "@types/hbs": "4.0.5",
     "@types/supertest": "2.0.8",
-    "jest": "29.7.0",
     "supertest": "4.0.2",
-    "ts-jest": "29.2.5",
     "typescript": "5.6.3"
   },
   "description": "Controls and configures deployments using the GitHub API.",

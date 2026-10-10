@@ -8,6 +8,5 @@ interface RequestExtras {
   context: any;
   log: Logger;
   requestId: string;
-  rawBody?: string;
   csrfToken: () => string;
 }
