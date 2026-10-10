@@ -47,3 +47,11 @@ updates:
       github-actions:
         patterns:
           - "*"
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      # The image stays on the Node major that CI tests against.
+      - dependency-name: node
+        update-types: ["version-update:semver-major"]
