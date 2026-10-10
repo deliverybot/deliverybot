@@ -9,8 +9,8 @@ operator.
 ```
 base/                 shared manifests
 overlays/staging/     namespace deliverybot-staging, staging.deliverybot.dev
-overlays/production/  namespace deliverybot, app.deliverybot.dev, 2 web pods,
-                      a Postgres replica
+overlays/production/  namespace deliverybot-production, app.deliverybot.dev,
+                      2 web pods, a Postgres replica
 ```
 
 The `Deploy` workflow (`.github/workflows/deploy.yml`) builds the image, pushes
