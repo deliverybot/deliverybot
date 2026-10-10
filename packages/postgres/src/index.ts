@@ -5,19 +5,21 @@ import { PostgresLockStore, LockOptions } from "./lock";
 import { PostgresMessageBus } from "./message";
 import { PostgresUserStore } from "./user";
 import { migrate } from "./migrate";
+import { PostgresQueue, QueueOptions } from "./queue";
 
 export { migrate, PostgresKVStore, PostgresLockStore, PostgresMessageBus };
-export { PostgresUserStore };
+export { PostgresUserStore, PostgresQueue };
 
 export interface PostgresOptions extends PoolConfig {
   lock?: Partial<LockOptions>;
+  queue?: Partial<QueueOptions>;
 }
 
 /**
  * Services backed by Postgres. Call `migrate(pool)` before serving traffic.
  */
 export function postgresServices(opts: PostgresOptions = {}) {
-  const { lock: lockOpts, ...poolConfig } = opts;
+  const { lock: lockOpts, queue: queueOpts, ...poolConfig } = opts;
   const pool = new Pool(poolConfig);
   const kv = new PostgresKVStore<any>(pool);
   const lock = new PostgresLockStore(pool, lockOpts);
@@ -29,5 +31,6 @@ export function postgresServices(opts: PostgresOptions = {}) {
     messageService: () => msg,
     userService: () => user,
   };
-  return { pool, services };
+  const queue = new PostgresQueue(pool, queueOpts);
+  return { pool, services, queue };
 }
