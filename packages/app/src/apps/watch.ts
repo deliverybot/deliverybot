@@ -46,7 +46,7 @@ export function watch({ app, robot, messageService }: Dependencies) {
     },
   );
 
-  robot.on("*", async context => {
+  robot.onAny(async (context: any) => {
     const repo = context.payload.repository;
     if (!repo) {
       return;

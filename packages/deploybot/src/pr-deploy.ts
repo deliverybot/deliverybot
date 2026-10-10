@@ -16,14 +16,14 @@ export async function handlePRDeploy(
   context.log.info(logCtx(context, { command }), "pr deploy: handling command");
   try {
     const target = command.split(" ")[1];
-    const pr = await context.github.pulls.get({
+    const pr = await context.octokit.pulls.get({
       owner: context.payload.repository.owner.login,
       repo: context.payload.repository.name,
       pull_number: prNumber,
     });
 
     const write = await canWrite(
-      context.github,
+      context.octokit,
       context.repo({ username: user }),
     );
     if (!write) {
@@ -31,7 +31,7 @@ export async function handlePRDeploy(
       return;
     }
     await deploy(
-      context.github,
+      context.octokit,
       context.log,
       kv,
       context.repo({
@@ -42,7 +42,7 @@ export async function handlePRDeploy(
       }),
     );
   } catch (error) {
-    await context.github.issues.createComment({
+    await context.octokit.issues.createComment({
       owner: context.payload.repository.owner.login,
       repo: context.payload.repository.name,
       issue_number: prNumber,

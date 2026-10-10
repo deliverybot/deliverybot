@@ -22,11 +22,10 @@
     "@types/csurf": "1.9.36",
     "@types/express": "4.17.21",
     "@types/jest": "29.5.14",
-    "@types/nock": "11.1.0",
     "@types/node-fetch": "2.5.2",
     "@types/supertest": "2.0.8",
     "jest": "29.7.0",
-    "nock": "11.5.0",
+    "nock": "14.0.10",
     "supertest": "4.0.2",
     "ts-jest": "29.2.5",
     "typescript": "5.6.3"

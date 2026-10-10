@@ -1,4 +1,5 @@
 import * as path from "path";
+import { ProbotOctokit } from "probot";
 import { Services, load, logger, localServices } from "@deliverybot/core";
 import { apps, info } from "../src";
 
@@ -10,6 +11,11 @@ export const app = load(services, apps, {
   webhookSecret: 'foobar',
   appSecret: 'foobar',
   privateKey: 'foobar',
+  githubToken: 'test',
+  Octokit: ProbotOctokit.defaults({
+    retry: { enabled: false },
+    throttle: { enabled: false },
+  }),
   config: {},
   locals: info,
   root: path.resolve(__dirname, ".."),

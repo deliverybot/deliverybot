@@ -46,16 +46,21 @@ export async function installs(user: User) {
   const installations = await user.github.apps.listInstallationsForAuthenticatedUser(
     {},
   );
-  return installations.data.installations.map(install => ({
-    id: install.id,
-    name: install.account.login,
-    target_type: install.target_type,
-    account: {
-      type: install.account.type,
-      id: install.account.id,
-    },
-    htmlUrl: install.html_url,
-  }));
+  return installations.data.installations.map(install => {
+    // Enterprise installations have no login or type.
+    const account =
+      install.account && "login" in install.account ? install.account : null;
+    return {
+      id: install.id,
+      name: account ? account.login : "",
+      target_type: install.target_type,
+      account: {
+        type: account ? account.type : "",
+        id: install.account ? install.account.id : undefined,
+      },
+      htmlUrl: install.html_url,
+    };
+  });
 }
 
 async function repoStats(

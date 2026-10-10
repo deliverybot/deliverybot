@@ -1,7 +1,11 @@
-import Webhooks from "@octokit/webhooks";
-import { PayloadRepository } from "@octokit/webhooks";
+import { Repository as PayloadRepository } from "@octokit/webhooks-types";
 import { v4 as uuid } from "uuid";
-import { Application, Context, LockService } from "@deliverybot/core";
+import {
+  Application,
+  Context,
+  LockService,
+  WebhookEvent,
+} from "@deliverybot/core";
 import { WatchStore, EnvLockStore } from "./store";
 import { Watch } from "./types";
 import { logCtx } from "./util";
@@ -26,7 +30,7 @@ export function auto(
   lockService: LockService,
   watchStore: WatchStore,
   envLockStore: EnvLockStore,
-  publish: (event: Webhooks.WebhookEvent<any>) => Promise<any>,
+  publish: (event: WebhookEvent) => Promise<any>,
 ) {
   /**
    * Add watch adds a watch on a specific ref, sha and repository.
@@ -43,7 +47,7 @@ export function auto(
   ) {
     try {
       let anyAdded = false;
-      const conf = await config(context.github, context.repo());
+      const conf = await config(context.octokit, context.repo());
       for (const target in conf) {
         const targetVal = conf[target]!;
         if (!match(targetVal.auto_deploy_on, matchRef)) {
@@ -117,7 +121,7 @@ export function auto(
     // Check if the current sha for this ref is equal to this watch. Since
     // multiple watches can be in progress we only want to process the latest
     // of them.
-    const refreshed = await context.github.git.getRef(
+    const refreshed = await context.octokit.git.getRef(
       context.repo({ ref: ref.replace("refs/", "") }),
     );
     const currentSha = refreshed.data.object.sha;
@@ -134,7 +138,7 @@ export function auto(
       logCtx(context, { ref, sha, target, watchId: watch.id }),
       "auto deploy: processing watch",
     );
-    const deploys = await context.github.repos.listDeployments(
+    const deploys = await context.octokit.repos.listDeployments(
       context.repo({ sha }),
     );
     if (deploys.data.find(d => d.environment === targetVal.environment)) {
@@ -147,7 +151,7 @@ export function auto(
 
     let pr = undefined;
     if (watch.prNumber) {
-      const prObject = await context.github.pulls.get({
+      const prObject = await context.octokit.pulls.get({
         owner: context.payload.repository.owner.login,
         repo: context.payload.repository.name,
         pull_number: watch.prNumber,
@@ -158,7 +162,7 @@ export function auto(
     context.log.info(logCtx(context, { ref }), "auto deploy: deploying");
     try {
       await deploy(
-        context.github,
+        context.octokit,
         context.log,
         envLockStore,
         context.repo({
@@ -209,7 +213,7 @@ export function auto(
   function lockWatch(context: Context, handle: () => Promise<boolean>) {
     // We need to lock by the ref + repository here. Since we want to deploy
     // by reference and not by the sha.
-    const watch = context.payload as Watch;
+    const watch = context.payload as unknown as Watch;
     const key = hash([watch.ref, watch.repository.id.toString(), watch.target]);
     context.log.info(
       logCtx(context, {
@@ -258,10 +262,7 @@ export function auto(
             ...watch,
             installation: context.payload.installation,
           },
-          protocol: context.protocol,
-          host: context.host,
-          url: context.url,
-        }),
+        } as any),
       ),
     );
   }
@@ -286,11 +287,11 @@ export function auto(
 
   // Handles a synthetic push watch event. This fires whenever a change happens
   // to a specific commit where a watch exists on that commit.
-  app.on("push_watch", context =>
+  app.onCustom("push_watch", context =>
     lockWatch(
       context,
       (): Promise<boolean> => {
-        const watch = context.payload as Watch;
+        const watch = context.payload as unknown as Watch;
         return processWatch(context, watch);
       },
     ),
