@@ -5,6 +5,7 @@ export interface Repo {
   owner: string;
   repo: string;
   id: number;
+  defaultBranch: string;
 }
 export interface User {
   id: string;
@@ -68,15 +69,17 @@ export async function verifyRepo(
   const { owner, repo } = req.params;
   const username = req.user!.username;
   const octokit = req.user!.github;
-  if (req.session.verified && req.session.verified[`${owner}/${repo}`]) {
-    const id = req.session.verified[`${owner}/${repo}`];
-    req.user!.repo = { owner, repo, id };
+  const verified = req.session.verified?.[`${owner}/${repo}`];
+  // Sessions from before the default branch was stored hold only the id.
+  if (typeof verified === "object") {
+    req.user!.repo = { owner, repo, ...verified };
     next();
     return;
   }
 
   const repoData = await octokit.rest.repos.get({ owner, repo });
   const id = repoData.data.id;
+  const defaultBranch = repoData.data.default_branch;
   const write = await canWrite(octokit, { owner, repo, username });
   if (!write) {
     (req as any).log.info({ owner, repo }, "no write access");
@@ -84,8 +87,8 @@ export async function verifyRepo(
     return;
   }
   req.session.verified = req.session.verified || {};
-  req.session.verified[`${owner}/${repo}`] = id;
-  req.user!.repo = { owner, repo, id };
+  req.session.verified[`${owner}/${repo}`] = { id, defaultBranch };
+  req.user!.repo = { owner, repo, id, defaultBranch };
   next();
 }
 

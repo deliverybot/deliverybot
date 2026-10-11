@@ -122,13 +122,13 @@ export const permission = ({ admin }: { admin: boolean }) =>
     .get("/repos/Codertocat/Hello-World/collaborators/Codertocat/permission")
     .reply(200, { permission: admin ? "admin" : "read" });
 
-export const config = ({ valid }: { valid?: boolean }) =>
+export const config = ({ valid, ref }: { valid?: boolean; ref?: string }) =>
   nock("https://api.github.com")
     .persist()
     .get(
       /^\/repos\/Codertocat\/Hello-World\/contents\/\.github(\/|%2F)deploy\.yml/,
     )
-    .query(() => true)
+    .query((q) => !ref || q.ref === ref)
     .reply(200, {
       content: Buffer.from(
         valid ? fixtures.deployValid : fixtures.deployInvalid,
@@ -138,7 +138,7 @@ export const config = ({ valid }: { valid?: boolean }) =>
 export const repo = () =>
   nock("https://api.github.com")
     .get("/repos/Codertocat/Hello-World")
-    .reply(200, { id: 1 });
+    .reply(200, { id: 1, default_branch: "main" });
 
 export const pr = () =>
   nock("https://api.github.com")

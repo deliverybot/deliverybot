@@ -31,7 +31,7 @@ describe("Deploy", () => {
     expect(response.status).toBe(302);
 
     expect(response.get("location")).toBe(
-      "/Codertocat/Hello-World/branch/master",
+      "/Codertocat/Hello-World/branch/main",
     );
   });
 
@@ -61,6 +61,36 @@ describe("Deploy", () => {
       .get("/Codertocat/Hello-World/config")
       .set("cookie", session);
     expect(response.status).toBe(200);
+  });
+
+  it("reads the config from the default branch", async () => {
+    factory.cleanAll();
+    factory.permission({ admin: true });
+    factory.repo();
+    const config = factory.config({ valid: true, ref: "refs/heads/main" });
+
+    const response = await factory
+      .request(app)
+      .get("/Codertocat/Hello-World/config")
+      .set("cookie", session);
+    expect(response.status).toBe(200);
+    expect(config.isDone()).toBe(true);
+  });
+
+  it("links to adding a config on the default branch", async () => {
+    factory.cleanAll();
+    factory.permission({ admin: true });
+    factory.repo();
+    factory.noConfig();
+
+    const response = await factory
+      .request(app)
+      .get("/Codertocat/Hello-World/config")
+      .set("cookie", session);
+    expect(response.status).toBe(200);
+    expect(response.text).toContain(
+      "https://github.com/Codertocat/Hello-World/new/main?filename",
+    );
   });
 
   it("gets commits", async () => {
