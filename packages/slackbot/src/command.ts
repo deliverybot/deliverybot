@@ -20,7 +20,7 @@ const help = `Deliverybot Slack app:
 
 \`/deliverybot login\`: Login to GitHub.
 
-\`/deliverybot deploy [owner]/[repo]@[ref] [target]\`: Deploy a repository to [target].
+\`/deliverybot deploy [owner]/[repo]@[ref] [target]\`: Deploy a branch, tag or commit of a repository to [target].
 `;
 
 const handlers: {
@@ -127,20 +127,26 @@ async function doDeploy(
   ref: { owner: string; repo: string; ref: string },
 ) {
   const github = new Octokit({ auth: ctx.user.github.token });
-  let gitRef: any;
+  // Accepts a branch, tag or sha, with or without a refs/, heads/ or tags/
+  // prefix.
+  const name = ref.ref.replace(/^refs\//, "").replace(/^(heads|tags)\//, "");
+  let sha: string;
   try {
-    gitRef = await github.rest.git.getRef(ref);
+    const commit = await github.rest.repos.getCommit({
+      owner: ref.owner,
+      repo: ref.repo,
+      ref: name,
+    });
+    sha = commit.data.sha;
   } catch (err) {
     throw new Error(`Ref not found ${ref.ref}`);
-  }
-  if (!gitRef.data.object) {
-    throw new Error(`Invalid ref ${ref.ref}`);
   }
 
   await deploy(github, ctx.log, ctx.lock, {
     ...ref,
+    ref: name,
     target,
-    sha: gitRef.data.object.sha,
+    sha,
     pr: undefined,
   });
 }

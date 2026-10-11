@@ -5,7 +5,7 @@ Slackbot implements the following slash deploy commands:
 ```
 /deliverybot help
 /deliverybot login
-/deliverybot deploy deliverybot/example@heads/master production
+/deliverybot deploy deliverybot/example@master production
 ```
 
 ## Setting up the Slack app
