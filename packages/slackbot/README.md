@@ -14,15 +14,12 @@ Each deployment needs its own Slack app, because Slack sends commands to one
 URL. Below, `<host>` is the deployment's `BASE_URL`, for example
 `https://app.deliverybot.dev`.
 
-1. Create an app at https://api.slack.com/apps, From scratch, in the
-   workspace you want to use.
-2. Slash Commands: create `/deliverybot` with the Request URL
-   `<host>/slack/command`.
-3. OAuth & Permissions: add the Redirect URL `<host>/slack/callback`. The
-   `commands` bot scope is added with the slash command.
-4. Basic Information: copy the Client ID, Client Secret and Signing Secret
+1. At https://api.slack.com/apps, choose Create New App, From a manifest,
+   pick the workspace, and paste `manifest.yml` from this package with
+   `<host>` replaced.
+2. Basic Information: copy the Client ID, Client Secret and Signing Secret
    into `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET` and `SLACK_SIGNING_SECRET`.
-5. To let other workspaces install the app, turn on Manage Distribution.
+3. To let other workspaces install the app, turn on Manage Distribution.
 
 The GitHub App's callback URL must be `<host>/login/cb`, as for the
 dashboard.

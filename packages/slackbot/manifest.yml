@@ -1,0 +1,27 @@
+# Slack app manifest. Replace <host> with the deployment's BASE_URL, for
+# example https://app.deliverybot.dev, then paste it into Create New App,
+# From a manifest at https://api.slack.com/apps.
+display_information:
+  name: Deliverybot
+  description: Deploy GitHub repositories from Slack.
+  background_color: "#24292e"
+features:
+  bot_user:
+    display_name: Deliverybot
+    always_online: false
+  slash_commands:
+    - command: /deliverybot
+      url: <host>/slack/command
+      description: Deploy with Deliverybot
+      usage_hint: "deploy owner/repo@ref target | login | help"
+      should_escape: false
+oauth_config:
+  redirect_urls:
+    - <host>/slack/callback
+  scopes:
+    bot:
+      - commands
+settings:
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false
