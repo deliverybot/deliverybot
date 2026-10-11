@@ -13,10 +13,25 @@ overlays/production/  namespace deliverybot-production, app.deliverybot.dev,
                       2 web pods, a Postgres replica
 ```
 
-The `Deploy` workflow (`.github/workflows/deploy.yml`) builds the image, pushes
-it to `ghcr.io/deliverybot/deliverybot`, and applies an overlay. Every push to
-`master` deploys to staging. Production is deployed by hand: Actions, Deploy,
-Run workflow, environment `production`.
+Deliverybot deploys itself. The `Deploy` workflow
+(`.github/workflows/deploy.yml`) builds an image for every push to `master` and
+pushes it to `ghcr.io/deliverybot/deliverybot`. Deliverybot, configured in
+`.github/deploy.yml`, then creates GitHub deployments: staging automatically
+once CI and the image build pass, production when someone deploys it from the
+dashboard. Each deployment runs the workflow's deploy job, which applies the
+overlay and reports the result as deployment statuses.
+
+### Break glass
+
+A bad deploy can take Deliverybot down, and then it can't deploy the fix. The
+same workflow can always be run by hand: Actions, Deploy, Run workflow, pick
+the environment, and optionally a commit SHA, tag or branch under "ref" to roll
+back to. This path doesn't need the app. It still records a GitHub deployment
+(marked `break_glass` in its payload), so the environment's history stays
+complete.
+
+Install only one Deliverybot GitHub App (normally production) on this
+repository. Each installed app creates its own deployments.
 
 ## One-time cluster setup
 
