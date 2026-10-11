@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@deliverybot/app": "0.7.2",
-    "apexcharts": "3.10.1",
+    "apexcharts": "3.24.0",
     "handlebars": "4.7.10",
     "stimulus": "1.1.1",
     "turbolinks": "5.2.0"
