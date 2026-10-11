@@ -16,7 +16,12 @@ export const app = load(services, apps, {
     retry: { enabled: false },
     throttle: { enabled: false },
   }),
-  config: {},
+  config: {
+    baseUrl: "https://deliverybot.test",
+    slackClientId: "slack-client",
+    slackClientSecret: "slack-secret",
+    slackSigningSecret: "slack-signing",
+  },
   locals: info,
   root: path.resolve(import.meta.dirname, ".."),
   production: false,

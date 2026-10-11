@@ -6,6 +6,10 @@ declare module "express-session" {
   interface SessionData {
     /** GitHub OAuth token of the signed in user. */
     token: string;
+    /** Refreshes `token` when the GitHub App's user tokens expire. */
+    refreshToken: string;
+    /** When `token` expires, in milliseconds since the epoch. */
+    tokenExpiresAt: number;
     userId: string;
     login: string;
     avatar: string;
@@ -14,6 +18,8 @@ declare module "express-session" {
     /** Repos the user has write access to, by "owner/repo". */
     verified: { [repo: string]: { id: number; defaultBranch: string } };
     slackId: string;
+    /** OAuth state of a Slack sign in in progress. */
+    slackState: string;
     csrfSecret: string;
   }
 }

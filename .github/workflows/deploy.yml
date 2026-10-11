@@ -145,7 +145,7 @@ jobs:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           SLACK_CLIENT_ID: ${{ secrets.SLACK_CLIENT_ID }}
           SLACK_CLIENT_SECRET: ${{ secrets.SLACK_CLIENT_SECRET }}
-          SLACK_LOGIN_URL: ${{ secrets.SLACK_LOGIN_URL }}
+          SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
         run: |
           overlay=deploy/kubernetes/overlays/$ENVIRONMENT
           namespace=$(yq ".metadata.name" "$overlay/namespace.yaml")
@@ -159,7 +159,7 @@ jobs:
             --from-literal=CLIENT_SECRET="$CLIENT_SECRET" \
             --from-literal=SLACK_CLIENT_ID="$SLACK_CLIENT_ID" \
             --from-literal=SLACK_CLIENT_SECRET="$SLACK_CLIENT_SECRET" \
-            --from-literal=SLACK_LOGIN_URL="$SLACK_LOGIN_URL" \
+            --from-literal=SLACK_SIGNING_SECRET="$SLACK_SIGNING_SECRET" \
             --dry-run=client -o yaml | kubectl apply -f -
           echo "NAMESPACE=$namespace" >> "$GITHUB_ENV"
 

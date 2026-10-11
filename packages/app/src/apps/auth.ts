@@ -103,7 +103,11 @@ export async function verifyRepo(
 export function auth({ app, csrf, userService, config }: Dependencies) {
   const loginUrl = `https://github.com/login/oauth/authorize?scope=user&client_id=${config.githubClientId}&redirect_uri=${config.baseUrl}/login/cb`;
 
-  async function accessToken(code: string): Promise<string> {
+  async function accessToken(code: string): Promise<{
+    access_token?: string;
+    refresh_token?: string;
+    expires_in?: number;
+  }> {
     const resp = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
@@ -116,13 +120,13 @@ export function auth({ app, csrf, userService, config }: Dependencies) {
         code,
       }),
     });
-    const body = await resp.json();
-    return body["access_token"];
+    return resp.json();
   }
 
   async function callback(req: Request, res: Response) {
     const code = typeof req.query.code === "string" ? req.query.code : "";
-    const token = code && (await accessToken(code));
+    const grant = code ? await accessToken(code) : {};
+    const token = grant.access_token;
     if (!token) {
       res.redirect("/login");
       return;
@@ -138,6 +142,12 @@ export function auth({ app, csrf, userService, config }: Dependencies) {
     );
     req.session.avatar = user.data.avatar_url;
     req.session.token = token;
+    // GitHub App user tokens expire unless the app opts out. The Slack app
+    // keeps the refresh token so commands keep working after that.
+    if (grant.refresh_token) req.session.refreshToken = grant.refresh_token;
+    if (grant.expires_in) {
+      req.session.tokenExpiresAt = Date.now() + grant.expires_in * 1000;
+    }
     req.session.userId = `${user.data.id}`;
     req.session.login = user.data.login;
     if (slackId) req.session.slackId = slackId;

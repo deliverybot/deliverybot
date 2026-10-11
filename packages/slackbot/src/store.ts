@@ -1,12 +1,12 @@
 import { KVStore, KVService } from "@deliverybot/core";
+import { GitHubToken } from "./token.js";
 
 export interface SlackUser {
   slack: {
     id: string;
   };
-  github: {
+  github: GitHubToken & {
     id: string;
-    token: string;
     username: string;
   };
 }

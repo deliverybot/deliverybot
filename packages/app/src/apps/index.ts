@@ -18,10 +18,10 @@ import { installations } from "./installations.js";
 export const apps = [
   util,
   auth,
+  slackbot,
   dashboard,
   deploy,
   watch,
-  slackbot,
   deploybot,
   installations,
 ];

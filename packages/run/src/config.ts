@@ -14,9 +14,9 @@ export const opts: Options = {
   appSecret: env("SESSION_SECRET") || env("WEBHOOK_SECRET") || "development",
   privateKey: env("PRIVATE_KEY"),
   config: {
-    slackLoginUrl: env("SLACK_LOGIN_URL"),
     slackClientId: env("SLACK_CLIENT_ID"),
     slackClientSecret: env("SLACK_CLIENT_SECRET"),
+    slackSigningSecret: env("SLACK_SIGNING_SECRET"),
     baseUrl: env("BASE_URL"),
     githubClientId: env("CLIENT_ID"),
     githubClientSecret: env("CLIENT_SECRET"),

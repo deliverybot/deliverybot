@@ -59,7 +59,8 @@ Create two environments under the repository's Settings, Environments:
   `WEBHOOK_SECRET`, `CLIENT_ID`, `CLIENT_SECRET`, and `SESSION_SECRET` (any
   long random string).
 - Optional Slack secrets: `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`,
-  `SLACK_LOGIN_URL`.
+  `SLACK_SIGNING_SECRET`. See `packages/slackbot/README.md` for creating the
+  Slack app.
 
 Then add the repository variable `DEPLOY_ENABLED` with the value `true`
 (Settings, Secrets and variables, Actions, Variables). The workflow does
