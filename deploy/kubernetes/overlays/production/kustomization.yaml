@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: deliverybot-production
+resources:
+  - namespace.yaml
+  - ../../base
+configMapGenerator:
+  - name: deliverybot
+    behavior: merge
+    literals:
+      - BASE_URL=https://app.deliverybot.dev
+patches:
+  - target:
+      kind: HTTPRoute
+      name: web
+    patch: |
+      - op: replace
+        path: /spec/hostnames/0
+        value: app.deliverybot.dev
+  # Two web pods and a Postgres replica so one node going away doesn't take
+  # the app down.
+  - target:
+      kind: Deployment
+      name: web
+    patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 2
+  - target:
+      kind: Cluster
+      name: deliverybot-db
+    patch: |
+      - op: replace
+        path: /spec/instances
+        value: 2

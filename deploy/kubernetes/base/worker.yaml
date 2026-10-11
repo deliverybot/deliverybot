@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: worker
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      # Lets a running job finish before the pod is killed. Jobs that don't
+      # finish in time are retried when their lease expires.
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: worker
+          image: deliverybot
+          command: ["node", "packages/run/lib/worker.js"]
+          envFrom:
+            - configMapRef:
+                name: deliverybot
+            - secretRef:
+                name: deliverybot
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: deliverybot-db-app
+                  key: uri
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 192Mi
+            limits:
+              memory: 512Mi

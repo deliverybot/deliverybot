@@ -57,6 +57,13 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
   // Webhooks read the raw body to verify signatures, so they go first.
   app.post(opts.webhookPath, ...webhooks(robot));
 
+  // Liveness check for the load balancer and Kubernetes probes. It sits
+  // before logging and sessions so probes neither fill the logs nor create
+  // sessions.
+  app.get("/healthz", (req: Request, res: Response) => {
+    res.type("text").send("ok");
+  });
+
   // Attach the probot log to the request object.
   app.use(logRequests);
 

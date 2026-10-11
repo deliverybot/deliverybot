@@ -1,0 +1,22 @@
+# Postgres through the CloudNativePG operator. It creates the `deliverybot`
+# database and a `deliverybot-db-app` secret whose `uri` key is the
+# connection string the app uses.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: deliverybot-db
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16
+  bootstrap:
+    initdb:
+      database: deliverybot
+      owner: deliverybot
+  storage:
+    size: 5Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
