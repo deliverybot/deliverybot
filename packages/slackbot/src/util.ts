@@ -3,6 +3,10 @@ import crypto from "crypto";
 
 export function verifySignature(secret: string, req: Request) {
   const log = (req as any).log;
+  if (!secret) {
+    log.warn("verifySignature: SLACK_SIGNING_SECRET is not set");
+    return false;
+  }
   try {
     const signature = req.headers["x-slack-signature"];
     const timestamp = req.headers["x-slack-request-timestamp"];
@@ -29,8 +33,8 @@ export function verifySignature(secret: string, req: Request) {
 
     // Timing safe comparison.
     const tssc = (a: string, b: string) => {
-      const ab = new Buffer(a, "utf-8");
-      const bb = new Buffer(b, "utf-8");
+      const ab = Buffer.from(a, "utf-8");
+      const bb = Buffer.from(b, "utf-8");
       if (ab.length !== bb.length) {
         return false;
       }

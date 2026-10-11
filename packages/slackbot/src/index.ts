@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { EnvLockStore } from "@deliverybot/deploybot";
 import { Dependencies } from "@deliverybot/core";
 import { AuthedRequest, authenticate } from "./auth.js";
@@ -5,6 +6,7 @@ import { verifySignature } from "./util.js";
 import * as path from "path";
 import { associateError, handle } from "./command.js";
 import { SlackUserStore } from "./store.js";
+import { freshToken } from "./token.js";
 
 const dir = path.join(import.meta.dirname, "..", "views");
 const views = {
@@ -16,32 +18,62 @@ const views = {
  * Slackbot initiates the slackbot application.
  *
  * Config:
- * - slackLoginUrl
+ * - baseUrl
+ * - githubClientId
+ * - githubClientSecret
  * - slackClientId
  * - slackClientSecret
- * - slackSecret
+ * - slackSigningSecret
  */
 export function slackbot({ app, kvService, config }: Dependencies) {
   const store = new SlackUserStore(kvService);
   const locker = new EnvLockStore(kvService);
+  const loginUrl = `${config.baseUrl}/slack/install`;
+  const redirectUri = `${config.baseUrl}/slack/callback`;
 
+  // Signing in with Slack tells us the Slack user id to link the GitHub
+  // account to. The state ties the callback to this browser.
   app.get("/slack/install", (req, res) => {
-    res.redirect(config.slackLoginUrl!);
+    const state = crypto.randomBytes(16).toString("base64url");
+    req.session.slackState = state;
+    const params = new URLSearchParams({
+      client_id: config.slackClientId || "",
+      scope: "commands",
+      redirect_uri: redirectUri,
+      state,
+    });
+    res.redirect(`https://slack.com/oauth/v2/authorize?${params}`);
   });
 
   app.get("/slack/callback", async (req, res) => {
-    const resp = await fetch(
-      `https://slack.com/api/oauth.access?code=${encodeURIComponent(String(req.query.code || ""))}&client_id=${config.slackClientId}&client_secret=${config.slackClientSecret}`,
-    );
+    const { slackState } = req.session;
+    delete req.session.slackState;
+    if (!slackState || req.query.state !== slackState) {
+      req.log.info("slack callback with an unknown state");
+      res.redirect("/slack/install");
+      return;
+    }
+
+    const resp = await fetch("https://slack.com/api/oauth.v2.access", {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        code: String(req.query.code || ""),
+        client_id: config.slackClientId || "",
+        client_secret: config.slackClientSecret || "",
+        redirect_uri: redirectUri,
+      }),
+    });
     const body = await resp.json();
-    if (!body.ok) {
-      req.log.error({ body }, "slack callback failed");
+    const userId = body.ok && body.authed_user && body.authed_user.id;
+    if (!userId) {
+      req.log.error({ error: body.error }, "slack callback failed");
       res.sendStatus(400);
       return;
     }
-    req.log.info({ user: body.user_id }, "slack got user");
+    req.log.info({ user: userId }, "slack got user");
     // Sends a success page -- includes a link to /slack/associate.
-    req.session.slackId = body.user_id;
+    req.session.slackId = userId;
     res.render(views.connect, {});
   });
 
@@ -53,6 +85,8 @@ export function slackbot({ app, kvService, config }: Dependencies) {
           id: req.user.id,
           username: req.user.username,
           token: req.user.token,
+          refreshToken: req.session.refreshToken,
+          expiresAt: req.session.tokenExpiresAt,
         },
       });
       res.render(views.success, {});
@@ -62,15 +96,15 @@ export function slackbot({ app, kvService, config }: Dependencies) {
   });
 
   app.post("/slack/command", async (req, res) => {
-    req.log.info({ body: req.body }, "handling slack request");
-
     const {
       text,
       team_id: teamId,
       user_id: userId,
       response_url: response,
     } = req.body;
-    if (!verifySignature(config.slackSecret!, req)) {
+    req.log.info({ text, teamId, userId }, "handling slack request");
+
+    if (!verifySignature(config.slackSigningSecret || "", req)) {
       res.sendStatus(400);
       return;
     }
@@ -78,15 +112,18 @@ export function slackbot({ app, kvService, config }: Dependencies) {
     try {
       const user = await store.get(userId);
       if (!user) {
-        res.json(associateError(teamId));
+        res.json(associateError({ loginUrl }));
         return;
       }
+      user.github = await freshToken(user.github, config, async (github) => {
+        await store.associate({ ...user, github });
+      });
 
       const team = { id: teamId };
       const ctx = {
-        loginUrl: config.slackLoginUrl!,
+        loginUrl,
         lock: locker,
-        text,
+        text: text || "",
         team,
         user,
         response,
@@ -95,7 +132,7 @@ export function slackbot({ app, kvService, config }: Dependencies) {
       res.json(handle(ctx));
     } catch (err) {
       req.log.error({ err }, "failed: handling slack request");
-      res.json(associateError({ loginUrl: config.slackLoginUrl! }));
+      res.json(associateError({ loginUrl }));
       return;
     }
   });
