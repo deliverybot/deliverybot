@@ -2,14 +2,15 @@
 # runs the Deploy workflow (.github/workflows/deploy.yml). If Deliverybot is
 # down, deploy from that workflow by hand instead.
 
-# Every push to master, once CI and the image build pass.
+# Every push to master, once CI passes. The Deploy workflow builds the image
+# if the Image workflow hasn't yet, so branches can be deployed too.
 staging:
   auto_deploy_on: refs/heads/master
   environment: staging
-  required_contexts: ["build (22.x)", "image"]
+  required_contexts: ["build (22.x)"]
 
 # Deployed from the dashboard.
 production:
   environment: production
   production_environment: true
-  required_contexts: ["build (22.x)", "image"]
+  required_contexts: ["build (22.x)"]

@@ -2,7 +2,7 @@ name: Deploy
 
 # Deliverybot deploys itself. The Image workflow builds an image for every push
 # to master. Deliverybot (configured in .github/deploy.yml) then creates a
-# GitHub deployment for staging once CI and the image are green, and for
+# GitHub deployment for staging once CI is green, and for
 # production when someone deploys it from the dashboard. That `deployment`
 # event runs this workflow, which reports back through deployment statuses.
 # Re-running an Image run doesn't deploy anything.
