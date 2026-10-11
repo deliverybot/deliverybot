@@ -165,4 +165,50 @@ describe("Slack", () => {
     const response = await command("help", "UDEAD");
     expect(response.body.text).toMatch(/connect your GitHub account/);
   });
+
+  it("resolves branch names for deploys", async () => {
+    await kv.put("slack/UDEPLOY", {
+      slack: { id: "UDEPLOY" },
+      github: { id: "1", username: "Codertocat", token: "token" },
+    });
+    for (const input of ["master", "heads/master", "refs/heads/master"]) {
+      nock("https://api.github.com")
+        .get("/repos/foo/bar/commits/master")
+        .reply(200, { sha: "abc123" })
+        .get("/repos/foo/bar/git/commits/abc123")
+        .reply(404, { message: "Not Found" });
+      const responded = new Promise<any>((resolve) =>
+        nock("https://hooks.slack.test")
+          .post("/response")
+          .reply(200, (uri, body) => {
+            resolve(body);
+            return {};
+          }),
+      );
+      const response = await command(`deploy foo/bar@${input} prod`, "UDEPLOY");
+      expect(response.body.text).toMatch(/Deploying/);
+      // The commit was found; the deploy fails later on the mocked 404.
+      expect((await responded).text).not.toMatch(/Ref not found/);
+    }
+  });
+
+  it("reports refs that don't exist", async () => {
+    await kv.put("slack/UNOREF", {
+      slack: { id: "UNOREF" },
+      github: { id: "1", username: "Codertocat", token: "token" },
+    });
+    nock("https://api.github.com")
+      .get("/repos/foo/bar/commits/nope")
+      .reply(404, { message: "Not Found" });
+    const responded = new Promise<any>((resolve) =>
+      nock("https://hooks.slack.test")
+        .post("/response")
+        .reply(200, (uri, body) => {
+          resolve(body);
+          return {};
+        }),
+    );
+    await command("deploy foo/bar@nope prod", "UNOREF");
+    expect((await responded).text).toMatch(/Ref not found nope/);
+  });
 });
