@@ -1,9 +1,15 @@
-production:
-  auto_deploy_on: refs/heads/master
-  environment: production
-  required_contexts: ["build (22.x)", "deliverybot/promotion"]
+# Deliverybot deploys itself. Each target creates a GitHub deployment, which
+# runs the Deploy workflow (.github/workflows/deploy.yml). If Deliverybot is
+# down, deploy from that workflow by hand instead.
 
-development:
+# Every push to master, once CI and the image build pass.
+staging:
   auto_deploy_on: refs/heads/master
-  environment: development
-  required_contexts: ["build (22.x)"]
+  environment: staging
+  required_contexts: ["build (22.x)", "image"]
+
+# Deployed from the dashboard.
+production:
+  environment: production
+  production_environment: true
+  required_contexts: ["build (22.x)", "image"]
