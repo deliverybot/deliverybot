@@ -30,7 +30,10 @@ export const partials: { [k: string]: Template | undefined };
       next();
     });
   }).on('end', function () {
-    p("var Handlebars = require('handlebars');");
+    // @deliverybot/app is an ES module package, so the output must be ESM too:
+    // webpack leaves a bare `require` alone in an ESM file and it fails in the
+    // browser.
+    p("import Handlebars from 'handlebars';");
     p("var partials = {};");
     p("Handlebars.partials = partials;")
     Object.keys(partials).forEach(partial => {
@@ -38,7 +41,7 @@ export const partials: { [k: string]: Template | undefined };
       p("// ======> " + partial);
       p("partials['" + partial + "'] = Handlebars.template(" + compiled + ");\n\n");
     });
-    p("module.exports = { partials: partials };")
+    p("export { partials };")
 
     try {
       fs.mkdirSync("lib/views", { recursive: true });
