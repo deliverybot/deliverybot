@@ -147,6 +147,7 @@ jobs:
           SLACK_CLIENT_SECRET: ${{ secrets.SLACK_CLIENT_SECRET }}
           SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
         run: |
+          set -o pipefail
           overlay=deploy/kubernetes/overlays/$ENVIRONMENT
           namespace=$(yq ".metadata.name" "$overlay/namespace.yaml")
           kubectl apply -f "$overlay/namespace.yaml"
@@ -160,11 +161,17 @@ jobs:
             --from-literal=SLACK_CLIENT_ID="$SLACK_CLIENT_ID" \
             --from-literal=SLACK_CLIENT_SECRET="$SLACK_CLIENT_SECRET" \
             --from-literal=SLACK_SIGNING_SECRET="$SLACK_SIGNING_SECRET" \
-            --dry-run=client -o yaml | kubectl apply -f -
+            --dry-run=client -o yaml | kubectl apply -f - | tee "$RUNNER_TEMP/secret.log"
           echo "NAMESPACE=$namespace" >> "$GITHUB_ENV"
+          # Pods read the secret only at start, so a changed secret needs a
+          # restart even when the image stays the same.
+          if ! grep -q unchanged "$RUNNER_TEMP/secret.log"; then
+            echo "SECRET_CHANGED=true" >> "$GITHUB_ENV"
+          fi
 
       - name: Apply the manifests
         run: |
+          set -o pipefail
           mkdir -p deploy/kubernetes/release
           cat > deploy/kubernetes/release/kustomization.yaml <<YAML
           resources:
@@ -174,7 +181,14 @@ jobs:
               newName: $IMAGE
               newTag: $SHA
           YAML
-          kubectl apply -k deploy/kubernetes/release
+          kubectl apply -k deploy/kubernetes/release | tee "$RUNNER_TEMP/apply.log"
+          if [ "$SECRET_CHANGED" = true ]; then
+            for deployment in web worker; do
+              if grep -q "deployment.apps/$deployment unchanged" "$RUNNER_TEMP/apply.log"; then
+                kubectl -n "$NAMESPACE" rollout restart "deployment/$deployment"
+              fi
+            done
+          fi
           for deployment in web worker; do
             kubectl -n "$NAMESPACE" rollout status "deployment/$deployment" --timeout=5m
           done
