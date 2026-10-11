@@ -20,7 +20,7 @@ async function Base(
     user.github,
     repo.owner,
     repo.repo,
-    branch,
+    branch || repo.defaultBranch,
   );
   const targets = queries.Targets(config.config);
   const locking = await queries.locks(config, repo, lock);
@@ -65,7 +65,7 @@ export async function Commits({
     repo.owner,
     repo.repo,
     repo.id,
-    branch || "master",
+    branch || repo.defaultBranch,
     options,
   );
 

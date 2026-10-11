@@ -475,8 +475,8 @@ export async function config(
   repo: string,
   branch: string,
 ): Promise<Config> {
-  const newFileUrl = newDeployFileUrl(owner, repo);
-  const editFileUrl = editDeployFileUrl(owner, repo);
+  const newFileUrl = newDeployFileUrl(owner, repo, branch);
+  const editFileUrl = editDeployFileUrl(owner, repo, branch);
 
   const conf: Config = {
     yaml: "",
@@ -490,7 +490,7 @@ export async function config(
     conf.config = await getConfig(github, {
       owner,
       repo,
-      ref: branch ? `refs/heads/${branch}` : `refs/heads/master`,
+      ref: `refs/heads/${branch}`,
     });
     conf.yaml = yamlEncode(conf.config) || "";
     conf.notExists = false;

@@ -11,8 +11,8 @@ declare module "express-session" {
     avatar: string;
     /** Where to go after signing in. */
     next: string;
-    /** Repo ids the user has write access to, by "owner/repo". */
-    verified: { [repo: string]: number };
+    /** Repos the user has write access to, by "owner/repo". */
+    verified: { [repo: string]: { id: number; defaultBranch: string } };
     slackId: string;
     csrfSecret: string;
   }

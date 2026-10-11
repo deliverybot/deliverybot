@@ -74,7 +74,7 @@ export async function SetLock({
     user.github,
     repo.owner,
     repo.repo,
-    "",
+    repo.defaultBranch,
   );
   if (error) {
     throw error;
