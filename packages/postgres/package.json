@@ -18,7 +18,7 @@
     "@deliverybot/core": "0.7.2",
     "connect-pg-simple": "10.0.0",
     "express-session": "1.19.0",
-    "pg": "8.23.0"
+    "pg": "8.23.1"
   },
   "devDependencies": {
     "@types/connect-pg-simple": "7.0.3",

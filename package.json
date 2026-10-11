@@ -23,8 +23,8 @@
     "trailingComma": "all"
   },
   "devDependencies": {
-    "@types/node": "22.20.4",
-    "prettier": "3.3.3",
+    "@types/node": "22.20.5",
+    "prettier": "3.9.9",
     "smee-client": "^1.1.0",
     "standard-version": "8.0.1"
   },

@@ -68,13 +68,12 @@ export async function config(
 
   // Disallow if dynamic + auto deploy.
 
-  const validation = validate(conf, schema, {
-    propertyName: "config",
-    allowUnknownAttributes: true,
-  });
+  const validation = validate(conf, schema, { allowUnknownAttributes: true });
   if (validation.errors.length > 0) {
     const err = validation.errors[0];
-    throw new ConfigError(`${err.property} ${err.message}`);
+    // jsonschema always roots error paths at "instance".
+    const property = err.property.replace(/^instance/, "config");
+    throw new ConfigError(`${property} ${err.message}`);
   }
   for (const key in conf) {
     conf[key].name = key;
