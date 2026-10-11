@@ -1,0 +1,18 @@
+# Attaches to the cluster's shared Envoy Gateway (`public` in the `gateway`
+# namespace), which terminates TLS with a deliverybot.dev wildcard
+# certificate. The overlays set the hostname.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: web
+spec:
+  parentRefs:
+    - name: public
+      namespace: gateway
+      sectionName: https-deliverybot-dev-wildcard
+  hostnames:
+    - example.deliverybot.dev
+  rules:
+    - backendRefs:
+        - name: web
+          port: 80

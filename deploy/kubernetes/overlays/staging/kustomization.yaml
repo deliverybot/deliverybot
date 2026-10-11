@@ -11,12 +11,9 @@ configMapGenerator:
       - BASE_URL=https://staging.deliverybot.dev
 patches:
   - target:
-      kind: Ingress
+      kind: HTTPRoute
       name: web
     patch: |
       - op: replace
-        path: /spec/tls/0/hosts/0
-        value: staging.deliverybot.dev
-      - op: replace
-        path: /spec/rules/0/host
+        path: /spec/hostnames/0
         value: staging.deliverybot.dev

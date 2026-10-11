@@ -11,14 +11,11 @@ configMapGenerator:
       - BASE_URL=https://app.deliverybot.dev
 patches:
   - target:
-      kind: Ingress
+      kind: HTTPRoute
       name: web
     patch: |
       - op: replace
-        path: /spec/tls/0/hosts/0
-        value: app.deliverybot.dev
-      - op: replace
-        path: /spec/rules/0/host
+        path: /spec/hostnames/0
         value: app.deliverybot.dev
   # Two web pods and a Postgres replica so one node going away doesn't take
   # the app down.

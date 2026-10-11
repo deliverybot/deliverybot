@@ -24,13 +24,13 @@ The manifests expect these to be installed in the cluster already:
 
 - The CloudNativePG operator, for example with its Helm chart:
   `helm install cnpg cloudnative-pg --repo https://cloudnative-pg.github.io/charts --namespace cnpg-system --create-namespace`
-- [ingress-nginx](https://kubernetes.github.io/ingress-nginx/) and
-  [cert-manager](https://cert-manager.io) with a `ClusterIssuer` named
-  `letsencrypt-prod`. If the cluster uses a different ingress controller or issuer,
-  change `base/ingress.yaml`.
+- A Gateway API gateway named `public` in the `gateway` namespace, with an
+  HTTPS listener `https-deliverybot-dev-wildcard` for `*.deliverybot.dev` that
+  accepts routes from other namespaces. To use a different gateway, change
+  the `parentRefs` in `base/route.yaml`.
 
 Point DNS for `staging.deliverybot.dev` and `app.deliverybot.dev` at the
-ingress load balancer.
+gateway's load balancer.
 
 ## GitHub setup
 

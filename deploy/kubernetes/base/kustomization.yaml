@@ -7,7 +7,7 @@ resources:
   - database.yaml
   - web.yaml
   - worker.yaml
-  - ingress.yaml
+  - route.yaml
 configMapGenerator:
   - name: deliverybot
     literals:
