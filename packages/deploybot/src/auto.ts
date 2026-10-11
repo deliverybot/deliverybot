@@ -255,7 +255,9 @@ export function auto(
     await Promise.all(
       watches.map((watch) =>
         publish({
-          id: uuid(),
+          // One id per watch, so the queue keeps a single waiting event per
+          // watch however many checks complete in a row.
+          id: `push_watch:${watch.id}`,
           name: "push_watch",
           payload: {
             ...watch,
@@ -265,6 +267,17 @@ export function auto(
       ),
     );
   }
+
+  // A watch can only deploy once its checks have passed, so a check run that
+  // starts or a status that turns pending can't change anything. Busy
+  // repositories send a lot of these, so drop them before they are queued.
+  app.ignore((event) => {
+    const payload: any = event.payload;
+    return (
+      (event.name === "check_run" && payload.action !== "completed") ||
+      (event.name === "status" && payload.state === "pending")
+    );
+  });
 
   // Status events emit different watches to auto-deploy code.
   app.on("status", async (context) => {
@@ -276,7 +289,7 @@ export function auto(
   });
 
   // Check run events emit different watches to auto-deploy code.
-  app.on("check_run", async (context) => {
+  app.on("check_run.completed", async (context) => {
     const sha = context.payload.check_run.check_suite.head_sha;
     if (!sha) return;
     await emitWatches(context, context.payload.repository.id, sha);

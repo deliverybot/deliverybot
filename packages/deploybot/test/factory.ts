@@ -203,14 +203,14 @@ export const push = (): any => ({
   payload: fixtures.push,
 });
 
-export const status = (): any => ({
+export const status = (state = "success"): any => ({
   name: "status",
-  payload: fixtures.status,
+  payload: { ...fixtures.status, state },
 });
 
-export const checkRun = (): any => ({
+export const checkRun = (action = "completed"): any => ({
   name: "check_run",
-  payload: fixtures.checkRunCreated,
+  payload: { ...fixtures.checkRunCreated, action },
 });
 
 export const errorComment = (expected: string) =>

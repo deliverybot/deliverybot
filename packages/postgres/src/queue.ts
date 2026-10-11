@@ -18,6 +18,11 @@ export interface QueueOptions {
    * workers claiming at the same moment can exceed it by one.
    */
   perInstallation: number;
+  /**
+   * Jobs with a higher priority are claimed first and skip the
+   * per-installation limit. Meant for events a person is waiting on.
+   */
+  priority: (event: WebhookEvent) => number;
 }
 
 const defaults: QueueOptions = {
@@ -27,6 +32,7 @@ const defaults: QueueOptions = {
   pollInterval: 1000,
   concurrency: 5,
   perInstallation: 2,
+  priority: (event) => (event.name === "issue_comment" ? 1 : 0),
 };
 
 interface Job {
@@ -44,7 +50,8 @@ const log = logger.child({ component: "queue" });
  * with `FOR UPDATE SKIP LOCKED`, so any number of them can run side by side,
  * and a job whose worker died is picked up again once its lease expires.
  * Finished jobs are deleted; jobs that fail every attempt stay with
- * state 'failed' for inspection.
+ * state 'failed' for inspection. An event whose id already has a job waiting
+ * to run is dropped, since that job will see the same state.
  */
 export class PostgresQueue {
   private opts: QueueOptions;
@@ -62,13 +69,18 @@ export class PostgresQueue {
 
   dispatcher: Dispatcher = async (event: WebhookEvent) => {
     await this.pool.query(
-      `INSERT INTO jobs (name, data, max_attempts, installation_id)
-       VALUES ($1, $2, $3, $4)`,
+      `INSERT INTO jobs
+         (name, data, max_attempts, installation_id, priority, event_id)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (event_id) WHERE state = 'queued' AND locked_until IS NULL
+       DO NOTHING`,
       [
         event.name,
         JSON.stringify(event),
         this.opts.maxAttempts,
         installationId(event),
+        this.opts.priority(event),
+        event.id,
       ],
     );
   };
@@ -130,13 +142,13 @@ export class PostgresQueue {
          WHERE state = 'queued' AND run_at <= now()
            AND (locked_until IS NULL OR locked_until < now())
            AND (
-             installation_id IS NULL OR (
+             priority > 0 OR installation_id IS NULL OR (
                SELECT count(*) FROM jobs r
                WHERE r.installation_id = j.installation_id
                  AND r.locked_until > now()
              ) < $2
            )
-         ORDER BY run_at, id
+         ORDER BY priority DESC, run_at, id
          FOR UPDATE SKIP LOCKED
          LIMIT 1
        )
@@ -180,6 +192,13 @@ export class PostgresQueue {
             this.opts.retryDelay * job.attempts,
             String((error && error.stack) || error),
           ],
+        )
+        .catch((error) =>
+          // The same event was queued again while this job ran, so the
+          // retry is redundant: the waiting job will handle it.
+          error.code === "23505"
+            ? this.pool.query("DELETE FROM jobs WHERE id = $1", [job.id])
+            : Promise.reject(error),
         )
         .catch((error) => log.error({ ...ctx, error }, "queue: update failed"));
     }

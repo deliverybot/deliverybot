@@ -138,6 +138,24 @@ describe("auto", () => {
     expect(deploy.isDone()).toBe(true);
   });
 
+  test("ignores check runs that start and pending statuses", async () => {
+    factory.config({ valid: true });
+    factory.noDeployments();
+
+    let deploy = factory.deployConflict();
+    await probot.receive(factory.push());
+    expect(deploy.isDone()).toBe(true);
+
+    factory.noDeployments();
+    deploy = factory.deploy();
+    await probot.receive(factory.checkRun("created"));
+    await probot.receive(factory.status("pending"));
+    expect(deploy.isDone()).toBe(false);
+
+    await probot.receive(factory.checkRun("completed"));
+    expect(deploy.isDone()).toBe(true);
+  });
+
   test("discards if not the latest", async () => {
     factory.config({ valid: true });
     factory.noDeployments();

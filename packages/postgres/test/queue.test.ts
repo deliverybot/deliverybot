@@ -162,3 +162,61 @@ test("limits how many jobs of one installation run at once", async () => {
   await until(async () => (await jobs()).length === 0);
   expect(maxBusy).toBe(2);
 });
+
+test("runs priority jobs first, past the installation limit", async () => {
+  const q = queue({ concurrency: 10, perInstallation: 2 });
+  for (let i = 0; i < 3; i++) await q.dispatcher(event(i, 1));
+  const started: string[] = [];
+  let release!: () => void;
+  const gate = new Promise<void>((r) => (release = r));
+  q.work(async (e) => {
+    started.push(e.id);
+    await gate;
+  });
+  try {
+    // Installation 1 is at its limit, yet the comment starts right away.
+    await until(() => started.length === 2);
+    await q.dispatcher({ ...event(100, 1), name: "issue_comment" } as any);
+    await until(() => started.length === 3);
+    expect(started).toEqual(["0", "1", "100"]);
+  } finally {
+    release();
+  }
+  await until(async () => (await jobs()).length === 0);
+});
+
+test("keeps one waiting job per event id", async () => {
+  const q = queue();
+  await q.dispatcher(event(1));
+  await q.dispatcher(event(1));
+  expect(await jobs()).toHaveLength(1);
+
+  // Once it runs, the same event can be queued again behind it.
+  let release!: () => void;
+  const gate = new Promise<void>((r) => (release = r));
+  let calls = 0;
+  q.work(async () => {
+    calls++;
+    await gate;
+  });
+  await until(() => calls === 1);
+  await q.dispatcher(event(1));
+  expect(await jobs()).toHaveLength(2);
+  release();
+  await until(async () => (await jobs()).length === 0);
+  expect(calls).toBe(2);
+});
+
+test("drops a retry when the same event is already waiting", async () => {
+  const q = queue({ concurrency: 1 });
+  await q.dispatcher(event(1));
+  let calls = 0;
+  q.work(async () => {
+    if (++calls === 1) {
+      await q.dispatcher(event(1));
+      throw new Error("boom");
+    }
+  });
+  await until(async () => (await jobs()).length === 0);
+  expect(calls).toBe(2);
+});
