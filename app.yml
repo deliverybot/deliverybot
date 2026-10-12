@@ -1,5 +1,6 @@
-# GitHub App manifest: the defaults used when a GitHub App is created for
-# Deliverybot (see https://probot.github.io/docs/development/#configuring-a-github-app).
+# GitHub App manifest for running your own Deliverybot. Use it to register an
+# app (https://docs.github.com/en/apps/sharing-github-apps/registering-a-github-app-from-a-manifest)
+# after replacing https://deliverybot.example.com with your BASE_URL.
 # Changing this file doesn't update an existing app; edit its settings on
 # GitHub to match.
 
@@ -8,6 +9,13 @@ url: https://deliverybot.dev
 description: Controls and configures deployments using the GitHub API.
 # Only installable by the account that owns the app.
 public: false
+
+hook_attributes:
+  # BASE_URL + WEBHOOK_PATH (default /api/github/webhooks).
+  url: https://deliverybot.example.com/api/github/webhooks
+# Sign in to the dashboard with GitHub.
+callback_urls:
+  - https://deliverybot.example.com/login/cb
 
 default_events:
   - check_run # finished checks trigger waiting auto deploys
