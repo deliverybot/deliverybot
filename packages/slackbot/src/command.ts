@@ -148,6 +148,7 @@ async function doDeploy(
     target,
     sha,
     pr: undefined,
+    actor: ctx.user.github.username,
   });
 }
 

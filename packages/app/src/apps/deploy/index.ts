@@ -138,6 +138,7 @@ export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
       switch (error.status) {
         case 400:
         case 409:
+        case "AccessError":
         case "LockError":
         case "ConfigError":
           res.status(400).json({ status: "BadRequest", error: error.message });

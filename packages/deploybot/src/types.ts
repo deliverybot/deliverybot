@@ -33,6 +33,10 @@ export interface Target {
   // Environment information must be copied into all deployments.
   transient_environment: boolean;
   production_environment: boolean;
+
+  // Users (`login`) and teams (`org/team-slug`) allowed to deploy this target
+  // by hand. Unset means anyone with write access.
+  deployers?: string[];
 }
 
 export type Targets = { [k: string]: Target | undefined };
@@ -48,6 +52,19 @@ export class UnknownTargetError extends ConfigError {
     public targets: string[],
   ) {
     super(`Deployment target "${target}" does not exist`);
+  }
+}
+
+/** Thrown when a target's `deployers` list doesn't include the user. */
+export class AccessError extends Error {
+  public status = "AccessError";
+
+  constructor(
+    public actor: string,
+    public target: string,
+    public deployers: string[],
+  ) {
+    super(`${actor} is not allowed to deploy to "${target}"`);
   }
 }
 

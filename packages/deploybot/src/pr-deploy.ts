@@ -1,7 +1,7 @@
 import { Application, Context, WebhookEvent } from "@deliverybot/core";
 import { EnvLockStore } from "./store.js";
 import { config, deploy } from "./deploy.js";
-import { LockError, UnknownTargetError } from "./types.js";
+import { AccessError, LockError, UnknownTargetError } from "./types.js";
 import { logCtx, canWrite } from "./util.js";
 
 /**
@@ -34,6 +34,9 @@ export function errorMessage(error: any, ref: string): string {
       `There is no \`${error.target}\` target in \`.github/deploy.yml\` on \`${ref}\`.\n\n` +
       `Available targets: ${formatTargets(error.targets)}.`
     );
+  }
+  if (error instanceof AccessError) {
+    return `You're not allowed to deploy to \`${error.target}\`. Its \`deployers\` in \`.github/deploy.yml\` are: ${error.deployers.map((d) => `\`${d}\``).join(", ") || "nobody"}.`;
   }
   if (error instanceof LockError) {
     const env = error.environment
@@ -132,6 +135,7 @@ export async function handlePRDeploy(
         ref,
         sha: pr.data.head.sha,
         pr: pr.data,
+        actor: user,
       }),
     );
   } catch (error) {

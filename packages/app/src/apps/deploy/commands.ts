@@ -54,6 +54,7 @@ export async function Deploy({
     ref: sha,
     force,
     task,
+    actor: user.username,
   });
 }
 

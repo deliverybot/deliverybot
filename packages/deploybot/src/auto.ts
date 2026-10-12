@@ -169,6 +169,8 @@ export function auto(
           sha,
           target,
           pr,
+          // Asked for by the config's auto_deploy_on, not by a person.
+          actor: null,
         }),
       );
       context.log.info(logCtx(context, { ref }), "auto deploy: done");

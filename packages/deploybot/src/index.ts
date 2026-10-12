@@ -19,6 +19,7 @@ export {
   Target,
   Targets,
   LockError,
+  AccessError,
   ConfigError,
   UnknownTargetError,
   DeployBody,

@@ -36,6 +36,13 @@
         },
         "auto_merge": {
           "type": "boolean"
+        },
+        "deployers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     }

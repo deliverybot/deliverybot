@@ -3,6 +3,7 @@ import yaml from "js-yaml";
 import { validate } from "jsonschema";
 import { EnvLockStore } from "./store.js";
 import {
+  AccessError,
   ConfigError,
   LockError,
   UnknownTargetError,
@@ -12,6 +13,7 @@ import {
 } from "./types.js";
 import schema from "./schema.json" with { type: "json" };
 import { render } from "./render.js";
+import { checkAccess } from "./access.js";
 import { withPreview } from "./util.js";
 
 type ReposGetContentParams =
@@ -110,7 +112,11 @@ function getDeployBody(
  * We need to deploy always using the ref of a branch so that finding
  * deployments later we can query using the branch ref.
  *
- * Throws ConfigError, LockError.
+ * `actor` is the GitHub login of the person deploying, checked against the
+ * target's `deployers`. Pass null only for automatic deploys, which the
+ * config itself asked for.
+ *
+ * Throws ConfigError, AccessError, LockError.
  */
 export async function deploy(
   github: Octokit,
@@ -125,6 +131,7 @@ export async function deploy(
     force,
     task,
     pr,
+    actor,
   }: {
     owner: string;
     repo: string;
@@ -134,6 +141,7 @@ export async function deploy(
     force?: boolean;
     task?: string;
     pr?: PullsGetResponse;
+    actor: string | null;
   },
 ) {
   const logCtx = {
@@ -173,6 +181,23 @@ export async function deploy(
     ref,
     ...getDeployBody(targetVal, params, force, task),
   };
+
+  if (actor !== null) {
+    try {
+      await checkAccess(github, log, {
+        actor,
+        target,
+        environment: body.environment,
+        refTargets: conf,
+        loadDefaultTargets: () => config(github, { owner, repo }),
+      });
+    } catch (error) {
+      if (error instanceof AccessError) {
+        log.info({ ...logCtx, actor }, "deploy: halted - not a deployer");
+      }
+      throw error;
+    }
+  }
 
   if (await kv.isLocked(repository.data.id, body.environment)) {
     log.info(logCtx, "deploy: halted - environment locked");
