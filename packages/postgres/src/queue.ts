@@ -200,19 +200,25 @@ export class PostgresQueue {
                run_at = now() + $3 * interval '1 millisecond',
                locked_until = NULL,
                last_error = $4
-           WHERE id = $1`,
+           WHERE id = $1 AND attempts = $5`,
           [
             job.id,
             failed ? "failed" : "queued",
             this.opts.retryDelay * job.attempts,
             String((error && error.stack) || error),
+            // A job that timed out may have been claimed again already; the
+            // newer attempt owns it then, so leave it alone.
+            job.attempts,
           ],
         )
         .catch((error) =>
           // The same event was queued again while this job ran, so the
           // retry is redundant: the waiting job will handle it.
           error.code === "23505"
-            ? this.pool.query("DELETE FROM jobs WHERE id = $1", [job.id])
+            ? this.pool.query(
+                "DELETE FROM jobs WHERE id = $1 AND attempts = $2",
+                [job.id, job.attempts],
+              )
             : Promise.reject(error),
         )
         .catch((error) => log.error({ ...ctx, error }, "queue: update failed"));
