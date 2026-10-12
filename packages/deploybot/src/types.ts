@@ -33,6 +33,10 @@ export interface Target {
   // Environment information must be copied into all deployments.
   transient_environment: boolean;
   production_environment: boolean;
+
+  // Report deployments of this target as a check run on the deployed commit.
+  // Needs the Checks: write permission on the app.
+  check_run?: boolean;
 }
 
 export type Targets = { [k: string]: Target | undefined };

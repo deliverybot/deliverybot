@@ -2,6 +2,7 @@ import { Dependencies } from "@deliverybot/core";
 import { prClose } from "./pr-close.js";
 import { prDeploy } from "./pr-deploy.js";
 import { auto } from "./auto.js";
+import { checkRun } from "./check-run.js";
 import { EnvLockStore, WatchStore } from "./store.js";
 
 export function deploybot({ robot, kvService, lockService }: Dependencies) {
@@ -9,6 +10,7 @@ export function deploybot({ robot, kvService, lockService }: Dependencies) {
   const watchStore = new WatchStore(kvService);
   prClose(robot);
   prDeploy(robot, lockStore);
+  checkRun(robot);
   auto(robot, lockService, watchStore, lockStore, robot.receive.bind(robot));
 }
 

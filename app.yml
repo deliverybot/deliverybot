@@ -28,6 +28,8 @@ default_events:
   - status # finished commit statuses trigger waiting auto deploys
 
 default_permissions:
+  # Reads checks for auto deploys. Raise to write to support `check_run: true`
+  # in .github/deploy.yml, which reports deployments as check runs.
   checks: read
   # Reads .github/deploy.yml and commits.
   contents: read
