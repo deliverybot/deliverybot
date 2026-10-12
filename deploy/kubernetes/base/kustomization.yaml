@@ -5,6 +5,7 @@ labels:
       app.kubernetes.io/part-of: deliverybot
 resources:
   - database.yaml
+  - backup.yaml
   - web.yaml
   - worker.yaml
   - route.yaml
