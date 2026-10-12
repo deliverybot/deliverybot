@@ -1,7 +1,7 @@
 import { Client } from "pg";
 import { LockError } from "@deliverybot/core";
 import { setup, DATABASE_URL } from "./db.js";
-import { migrate } from "../src/index.js";
+import { migrate, postgresServices } from "../src/index.js";
 import { CHANNEL } from "../src/message.js";
 
 let db: Awaited<ReturnType<typeof setup>>;
@@ -94,6 +94,26 @@ describe("lock", () => {
       events.push("second");
     });
     expect(events).toEqual(["first start", "first end", "second"]);
+  });
+
+  test("holding locks doesn't use up the shared pool", async () => {
+    const small = postgresServices({ connectionString: DATABASE_URL, max: 2 });
+    const lock = small.services.lockService();
+    const kv = small.services.kvService<number>();
+    try {
+      // More handlers than pool connections, each holding a lock while it
+      // queries, like one push deploying to many targets at once.
+      await Promise.all(
+        ["a", "b", "c", "d"].map((k) =>
+          lock.lock(`pool-${k}`, async () => {
+            await new Promise((r) => setTimeout(r, 20));
+            await kv.get(k);
+          }),
+        ),
+      );
+    } finally {
+      await small.pool.end();
+    }
   });
 
   test("releases the lock when the handler throws", async () => {

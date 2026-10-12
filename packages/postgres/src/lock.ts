@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import { Client, ClientConfig } from "pg";
 import { logger, LockError, LockStore } from "@deliverybot/core";
 
 export interface LockOptions {
@@ -18,12 +18,17 @@ const defaults: LockOptions = {
  * Distributed lock using a Postgres session advisory lock. The lock is held
  * by a dedicated connection, so it is released automatically if the process
  * dies; no lease is needed.
+ *
+ * That connection is opened for the lock rather than taken from the shared
+ * pool. Handlers use the pool themselves, so with pooled connections enough
+ * locks held at once (one push can start a deploy per target) would take
+ * every connection and leave each handler waiting for one forever.
  */
 export class PostgresLockStore implements LockStore {
   private opts: LockOptions;
 
   constructor(
-    private pool: Pool,
+    private config: ClientConfig,
     opts: Partial<LockOptions> = {},
   ) {
     this.opts = { ...defaults, ...opts };
@@ -39,9 +44,10 @@ export class PostgresLockStore implements LockStore {
   public async lock(key: string, handler: () => Promise<void>): Promise<void> {
     const retries = this.retries();
     for (let tries = 1; ; tries++) {
-      const client = await this.pool.connect();
+      const client = new Client(this.config);
       let locked = false;
       try {
+        await client.connect();
         const { rows } = await client.query(
           "SELECT pg_try_advisory_lock(hashtextextended($1, 0)) AS locked",
           [key],
@@ -61,7 +67,7 @@ export class PostgresLockStore implements LockStore {
           return;
         }
       } finally {
-        client.release();
+        await client.end().catch(() => {});
       }
       if (tries > retries) {
         throw new LockError(
