@@ -41,8 +41,25 @@ export class ConfigError extends Error {
   public status = "ConfigError";
 }
 
+/** Thrown when a deploy names a target that .github/deploy.yml doesn't define. */
+export class UnknownTargetError extends ConfigError {
+  constructor(
+    public target: string | undefined,
+    public targets: string[],
+  ) {
+    super(`Deployment target "${target}" does not exist`);
+  }
+}
+
 export class LockError extends Error {
   public status = "LockError";
+
+  constructor(
+    message: string,
+    public environment?: string,
+  ) {
+    super(message);
+  }
 }
 
 export interface Watch {

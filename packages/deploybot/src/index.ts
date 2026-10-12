@@ -20,5 +20,6 @@ export {
   Targets,
   LockError,
   ConfigError,
+  UnknownTargetError,
   DeployBody,
 } from "./types.js";

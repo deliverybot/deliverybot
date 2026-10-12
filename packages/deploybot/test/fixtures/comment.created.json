@@ -1,11 +1,17 @@
 {
   "action": "created",
   "issue": {
-    "number": 1
+    "number": 1,
+    "pull_request": {
+      "url": "https://api.github.com/repos/Codertocat/Hello-World/pulls/1"
+    }
   },
   "comment": {
+    "id": 10,
     "body": "FOOBAR",
-    "user": { "login": "Codertocat" }
+    "user": {
+      "login": "Codertocat"
+    }
   },
   "repository": {
     "id": 1,

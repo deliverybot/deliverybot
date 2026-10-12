@@ -222,3 +222,18 @@ export const errorComment = (expected: string) =>
       return true;
     })
     .reply(200);
+
+export const reaction = (content: string, id = 100) =>
+  nock("https://api.github.com")
+    .post("/repos/Codertocat/Hello-World/issues/comments/10/reactions", {
+      content,
+    })
+    .reply(201, { id, content });
+
+export const lockedEnvironment = async (env: string) => {
+  const { EnvLockStore } = await import("../src/store.js");
+  const { services } = await import("./app.js");
+  const store = new EnvLockStore(services.kvService);
+  await store.lock(1, env);
+  return () => store.unlock(1, env);
+};
