@@ -1,0 +1,10 @@
+{{#if sinceDeploy}}
+<div class="f6 text-gray mt-2">
+  {{#if sinceDeploy.compareUrl}}
+  <a href="{{sinceDeploy.compareUrl}}" target="_blank" rel="noopener noreferrer"><strong>{{sinceDeploy.count}} {{sinceDeploy.commits}}</strong> to {{branch}}</a>
+  since the last deploy{{#if sinceDeploy.environment}} to <strong>{{sinceDeploy.environment}}</strong>{{/if}} {{sinceDeploy.deployedAtWords}}
+  {{else}}
+  No new commits on {{branch}} since the last deploy{{#if sinceDeploy.environment}} to <strong>{{sinceDeploy.environment}}</strong>{{/if}} {{sinceDeploy.deployedAtWords}}
+  {{/if}}
+</div>
+{{/if}}

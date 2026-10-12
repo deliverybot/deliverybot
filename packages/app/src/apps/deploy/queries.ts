@@ -149,7 +149,14 @@ export async function commits(
 
   // For generating test files:
   // require("fs").writeFileSync(`./test/fixtures/query-commits.${opts.minimal ? "minimal" : "full"}.json`, JSON.stringify(result, null, 2));
-  return View(owner, repo, branch, watches, result);
+  return View(
+    owner,
+    repo,
+    branch,
+    watches,
+    result,
+    !opts.before && !opts.after,
+  );
 }
 
 export async function metrics(
@@ -172,6 +179,7 @@ export function View(
   branch: string,
   watches: Watches,
   data: any,
+  firstPage = false,
 ) {
   const branches = Branches(branch, get(data, "repository.refs.nodes", []));
   const commits = Commits(
@@ -182,7 +190,14 @@ export function View(
     get(data, "repository.ref.target.history.edges", []),
   );
   const pagination = get(data, "repository.ref.target.history.pageInfo", {});
-  return { branches, pagination: Pagination(pagination), ...commits };
+  return {
+    branches,
+    pagination: Pagination(pagination),
+    sinceDeploy: firstPage
+      ? SinceDeploy(owner, repo, commits.commits, commits.latest)
+      : null,
+    ...commits,
+  };
 }
 
 export function Measures(data: any, start: Date, end: Date): Measure[] {
@@ -376,6 +391,32 @@ export function Latest(commits: any[]) {
     .pop();
   if (latest) latest.deployment.latest = true;
   return latest;
+}
+
+// Counts the commits on the branch since the most recently deployed one, like
+// GitHub's "N commits to master since this release". Only works when that
+// commit is on the page being shown, which starts at the branch head.
+export function SinceDeploy(
+  owner: string,
+  repo: string,
+  commits: any[],
+  latest: any,
+) {
+  if (!latest || commits.length === 0) {
+    return null;
+  }
+  const count = commits.findIndex((c) => c.oid === latest.oid);
+  const head = commits[0];
+  return {
+    count,
+    commits: count === 1 ? "commit" : "commits",
+    environment: get(latest, "deployments[0].environment", ""),
+    deployedAtWords: latest.deployment.lastDeployedAtWords,
+    compareUrl:
+      count > 0
+        ? `https://github.com/${owner}/${repo}/compare/${latest.oid}...${head.oid}`
+        : null,
+  };
 }
 
 export function Commits(

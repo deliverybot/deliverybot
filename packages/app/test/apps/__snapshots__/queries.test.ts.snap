@@ -10,6 +10,7 @@ Object {
     "prev": undefined,
   },
   "previous": null,
+  "sinceDeploy": null,
 }
 `;
 
@@ -781,6 +782,13 @@ Object {
     "repo": "deliverybot-example",
     "undeployed": false,
   },
+  "sinceDeploy": Object {
+    "commits": "commit",
+    "compareUrl": "https://github.com/colinjfw/deliverybot-example/compare/c57bb8ee26495cd7016f9adb87c0b5d6e79f7f5c...43aa699010bb9d3c3a2f5ec841f66f99434e4e0e",
+    "count": 1,
+    "deployedAtWords": "a few seconds ago",
+    "environment": "production",
+  },
 }
 `;
 
@@ -1114,5 +1122,6 @@ Object {
     "prev": false,
   },
   "previous": null,
+  "sinceDeploy": null,
 }
 `;

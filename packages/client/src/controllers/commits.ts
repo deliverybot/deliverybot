@@ -42,5 +42,6 @@ export class CommitsController extends RefreshController {
     update("checkstatus", "commit_status");
     updateSingle("lock", "lock_modal");
     updateSingle("lockstates", "lock_states");
+    updateSingle("sincedeploy", "since_deploy");
   }
 }
