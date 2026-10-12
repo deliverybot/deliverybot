@@ -8,6 +8,13 @@ metadata:
 spec:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:16
+  # WAL archiving and base backups to the `postgres-backups` ObjectStore,
+  # see backup.yaml.
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: postgres-backups
   bootstrap:
     initdb:
       database: deliverybot

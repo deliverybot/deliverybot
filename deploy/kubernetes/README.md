@@ -44,6 +44,10 @@ The manifests expect these to be installed in the cluster already:
 
 - The CloudNativePG operator, for example with its Helm chart:
   `helm install cnpg cloudnative-pg --repo https://cloudnative-pg.github.io/charts --namespace cnpg-system --create-namespace`
+- The Barman Cloud plugin in the operator's namespace, for backups:
+  `helm install plugin-barman-cloud plugin-barman-cloud --repo https://cloudnative-pg.github.io/charts --namespace cnpg-system`
+  (it needs cert-manager), and a Barman Cloud `ObjectStore` named
+  `postgres-backups` in each namespace (see [Backups](#backups)).
 - A Gateway API gateway named `public` in the `gateway` namespace, with an
   HTTPS listener `https-deliverybot-dev-wildcard` for `*.deliverybot.dev` that
   accepts routes from other namespaces. To use a different gateway, change
@@ -101,8 +105,28 @@ Secret holding its connection string. Each `web` pod runs migrations in an
 init container before it starts. Migrations take a Postgres advisory lock, so
 pods starting together don't conflict.
 
-Backups are not configured yet. Add a `backup` section to `base/database.yaml`
-once there is a DigitalOcean Spaces bucket for them.
+### Backups
+
+The [Barman Cloud plugin](https://cloudnative-pg.io/plugin-barman-cloud/)
+archives WAL to object storage continuously and `base/backup.yaml` schedules a
+base backup every night at 03:00 UTC, so the database can be restored to any
+point in the retention window. The cluster writes to the `postgres-backups`
+`ObjectStore` in its namespace, which sets the bucket, its credentials and the
+retention. It isn't part of these manifests; create it before deploying.
+
+Check the archive and the latest backups with:
+
+```sh
+kubectl -n deliverybot-production get cluster deliverybot-db \
+  -o jsonpath='{.status.conditions[?(@.type=="ContinuousArchiving")]}'
+kubectl -n deliverybot-production get backups
+```
+
+To restore, create a new `Cluster` that bootstraps from the object store (see
+[Restoring a Cluster](https://cloudnative-pg.io/plugin-barman-cloud/docs/usage/#restoring-a-cluster)),
+optionally with a `recoveryTarget` time, and point the app's secret at it. Use
+a different `serverName` for the new cluster so it doesn't archive over the
+old one's WAL.
 
 ## Trying it locally
 
