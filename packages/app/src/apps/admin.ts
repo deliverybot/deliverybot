@@ -19,6 +19,8 @@ export function parseLogins(value: string | undefined): Set<string> {
 
 const PER_PAGE = 50;
 const RECENT = 20;
+/** Installations with a webhook event this recent count as active. */
+const ACTIVE_DAYS = 30;
 
 /** The page number from `?after=` or `?before=`, as the pagination partial links. */
 function pageParam(query: any): number {
@@ -71,10 +73,13 @@ export function admin({
       store.list(),
       userService().list(),
     ]);
+    const activeSince = Date.now() - ACTIVE_DAYS * 24 * 60 * 60 * 1000;
     const installations = installs.map((i) => ({
       ...i,
       repoCount: i.repositoryCount === null ? "?" : i.repositoryCount,
       installed: ago(i.createdAt),
+      lastActivity: i.lastActivityAt ? ago(i.lastActivityAt) : null,
+      active: !!i.lastActivityAt && Date.parse(i.lastActivityAt) >= activeSince,
     }));
     res.render("admin", {
       title: "Admin",
@@ -82,6 +87,8 @@ export function admin({
       user: user(req),
       installations,
       hasInstallations: installations.length > 0,
+      activeCount: installations.filter((i) => !i.suspended && i.active).length,
+      activeDays: ACTIVE_DAYS,
       totalRepos: installs.reduce(
         (sum, i) => sum + (i.repositoryCount || 0),
         0,
