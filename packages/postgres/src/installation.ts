@@ -27,8 +27,13 @@ export class PostgresInstallationStore implements InstallationStore {
       [id],
     );
     if (!rows.length) return undefined;
-    const { createdAt, updatedAt, repositoryCount, ...installation } =
-      toInstallation(rows[0]);
+    const {
+      createdAt,
+      updatedAt,
+      repositoryCount,
+      lastActivityAt,
+      ...installation
+    } = toInstallation(rows[0]);
     return installation;
   }
 
@@ -42,7 +47,12 @@ export class PostgresInstallationStore implements InstallationStore {
 
   async list(): Promise<InstallationRecord[]> {
     const { rows } = await this.pool.query(
-      "SELECT * FROM installations ORDER BY created_at DESC, id DESC",
+      `SELECT i.*, a.last_activity_at FROM installations i
+       LEFT JOIN (
+         SELECT installation_id, max(last_event_at) AS last_activity_at
+         FROM repositories GROUP BY installation_id
+       ) a ON a.installation_id = i.id
+       ORDER BY a.last_activity_at DESC NULLS LAST, i.created_at DESC, i.id DESC`,
     );
     return rows.map(toInstallation);
   }
@@ -94,6 +104,9 @@ function toInstallation(r: any): InstallationRecord {
     repositorySelection: r.repository_selection,
     suspended: r.suspended,
     repositoryCount: r.repository_count,
+    lastActivityAt: r.last_activity_at
+      ? r.last_activity_at.toISOString()
+      : null,
     createdAt: r.created_at.toISOString(),
     updatedAt: r.updated_at.toISOString(),
   };

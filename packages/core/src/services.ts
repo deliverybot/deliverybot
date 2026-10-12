@@ -76,6 +76,8 @@ export interface Installation {
 export interface InstallationRecord extends Installation {
   /** Repositories the app can access, or null until first counted. */
   repositoryCount: number | null;
+  /** The most recent webhook event for any of its repositories. */
+  lastActivityAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -95,6 +97,7 @@ export interface InstallationStore {
   /** Deletes the installation and the activity of its repositories. */
   delete(id: number): Promise<void>;
   /** Every installation, newest first. */
+  /** All installations, most recently active first. */
   list(): Promise<InstallationRecord[]>;
   setRepositoryCount(id: number, count: number): Promise<void>;
   recordActivity(

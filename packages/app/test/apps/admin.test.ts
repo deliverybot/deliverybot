@@ -70,6 +70,34 @@ describe("Admin", () => {
     expect(response.text).toContain("https://github.com/Codertocat");
   });
 
+  it("marks installations with recent activity as active", async () => {
+    const [, cookie] = await factory.login(app);
+    const idle = await factory
+      .request(app)
+      .get("/_/admin")
+      .set("cookie", cookie);
+    expect(idle.text).toContain("None recorded");
+    expect(idle.text).toContain('Label--gray">Idle');
+    expect(idle.text).toContain("0 active in the last 30 days");
+
+    await deliverybot.probot.receive({
+      id: "1",
+      name: "star",
+      payload: {
+        action: "created",
+        installation: { id: 77 },
+        repository: { id: 5, full_name: "octo-org/active" },
+      },
+    } as any);
+    const active = await factory
+      .request(app)
+      .get("/_/admin")
+      .set("cookie", cookie);
+    expect(active.text).not.toContain("None recorded");
+    expect(active.text).toContain('Label--green">Active');
+    expect(active.text).toContain("1 active in the last 30 days");
+  });
+
   it("shows repositories with their latest activity", async () => {
     const [, cookie] = await factory.login(app);
     await deliverybot.probot.receive({

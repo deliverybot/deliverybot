@@ -226,6 +226,13 @@ describe("repository activity", () => {
       fullName: "second/a",
       lastEvent: "push",
     });
+    await store.upsert(install(3, "quiet"));
+    const listed = await store.list();
+    expect(listed.map((i) => i.account)).toEqual(["second", "first", "quiet"]);
+    expect(listed[0].lastActivityAt).toBeTruthy();
+    expect(listed[2].lastActivityAt).toBeNull();
+    expect(await store.get(2)).toEqual(install(2, "second"));
+
     const activity = await store.listActivity(1);
     expect(activity.map((a) => [a.fullName, a.lastEvent])).toEqual([
       ["first/a", "deployment_status.created"],

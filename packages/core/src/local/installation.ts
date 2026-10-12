@@ -14,6 +14,7 @@ export class InstallationStore {
     this.installations[installation.id] = {
       ...installation,
       repositoryCount: existing ? existing.repositoryCount : null,
+      lastActivityAt: null,
       createdAt: existing ? existing.createdAt : now,
       updatedAt: now,
     };
@@ -22,7 +23,13 @@ export class InstallationStore {
   async get(id: number): Promise<Installation | undefined> {
     const i = this.installations[id];
     if (!i) return undefined;
-    const { createdAt, updatedAt, repositoryCount, ...installation } = i;
+    const {
+      createdAt,
+      updatedAt,
+      repositoryCount,
+      lastActivityAt,
+      ...installation
+    } = i;
     return installation;
   }
 
@@ -34,9 +41,18 @@ export class InstallationStore {
   }
 
   async list(): Promise<InstallationRecord[]> {
-    return Object.values(this.installations).sort((a, b) =>
-      b.createdAt.localeCompare(a.createdAt),
-    );
+    const last: { [id: number]: string } = {};
+    for (const a of Object.values(this.activity)) {
+      const seen = last[a.installationId];
+      if (!seen || a.lastEventAt > seen) last[a.installationId] = a.lastEventAt;
+    }
+    return Object.values(this.installations)
+      .map((i) => ({ ...i, lastActivityAt: last[i.id] || null }))
+      .sort(
+        (a, b) =>
+          (b.lastActivityAt || "").localeCompare(a.lastActivityAt || "") ||
+          b.createdAt.localeCompare(a.createdAt),
+      );
   }
 
   async setRepositoryCount(id: number, count: number): Promise<void> {
