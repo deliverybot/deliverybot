@@ -1,5 +1,9 @@
 import { Logger } from "@deliverybot/core";
-import { deploy as deployCommit, EnvLockStore } from "@deliverybot/deploybot";
+import {
+  deploy as deployCommit,
+  EnvLockStore,
+  RawInputs,
+} from "@deliverybot/deploybot";
 import { User, Repo } from "../auth.js";
 import { config } from "./queries.js";
 
@@ -34,6 +38,7 @@ export async function Deploy({
   force,
   task,
   lock,
+  inputs,
 }: {
   user: User;
   log: Logger;
@@ -43,6 +48,7 @@ export async function Deploy({
   force?: boolean;
   task?: string;
   lock: EnvLockStore;
+  inputs?: RawInputs;
 }) {
   await deployCommit(user.github, log, lock, {
     owner: repo.owner,
@@ -54,7 +60,25 @@ export async function Deploy({
     ref: sha,
     force,
     task,
+    inputs,
   });
+}
+
+/**
+ * Reads deploy inputs from a request body. The dashboard form posts them as
+ * flat `inputs[name]` fields; API clients may send an `inputs` object.
+ */
+export function bodyInputs(body: { [k: string]: unknown }): RawInputs {
+  const inputs: RawInputs = {};
+  const nested = body.inputs;
+  if (nested && typeof nested === "object" && !Array.isArray(nested)) {
+    Object.assign(inputs, nested);
+  }
+  for (const [key, value] of Object.entries(body)) {
+    const match = key.match(/^inputs\[([^\]]+)\]$/);
+    if (match) inputs[match[1]] = value;
+  }
+  return inputs;
 }
 
 export async function SetLock({

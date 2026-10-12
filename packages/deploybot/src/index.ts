@@ -13,10 +13,12 @@ export function deploybot({ robot, kvService, lockService }: Dependencies) {
 }
 
 export { config, deploy } from "./deploy.js";
+export { resolveInputs, InputValues, RawInputs } from "./inputs.js";
 export { EnvLockStore, WatchStore } from "./store.js";
 export {
   Watch,
   Target,
+  Input,
   Targets,
   LockError,
   ConfigError,

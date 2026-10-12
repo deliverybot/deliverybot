@@ -36,6 +36,47 @@
         },
         "auto_merge": {
           "type": "boolean"
+        },
+        "inputs": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "type": {
+                "enum": ["string", "boolean", "number", "choice"]
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "default": {
+                "type": ["string", "number", "boolean"]
+              },
+              "options": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": ["string", "number"]
+                }
+              }
+            },
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "choice"
+                }
+              },
+              "required": ["type"]
+            },
+            "then": {
+              "required": ["options"]
+            }
+          }
         }
       }
     }

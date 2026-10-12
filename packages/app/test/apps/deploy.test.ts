@@ -207,6 +207,74 @@ describe("Deploy", () => {
     expect(deploy.isDone()).toBe(true);
   });
 
+  it("deploys with inputs", async () => {
+    factory.cleanAll();
+    factory.permission({ admin: true });
+    factory.repo();
+    factory.inputsConfig();
+    factory.gitCommit();
+    factory.repo();
+    const deploy = factory.deploy((body: any) => {
+      expect(body.description).toBe("Deploy 1.2.3");
+      expect(body.payload.inputs).toEqual({
+        version: "1.2.3",
+        dry_run: false,
+        region: "us",
+      });
+      return true;
+    });
+
+    const response = await factory
+      .request(app)
+      .post("/Codertocat/Hello-World/branch/master/o/foo")
+      .set("csrf-token", csrf)
+      .set("cookie", session)
+      .set("content-type", "application/json")
+      .send({
+        target: "production",
+        "inputs[version]": "1.2.3",
+        "inputs[dry_run]": "false",
+        "inputs[region]": "us",
+      });
+    expect(response.status).toBe(200);
+    expect(deploy.isDone()).toBe(true);
+  });
+
+  it("rejects a deploy with a missing input", async () => {
+    factory.cleanAll();
+    factory.permission({ admin: true });
+    factory.repo();
+    factory.inputsConfig();
+    factory.gitCommit();
+    factory.repo();
+
+    const response = await factory
+      .request(app)
+      .post("/Codertocat/Hello-World/branch/master/o/foo")
+      .set("csrf-token", csrf)
+      .set("cookie", session)
+      .send("target=production");
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Input "version" is required');
+  });
+
+  it("shows input fields for targets that declare them", async () => {
+    factory.cleanAll();
+    factory.permission({ admin: true });
+    factory.repo();
+    factory.inputsConfig();
+    factory.commitsMinimalGql();
+
+    const response = await factory
+      .request(app)
+      .get("/Codertocat/Hello-World/branch/master")
+      .set("cookie", session);
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('data-inputs-for="production"');
+    expect(response.text).toContain('name="inputs[version]"');
+    expect(response.text).toContain('<option value="eu" selected>eu</option>');
+  });
+
   it("fails to deploy", async () => {
     factory.commitFullGql();
     factory.gitCommit();

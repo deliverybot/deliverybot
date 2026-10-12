@@ -14,7 +14,8 @@
     Deploy
   </button>
 
-  <select name="target" class="form-select ml-2 text-gray-light" required>
+  <select name="target" class="form-select ml-2 text-gray-light" required
+    data-action="change->form#selectTarget">
     <option disabled selected value="">Target</option>
     {{#each @root.targets}}
       <option value="{{name}}">{{name}}</option>
@@ -26,4 +27,33 @@
     <input type="checkbox" name="force">
     Force
   </label>
+
+  {{#each @root.targets}}
+  {{#if inputs.length}}
+  {{! Disabled fieldsets are left out of the submission, so only the selected target's inputs are sent. }}
+  <fieldset data-target="form.inputs" data-inputs-for="{{name}}" class="mt-2" hidden disabled>
+    {{#each inputs}}
+    <label class="d-inline-block mr-3 text-gray-light"{{#if description}} title="{{description}}"{{/if}}>
+      {{#if isBoolean}}
+      <input type="hidden" name="inputs[{{name}}]" value="false">
+      <input type="checkbox" name="inputs[{{name}}]" value="true"{{#if checked}} checked{{/if}}>
+      {{name}}
+      {{else if isChoice}}
+      {{name}}
+      <select name="inputs[{{name}}]" class="form-select select-sm"{{#if required}} required{{/if}}>
+        {{#unless required}}<option value=""></option>{{/unless}}
+        {{#each options}}
+        <option value="{{value}}"{{#if selected}} selected{{/if}}>{{value}}</option>
+        {{/each}}
+      </select>
+      {{else}}
+      {{name}}
+      <input type="{{#if isNumber}}number{{else}}text{{/if}}" name="inputs[{{name}}]" class="form-control input-sm"
+        value="{{default}}" placeholder="{{description}}"{{#if required}} required{{/if}}>
+      {{/if}}
+    </label>
+    {{/each}}
+  </fieldset>
+  {{/if}}
+  {{/each}}
 </form>

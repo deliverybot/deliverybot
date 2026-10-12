@@ -6,6 +6,7 @@ import {
   WatchStore,
   Targets,
   Watch,
+  Input,
 } from "@deliverybot/deploybot";
 import get from "lodash.get";
 import { Repo } from "../auth.js";
@@ -456,8 +457,30 @@ export function Targets(conf: Targets | null) {
     conf &&
     Object.keys(conf).map((name: string) => ({
       name,
+      inputs: Inputs(conf[name]?.inputs),
     }))
   );
+}
+
+/** Shapes a target's declared inputs into form fields for the deploy button. */
+export function Inputs(inputs: { [name: string]: Input } | undefined) {
+  return Object.entries(inputs || {}).map(([name, input]) => {
+    const type = input.type || "string";
+    return {
+      name,
+      description: input.description,
+      required: !!input.required && input.default === undefined,
+      default: input.default,
+      isBoolean: type === "boolean",
+      isChoice: type === "choice",
+      isNumber: type === "number",
+      checked: type === "boolean" && input.default === true,
+      options: (input.options || []).map((value) => ({
+        value,
+        selected: String(value) === String(input.default),
+      })),
+    };
+  });
 }
 
 interface Config {

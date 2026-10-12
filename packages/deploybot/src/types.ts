@@ -16,6 +16,15 @@ export interface DeployBody {
   required_contexts: string[];
 }
 
+/** A value a person fills in when deploying a target from the dashboard. */
+export interface Input {
+  description?: string;
+  type?: "string" | "boolean" | "number" | "choice";
+  required?: boolean;
+  default?: string | number | boolean;
+  options?: Array<string | number>;
+}
+
 export interface Target {
   name: string;
   auto_deploy_on: string;
@@ -24,6 +33,9 @@ export interface Target {
   payload: any;
   environment: string;
   description: string;
+
+  // Inputs are filled in when deploying and added to the payload as `inputs`.
+  inputs?: { [name: string]: Input };
 
   // Required contexts  are required to be matched across all deployments in the
   // target set. This is so that one deployment does not succeed before another

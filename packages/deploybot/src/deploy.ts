@@ -12,6 +12,7 @@ import {
 } from "./types.js";
 import schema from "./schema.json" with { type: "json" };
 import { render } from "./render.js";
+import { resolveInputs, RawInputs } from "./inputs.js";
 import { withPreview } from "./util.js";
 
 type ReposGetContentParams =
@@ -88,6 +89,9 @@ function getDeployBody(
   force?: boolean,
   task?: string,
 ): DeployBody {
+  // Declared inputs travel in the payload so the deploy job can read them, and
+  // are rendered into the rest of the target as ${{ inputs.name }}.
+  const inputs = data.inputs ? { inputs: data.inputs } : {};
   return withPreview({
     task: task || target.task || "deploy",
     transient_environment: target.transient_environment || false,
@@ -100,6 +104,7 @@ function getDeployBody(
     payload: {
       target: target.name,
       ...render(target.payload, data),
+      ...inputs,
     },
   });
 }
@@ -125,6 +130,7 @@ export async function deploy(
     force,
     task,
     pr,
+    inputs,
   }: {
     owner: string;
     repo: string;
@@ -134,6 +140,7 @@ export async function deploy(
     force?: boolean;
     task?: string;
     pr?: PullsGetResponse;
+    inputs?: RawInputs;
   },
 ) {
   const logCtx = {
@@ -166,12 +173,13 @@ export async function deploy(
     log.info(logCtx, "deploy: halted - no target");
     throw new UnknownTargetError(target, Object.keys(conf));
   }
+  const data = { ...params, inputs: resolveInputs(targetVal, inputs) };
 
   const body = {
     owner,
     repo,
     ref,
-    ...getDeployBody(targetVal, params, force, task),
+    ...getDeployBody(targetVal, data, force, task),
   };
 
   if (await kv.isLocked(repository.data.id, body.environment)) {

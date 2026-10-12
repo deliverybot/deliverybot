@@ -18,6 +18,7 @@ export const cleanAll = nock.cleanAll;
 
 export const fixtures = {
   deployValid: require("./fixtures/deploy-valid.cjs"),
+  deployInputs: require("./fixtures/deploy-inputs.cjs"),
   deployInvalid: require("./fixtures/deploy-invalid.cjs"),
   deployment: require("./fixtures/deployment.json"),
   commentCreated: require("./fixtures/comment.created.json"),
@@ -233,3 +234,14 @@ export const errorComment = (expected: string) =>
       return true;
     })
     .reply(200);
+
+export const inputsConfig = () =>
+  nock("https://api.github.com")
+    .persist()
+    .get(
+      /^\/repos\/Codertocat\/Hello-World\/contents\/\.github(\/|%2F)deploy\.yml/,
+    )
+    .query(() => true)
+    .reply(200, {
+      content: Buffer.from(fixtures.deployInputs).toString("base64"),
+    });

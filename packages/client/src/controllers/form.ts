@@ -2,7 +2,7 @@ import { Controller } from "./base";
 import { ToastController } from "./toast";
 
 export class FormController extends Controller {
-  static targets = ["form", "button"];
+  static targets = ["form", "button", "inputs"];
   static successMessage = "Creation successful";
 
   connect() {
@@ -13,6 +13,17 @@ export class FormController extends Controller {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       this.handleSubmit(form);
+    });
+  }
+
+  /** Shows only the input fields of the target picked in the select. */
+  selectTarget(e: Event) {
+    const target = (e.target as HTMLSelectElement).value;
+    this.targets.findAll("inputs").forEach((el) => {
+      const fieldset = el as HTMLFieldSetElement;
+      const active = fieldset.dataset.inputsFor === target;
+      fieldset.hidden = !active;
+      fieldset.disabled = !active;
     });
   }
 
