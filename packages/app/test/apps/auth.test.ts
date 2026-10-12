@@ -1,6 +1,6 @@
 import nock from "nock";
 import * as factory from "../factory.js";
-import { app as deliverybot } from "../app.js";
+import { app as deliverybot, services } from "../app.js";
 
 const app = deliverybot.express;
 
@@ -31,6 +31,21 @@ describe("Auth", () => {
       .get("/_/me")
       .set("cookie", session[0]);
     expect(me.body.id).toEqual("1");
+  });
+
+  it("records signed in users, including existing sessions", async () => {
+    const users = services.userService();
+    const [, cookie] = await factory.login(app);
+    await users.delete("1");
+    expect(await users.list()).toEqual([]);
+
+    // The session already recorded its user, so a later delete sticks
+    // until the next sign in.
+    await factory.request(app).get("/_/me").set("cookie", cookie);
+    expect(await users.list()).toEqual([]);
+
+    await factory.login(app);
+    expect((await users.list()).map((u) => u.username)).toContain("Codertocat");
   });
 
   it("signs out when GitHub rejects the token", async () => {
