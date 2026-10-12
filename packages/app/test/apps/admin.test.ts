@@ -83,9 +83,9 @@ describe("Admin", () => {
     } as any);
     nock("https://api.github.com")
       .get("/installation/repositories")
-      .query({ per_page: 100 })
+      .query({ per_page: 50, page: 1 })
       .reply(200, {
-        total_count: 2,
+        total_count: 120,
         repositories: [
           { id: 4, full_name: "octo-org/idle", private: true },
           { id: 5, full_name: "octo-org/active", private: false },
@@ -103,6 +103,30 @@ describe("Admin", () => {
     expect(idle).toBeGreaterThan(active);
     expect(response.text).toContain("<code>star.created</code>");
     expect(response.text).toContain("None recorded");
+    expect(response.text).toContain("120 repositories");
+    expect(response.text).toContain('href="/_/admin/installations/77?after=2"');
+  });
+
+  it("pages through repositories", async () => {
+    const [, cookie] = await factory.login(app);
+    nock("https://api.github.com")
+      .get("/installation/repositories")
+      .query({ per_page: 50, page: 3 })
+      .reply(200, {
+        total_count: 120,
+        repositories: [{ id: 9, full_name: "octo-org/last", private: false }],
+      });
+
+    const response = await factory
+      .request(app)
+      .get("/_/admin/installations/77?after=3")
+      .set("cookie", cookie);
+    expect(response.status).toBe(200);
+    expect(response.text).toContain("octo-org/last");
+    expect(response.text).toContain(
+      'href="/_/admin/installations/77?before=2"',
+    );
+    expect(response.text).not.toContain("?after=4");
   });
 
   it("returns 404 for unknown installations", async () => {

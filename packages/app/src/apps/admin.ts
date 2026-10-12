@@ -17,6 +17,15 @@ export function parseLogins(value: string | undefined): Set<string> {
   );
 }
 
+const PER_PAGE = 50;
+const RECENT = 20;
+
+/** The page number from `?after=` or `?before=`, as the pagination partial links. */
+function pageParam(query: any): number {
+  const n = Number(query.after || query.before || 1);
+  return Number.isSafeInteger(n) && n > 0 ? n : 1;
+}
+
 function ago(iso: string) {
   return timeAgoInWords(Date.parse(iso));
 }
@@ -90,66 +99,60 @@ export function admin({
     const id = Number(req.params.id);
     const install = Number.isSafeInteger(id) ? await store.get(id) : undefined;
     if (!install) throw new NotFoundError("Installation not found");
+    const page = pageParam(req.query);
 
     const activity = await store.listActivity(id);
     const byId = new Map(activity.map((a) => [a.id, a]));
-    let repos: { id: number; fullName: string; private: boolean }[] = [];
-    let reposError = false;
-    if (install.suspended) {
-      reposError = true;
-    } else {
+    const row = (r: { fullName: string; private?: boolean }, a?: any) => ({
+      fullName: r.fullName,
+      private: !!r.private,
+      lastEvent: a?.lastEvent,
+      lastEventAgo: a ? ago(a.lastEventAt) : null,
+    });
+
+    // One page of repositories from GitHub; installations can have
+    // thousands.
+    let repos: ReturnType<typeof row>[] = [];
+    let total = 0;
+    let reposError = install.suspended;
+    if (!install.suspended) {
       try {
         const octokit = await robot.auth(id);
-        const list = await octokit.paginate(
-          octokit.rest.apps.listReposAccessibleToInstallation,
-          { per_page: 100 },
+        const { data } =
+          await octokit.rest.apps.listReposAccessibleToInstallation({
+            per_page: PER_PAGE,
+            page,
+          });
+        total = data.total_count;
+        repos = data.repositories.map((r) =>
+          row({ fullName: r.full_name, private: r.private }, byId.get(r.id)),
         );
-        repos = list.map((r) => ({
-          id: r.id,
-          fullName: r.full_name,
-          private: r.private,
-        }));
       } catch (error) {
         req.log.warn({ error, installation: id }, "admin: repo list failed");
         reposError = true;
       }
     }
 
-    // Repositories with recent activity first, then by name. Activity of a
-    // repository the app no longer lists is kept so nothing silently hides.
-    const seen = new Set(repos.map((r) => r.id));
-    const rows = [
-      ...repos.map((r) => ({ ...r, activity: byId.get(r.id) })),
-      ...activity
-        .filter((a) => !seen.has(a.id))
-        .map((a) => ({
-          id: a.id,
-          fullName: a.fullName,
-          private: false,
-          activity: a,
-        })),
-    ]
-      .sort(
-        (a, b) =>
-          (b.activity?.lastEventAt || "").localeCompare(
-            a.activity?.lastEventAt || "",
-          ) || a.fullName.localeCompare(b.fullName),
-      )
-      .map((r) => ({
-        fullName: r.fullName,
-        private: r.private,
-        lastEvent: r.activity?.lastEvent,
-        lastEventAgo: r.activity ? ago(r.activity.lastEventAt) : null,
-      }));
+    const recent = activity
+      .slice(0, RECENT)
+      .map((a) => row({ fullName: a.fullName }, a));
 
     res.render("admin-installation", {
       title: `Admin: ${install.account}`,
       csrf: req.csrfToken(),
       user: user(req),
       install,
-      repos: rows,
-      hasRepos: rows.length > 0,
+      recent,
+      hasRecent: recent.length > 0,
+      repos,
+      hasRepos: repos.length > 0,
+      total,
       reposError,
+      url: { path: req.path },
+      pagination: {
+        prev: page > 1 ? page - 1 : null,
+        next: page * PER_PAGE < total ? page + 1 : null,
+      },
     });
   }
 
