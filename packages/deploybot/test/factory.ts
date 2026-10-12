@@ -19,6 +19,7 @@ export const cleanAll = nock.cleanAll;
 export const fixtures = {
   deployValid: require("./fixtures/deploy-valid.cjs"),
   deployInvalid: require("./fixtures/deploy-invalid.cjs"),
+  deployLimited: require("./fixtures/deploy-limited.cjs"),
   deployment: require("./fixtures/deployment.json"),
   commentCreated: require("./fixtures/comment.created.json"),
   pullRequest: require("./fixtures/pull-request.json"),
@@ -91,6 +92,27 @@ export const withDeployments = (deployments: any[]) =>
     .query(true)
     .reply(200, deployments);
 
+/** Deployment 5 to production, created `ageMs` ago with the given statuses. */
+export const inFlightDeployment = (states: string[], ageMs = 0) => [
+  nock("https://api.github.com")
+    .get("/repos/Codertocat/Hello-World/deployments")
+    .query((q) => q.environment === "production")
+    .reply(200, [
+      {
+        id: 5,
+        environment: "production",
+        created_at: new Date(Date.now() - ageMs).toISOString(),
+      },
+    ]),
+  nock("https://api.github.com")
+    .get("/repos/Codertocat/Hello-World/deployments/5/statuses")
+    .query(true)
+    .reply(
+      200,
+      states.map((state) => ({ state })),
+    ),
+];
+
 export const token = () =>
   nock("https://api.github.com")
     .post("/app/installations/2/access_tokens")
@@ -111,7 +133,13 @@ export const permission = ({ admin }: { admin: boolean }) =>
     .get("/repos/Codertocat/Hello-World/collaborators/Codertocat/permission")
     .reply(200, { permission: admin ? "admin" : "read" });
 
-export const config = ({ valid }: { valid?: boolean }) =>
+export const config = ({
+  valid,
+  limited,
+}: {
+  valid?: boolean;
+  limited?: boolean;
+}) =>
   nock("https://api.github.com")
     .persist()
     .get(
@@ -120,7 +148,11 @@ export const config = ({ valid }: { valid?: boolean }) =>
     .query(() => true)
     .reply(200, {
       content: Buffer.from(
-        valid ? fixtures.deployValid : fixtures.deployInvalid,
+        limited
+          ? fixtures.deployLimited
+          : valid
+            ? fixtures.deployValid
+            : fixtures.deployInvalid,
       ).toString("base64"),
     });
 
@@ -206,6 +238,20 @@ export const push = (): any => ({
 export const status = (state = "success"): any => ({
   name: "status",
   payload: { ...fixtures.status, state },
+});
+
+export const deploymentStatusEvent = (
+  state: string,
+  environment = "production",
+): any => ({
+  name: "deployment_status",
+  payload: {
+    action: "created",
+    deployment_status: { id: 1, state },
+    deployment: { ...fixtures.deployment.deployment, environment },
+    repository: fixtures.deployment.repository,
+    installation: fixtures.deployment.installation,
+  },
 });
 
 export const checkRun = (action = "completed"): any => ({

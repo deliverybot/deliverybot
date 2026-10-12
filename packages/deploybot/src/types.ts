@@ -25,6 +25,10 @@ export interface Target {
   environment: string;
   description: string;
 
+  // How many deployments to the environment may be in progress at once. Unset
+  // means no limit.
+  max_in_flight?: number;
+
   // Required contexts  are required to be matched across all deployments in the
   // target set. This is so that one deployment does not succeed before another
   // causing the set to fail.
@@ -59,6 +63,21 @@ export class LockError extends Error {
     public environment?: string,
   ) {
     super(message);
+  }
+}
+
+/**
+ * Thrown when the environment already has as many deployments in progress as
+ * the target's max_in_flight allows.
+ */
+export class InFlightError extends Error {
+  public status = "InFlightError";
+
+  constructor(
+    public environment: string,
+    public inFlight: number,
+  ) {
+    super(`${environment} already has ${inFlight} deployment(s) in progress`);
   }
 }
 

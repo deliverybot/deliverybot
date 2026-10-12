@@ -19,6 +19,7 @@ export {
   Target,
   Targets,
   LockError,
+  InFlightError,
   ConfigError,
   UnknownTargetError,
   DeployBody,

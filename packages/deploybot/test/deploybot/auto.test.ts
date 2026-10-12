@@ -184,4 +184,42 @@ describe("auto", () => {
     await probot.receive(factory.push());
     expect(deploy.isDone()).toBe(false);
   });
+
+  test("waits for deployments in flight, then deploys", async () => {
+    factory.config({ limited: true });
+    factory.noDeployments();
+    factory.inFlightDeployment(["in_progress"]);
+    let deploy = factory.deploy();
+
+    await probot.receive(factory.push());
+    expect(deploy.isDone()).toBe(false);
+
+    // A deployment to another environment finishing changes nothing.
+    await probot.receive(factory.deploymentStatusEvent("success", "staging"));
+    expect(deploy.isDone()).toBe(false);
+
+    factory.cleanAll();
+    factory.token();
+    factory.repo().persist();
+    factory.gitCommit().persist();
+    factory.gitRef().persist();
+    factory.config({ limited: true });
+    factory.noDeployments();
+    factory.inFlightDeployment(["success"]);
+    deploy = factory.deploy();
+
+    await probot.receive(factory.deploymentStatusEvent("success"));
+    expect(deploy.isDone()).toBe(true);
+  });
+
+  test("ignores deployment statuses that aren't final", async () => {
+    factory.config({ limited: true });
+    factory.noDeployments();
+    factory.inFlightDeployment(["in_progress"]);
+    const deploy = factory.deploy();
+
+    await probot.receive(factory.push());
+    await probot.receive(factory.deploymentStatusEvent("in_progress"));
+    expect(deploy.isDone()).toBe(false);
+  });
 });

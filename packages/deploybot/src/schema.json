@@ -36,6 +36,10 @@
         },
         "auto_merge": {
           "type": "boolean"
+        },
+        "max_in_flight": {
+          "type": "integer",
+          "minimum": 1
         }
       }
     }

@@ -1,7 +1,7 @@
 import { Application, Context, WebhookEvent } from "@deliverybot/core";
 import { EnvLockStore } from "./store.js";
 import { config, deploy } from "./deploy.js";
-import { LockError, UnknownTargetError } from "./types.js";
+import { InFlightError, LockError, UnknownTargetError } from "./types.js";
 import { logCtx, canWrite } from "./util.js";
 
 /**
@@ -40,6 +40,9 @@ export function errorMessage(error: any, ref: string): string {
       ? `\`${error.environment}\``
       : "This environment";
     return `${env} is locked, so nothing was deployed. Unlock it on the Deliverybot dashboard and comment again.`;
+  }
+  if (error instanceof InFlightError) {
+    return `\`${error.environment}\` already has ${error.inFlight === 1 ? "a deployment" : `${error.inFlight} deployments`} in progress, so nothing was deployed. Comment again once it has finished.`;
   }
   if (error?.status === "ConfigError") {
     return `\`.github/deploy.yml\` on \`${ref}\` is invalid: ${error.message}`;

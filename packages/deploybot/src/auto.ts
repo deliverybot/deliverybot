@@ -8,7 +8,7 @@ import {
 import { WatchStore, EnvLockStore } from "./store.js";
 import { PayloadRepository, Watch } from "./types.js";
 import { logCtx } from "./util.js";
-import { config, deploy } from "./deploy.js";
+import { config, deploy, IN_FLIGHT_STATES } from "./deploy.js";
 import { hash } from "./util.js";
 
 export function match(auto: string | undefined, ref: string) {
@@ -183,6 +183,19 @@ export function auto(
             "auto deploy: checks not ready",
           );
           return false;
+        case "InFlightError":
+          // Keep the watch and retry it when a deployment to the environment
+          // finishes.
+          context.log.info(
+            logCtx(context, { target, ref, error }),
+            "auto deploy: waiting for deployments in flight",
+          );
+          await watchStore.addBlocked(
+            watch.repository.id,
+            error.environment,
+            watch,
+          );
+          return false;
         case "LockError":
           context.log.info(
             logCtx(context, { target, ref, error }),
@@ -228,6 +241,7 @@ export function auto(
       const done = await handle();
       if (done) {
         await watchStore.delWatch(watch.repository.id, watch);
+        await watchStore.delBlocked(watch.repository.id, watch);
       }
     });
   }
@@ -293,6 +307,27 @@ export function auto(
     const sha = context.payload.check_run.check_suite.head_sha;
     if (!sha) return;
     await emitWatches(context, context.payload.repository.id, sha);
+  });
+
+  // A deployment that finishes frees a slot in its environment, so retry the
+  // watches that were waiting on it. They mark themselves blocked again if the
+  // environment is still full.
+  app.on("deployment_status", async (context) => {
+    const state = context.payload.deployment_status.state;
+    if (IN_FLIGHT_STATES.includes(state)) return;
+    const repoId = context.payload.repository.id;
+    const environment = context.payload.deployment.environment;
+    const blocked = (await watchStore.listBlocked(repoId)).filter(
+      (b) => b.environment === environment,
+    );
+    const shas = new Set<string>();
+    for (const b of blocked) {
+      await watchStore.delBlocked(repoId, b.watch);
+      shas.add(b.watch.sha);
+    }
+    for (const sha of shas) {
+      await emitWatches(context, repoId, sha);
+    }
   });
 
   // Handles a synthetic push watch event. This fires whenever a change happens

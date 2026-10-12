@@ -4,6 +4,7 @@ import { validate } from "jsonschema";
 import { EnvLockStore } from "./store.js";
 import {
   ConfigError,
+  InFlightError,
   LockError,
   UnknownTargetError,
   Targets,
@@ -104,13 +105,60 @@ function getDeployBody(
   });
 }
 
+// Deployment states that mean the deployment is still going out.
+export const IN_FLIGHT_STATES = ["queued", "pending", "in_progress"];
+
+// A deployment that hasn't finished after this long is treated as abandoned,
+// so a deployer that never reports back can't block an environment forever.
+export const IN_FLIGHT_TIMEOUT_MS = 60 * 60 * 1000;
+
+/**
+ * Counts the deployments to an environment that are still in progress: their
+ * latest status is queued, pending or in progress, or they have no status yet.
+ * Only deployments created in the last IN_FLIGHT_TIMEOUT_MS count, and at most
+ * `limit` are looked at since that is all the caller needs to know.
+ */
+export async function countInFlight(
+  github: Octokit,
+  {
+    owner,
+    repo,
+    environment,
+    limit,
+  }: { owner: string; repo: string; environment: string; limit: number },
+): Promise<number> {
+  const since = Date.now() - IN_FLIGHT_TIMEOUT_MS;
+  const deployments = await github.rest.repos.listDeployments({
+    owner,
+    repo,
+    environment,
+    per_page: Math.min(100, limit + 10),
+  });
+  const recent = deployments.data.filter(
+    (d) => new Date(d.created_at).getTime() >= since,
+  );
+  let count = 0;
+  for (const d of recent) {
+    const statuses = await github.rest.repos.listDeploymentStatuses({
+      owner,
+      repo,
+      deployment_id: d.id,
+      per_page: 1,
+    });
+    const latest = statuses.data[0];
+    if (!latest || IN_FLIGHT_STATES.includes(latest.state)) count++;
+    if (count >= limit) break;
+  }
+  return count;
+}
+
 /**
  * Deploy commit handles all the necessities of creating a conformant deployment
  * including templating and more. All deploys should go through this function.
  * We need to deploy always using the ref of a branch so that finding
  * deployments later we can query using the branch ref.
  *
- * Throws ConfigError, LockError.
+ * Throws ConfigError, LockError, InFlightError.
  */
 export async function deploy(
   github: Octokit,
@@ -177,6 +225,21 @@ export async function deploy(
   if (await kv.isLocked(repository.data.id, body.environment)) {
     log.info(logCtx, "deploy: halted - environment locked");
     throw new LockError(`Deployment environment locked`, body.environment);
+  }
+
+  // Force skips the limit too, so a stuck deployment can always be replaced.
+  const limit = targetVal.max_in_flight;
+  if (limit && !force) {
+    const inFlight = await countInFlight(github, {
+      owner,
+      repo,
+      environment: body.environment,
+      limit,
+    });
+    if (inFlight >= limit) {
+      log.info({ ...logCtx, inFlight }, "deploy: halted - in flight limit");
+      throw new InFlightError(body.environment, inFlight);
+    }
   }
 
   try {

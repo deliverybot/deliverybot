@@ -155,6 +155,20 @@ describe("pr-deploy", () => {
     }
   });
 
+  test("says when the environment is busy", async () => {
+    factory.config({ limited: true });
+    factory.permission({ admin: true });
+    factory.inFlightDeployment(["queued"]);
+    const deploy = factory.deploy();
+    const error = factory.errorComment(
+      "@Codertocat `production` already has a deployment in progress, so nothing was deployed. Comment again once it has finished.",
+    );
+
+    await probot.receive(factory.prDeployComment("production"));
+    expect(deploy.isDone()).toBe(false);
+    expect(error.isDone()).toBe(true);
+  });
+
   test("error comment on invalid file", async () => {
     factory.config({ valid: false });
     factory.permission({ admin: true });

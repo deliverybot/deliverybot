@@ -29,6 +29,28 @@ export class WatchStore {
       .list(`queue/${repoId}-${sha}/jobs`)
       .then((r) => r.map((w) => JSON.parse(w.json) as Watch));
   }
+
+  /**
+   * Remembers a watch that is waiting for a deployment to the environment to
+   * finish, so the deployment_status that ends it can retry the watch.
+   */
+  addBlocked(repoId: number, environment: string, watch: Watch) {
+    return this.store.put(`repos/${repoId}/blocked/${watch.id}`, {
+      json: JSON.stringify({ environment, watch }),
+    });
+  }
+
+  delBlocked(repoId: number, watch: Watch) {
+    return this.store.del(`repos/${repoId}/blocked/${watch.id}`);
+  }
+
+  listBlocked(
+    repoId: number,
+  ): Promise<{ environment: string; watch: Watch }[]> {
+    return this.store
+      .list(`repos/${repoId}/blocked`)
+      .then((r) => r.map((b) => JSON.parse(b.json)));
+  }
 }
 
 export class EnvLockStore {
