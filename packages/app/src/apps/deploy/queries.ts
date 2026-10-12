@@ -64,6 +64,13 @@ query commits(
 ) {
   repository(owner:$owner,name:$repo) {
     refs(refPrefix:"refs/heads/",first:50) { nodes { name } }
+    ${
+      opts.minimal
+        ? ""
+        : `deployments(first:1,orderBy:{field:CREATED_AT,direction:DESC}) {
+      nodes { environment createdAt commitOid }
+    }`
+    }
     ref(qualifiedName:$branch) {
       target {
         ... on Commit {
@@ -149,14 +156,58 @@ export async function commits(
 
   // For generating test files:
   // require("fs").writeFileSync(`./test/fixtures/query-commits.${opts.minimal ? "minimal" : "full"}.json`, JSON.stringify(result, null, 2));
-  return View(
-    owner,
-    repo,
-    branch,
-    watches,
-    result,
-    !opts.before && !opts.after,
-  );
+  const firstPage = !opts.before && !opts.after;
+  const view = View(owner, repo, branch, watches, result, firstPage);
+  if (firstPage && !opts.minimal && !view.sinceDeploy) {
+    view.sinceDeploy = await SinceDeployOffPage(
+      token,
+      owner,
+      repo,
+      view.commits,
+      result,
+    );
+  }
+  return view;
+}
+
+// When the last deployed commit is further back than the page shows, count
+// the commits since the repository's latest deployment with the compare API.
+export async function SinceDeployOffPage(
+  token: string,
+  owner: string,
+  repo: string,
+  commits: any[],
+  data: any,
+) {
+  const deploy = get(data, "repository.deployments.nodes[0]");
+  if (!deploy || !deploy.commitOid || commits.length === 0) {
+    return null;
+  }
+  const head = commits[0].oid;
+  try {
+    const resp = await ghRequest(
+      "GET /repos/{owner}/{repo}/compare/{basehead}",
+      {
+        owner,
+        repo,
+        basehead: `${deploy.commitOid}...${head}`,
+        per_page: 1,
+        headers: { authorization: `token ${token}` },
+      },
+    );
+    return SinceDeployView(
+      owner,
+      repo,
+      deploy.commitOid,
+      head,
+      resp.data.ahead_by,
+      deploy.environment,
+      timeAgoInWords(Date.parse(deploy.createdAt)),
+    );
+  } catch (e) {
+    // The deployed commit may be gone, e.g. after a force push.
+    return null;
+  }
 }
 
 export async function metrics(
@@ -394,8 +445,8 @@ export function Latest(commits: any[]) {
 }
 
 // Counts the commits on the branch since the most recently deployed one, like
-// GitHub's "N commits to master since this release". Only works when that
-// commit is on the page being shown, which starts at the branch head.
+// GitHub's "N commits to master since this release", using the deployed commit
+// on the page being shown, which starts at the branch head.
 export function SinceDeploy(
   owner: string,
   repo: string,
@@ -405,16 +456,34 @@ export function SinceDeploy(
   if (!latest || commits.length === 0) {
     return null;
   }
-  const count = commits.findIndex((c) => c.oid === latest.oid);
-  const head = commits[0];
+  return SinceDeployView(
+    owner,
+    repo,
+    latest.oid,
+    commits[0].oid,
+    commits.findIndex((c) => c.oid === latest.oid),
+    get(latest, "deployments[0].environment", ""),
+    latest.deployment.lastDeployedAtWords,
+  );
+}
+
+export function SinceDeployView(
+  owner: string,
+  repo: string,
+  base: string,
+  head: string,
+  count: number,
+  environment: string,
+  deployedAtWords: string,
+) {
   return {
     count,
     commits: count === 1 ? "commit" : "commits",
-    environment: get(latest, "deployments[0].environment", ""),
-    deployedAtWords: latest.deployment.lastDeployedAtWords,
+    environment,
+    deployedAtWords,
     compareUrl:
       count > 0
-        ? `https://github.com/${owner}/${repo}/compare/${latest.oid}...${head.oid}`
+        ? `https://github.com/${owner}/${repo}/compare/${base}...${head}`
         : null,
   };
 }
