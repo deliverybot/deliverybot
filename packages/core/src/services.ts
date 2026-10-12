@@ -74,6 +74,8 @@ export interface Installation {
 }
 
 export interface InstallationRecord extends Installation {
+  /** Repositories the app can access, or null until first counted. */
+  repositoryCount: number | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -94,6 +96,7 @@ export interface InstallationStore {
   delete(id: number): Promise<void>;
   /** Every installation, newest first. */
   list(): Promise<InstallationRecord[]>;
+  setRepositoryCount(id: number, count: number): Promise<void>;
   recordActivity(
     activity: Omit<RepositoryActivity, "lastEventAt">,
   ): Promise<void>;

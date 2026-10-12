@@ -13,6 +13,7 @@ export class InstallationStore {
     const existing = this.installations[installation.id];
     this.installations[installation.id] = {
       ...installation,
+      repositoryCount: existing ? existing.repositoryCount : null,
       createdAt: existing ? existing.createdAt : now,
       updatedAt: now,
     };
@@ -21,7 +22,7 @@ export class InstallationStore {
   async get(id: number): Promise<Installation | undefined> {
     const i = this.installations[id];
     if (!i) return undefined;
-    const { createdAt, updatedAt, ...installation } = i;
+    const { createdAt, updatedAt, repositoryCount, ...installation } = i;
     return installation;
   }
 
@@ -36,6 +37,11 @@ export class InstallationStore {
     return Object.values(this.installations).sort((a, b) =>
       b.createdAt.localeCompare(a.createdAt),
     );
+  }
+
+  async setRepositoryCount(id: number, count: number): Promise<void> {
+    const i = this.installations[id];
+    if (i) i.repositoryCount = count;
   }
 
   async recordActivity(a: Omit<RepositoryActivity, "lastEventAt">) {

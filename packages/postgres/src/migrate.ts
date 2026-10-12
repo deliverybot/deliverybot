@@ -95,6 +95,10 @@ export const migrations: string[] = [
   CREATE UNIQUE INDEX IF NOT EXISTS jobs_waiting_event ON jobs (event_id)
     WHERE state = 'queued' AND locked_until IS NULL;
   `,
+  `
+  -- Kept up to date by webhooks so the admin dashboard doesn't ask GitHub.
+  ALTER TABLE installations ADD COLUMN repository_count integer;
+  `,
 ];
 
 // Arbitrary constant so concurrent processes don't migrate at the same time.
