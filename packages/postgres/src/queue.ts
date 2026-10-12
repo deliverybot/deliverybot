@@ -6,7 +6,11 @@ export interface QueueOptions {
   maxAttempts: number;
   /** Delay before a retry, multiplied by the attempt number. */
   retryDelay: number;
-  /** How long a worker owns a job before another worker may take it over. */
+  /**
+   * How long a worker owns a job before another worker may take it over.
+   * A job still running after this long is given up on and retried, so a
+   * call that never returns can't hold a slot forever.
+   */
   lease: number;
   /** How often an idle worker checks for new jobs. */
   pollInterval: number;
@@ -59,6 +63,7 @@ export class PostgresQueue {
   private inflight = new Set<Promise<void>>();
   private loop?: Promise<void>;
   private wake?: () => void;
+  private lastLoop = Date.now();
 
   constructor(
     private pool: Pool,
@@ -99,8 +104,18 @@ export class PostgresQueue {
     await Promise.all(this.inflight);
   }
 
+  /**
+   * False once the worker loop hasn't come round for `maxAge` ms, which
+   * means it is stuck, for example on a database connection that died
+   * without being closed. Meant for a liveness probe.
+   */
+  healthy(maxAge = 1000 * 60 * 2) {
+    return this.running && Date.now() - this.lastLoop < maxAge;
+  }
+
   private async run(handler: (event: WebhookEvent) => Promise<void>) {
     while (this.running) {
+      this.lastLoop = Date.now();
       let job: Job | undefined;
       if (this.inflight.size < this.opts.concurrency) {
         try {
@@ -170,7 +185,7 @@ export class PostgresQueue {
     };
     log.info({ ...ctx, state: "processing" }, "queue: processing event");
     try {
-      await handler(job.data);
+      await timeout(handler(job.data), this.opts.lease);
       await this.pool.query("DELETE FROM jobs WHERE id = $1", [job.id]);
     } catch (error) {
       const failed = job.attempts >= job.max_attempts;
@@ -203,6 +218,19 @@ export class PostgresQueue {
         .catch((error) => log.error({ ...ctx, error }, "queue: update failed"));
     }
   }
+}
+
+function timeout<T>(p: Promise<T>, ms: number): Promise<T> {
+  let t: NodeJS.Timeout;
+  return Promise.race([
+    p,
+    new Promise<never>((_, reject) => {
+      t = setTimeout(
+        () => reject(new Error(`job timed out after ${ms}ms`)),
+        ms,
+      );
+    }),
+  ]).finally(() => clearTimeout(t));
 }
 
 function installationId(event: WebhookEvent): number | null {

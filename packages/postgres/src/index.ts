@@ -1,7 +1,7 @@
 import { Pool, PoolConfig } from "pg";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
-import { Services } from "@deliverybot/core";
+import { Services, logger } from "@deliverybot/core";
 import { PostgresKVStore } from "./kv.js";
 import { PostgresLockStore, LockOptions } from "./lock.js";
 import { PostgresMessageBus } from "./message.js";
@@ -23,9 +23,23 @@ export interface PostgresOptions extends PoolConfig {
  */
 export function postgresServices(opts: PostgresOptions = {}) {
   const { lock: lockOpts, queue: queueOpts, ...poolConfig } = opts;
-  const pool = new Pool(poolConfig);
+  const config: PoolConfig = {
+    // Without these a connection that dies without being closed (the
+    // database moving to another node, say) leaves a query waiting forever,
+    // and the worker stops processing events without crashing.
+    keepAlive: true,
+    connectionTimeoutMillis: 1000 * 10,
+    query_timeout: 1000 * 60,
+    ...poolConfig,
+  };
+  const pool = new Pool(config);
+  // An idle connection that drops is removed from the pool and emits this.
+  // Unhandled, it would crash the process.
+  pool.on("error", (error) => {
+    logger.warn({ error }, "postgres: idle connection error");
+  });
   const kv = new PostgresKVStore<any>(pool);
-  const lock = new PostgresLockStore(pool, lockOpts);
+  const lock = new PostgresLockStore(config, lockOpts);
   const msg = new PostgresMessageBus<any>(pool);
   const user = new PostgresUserStore(pool);
   const installation = new PostgresInstallationStore(pool);
