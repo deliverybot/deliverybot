@@ -45,7 +45,7 @@ export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
       branch: "",
       options: {
         count: 25,
-        target: queryString(req.query.target),
+        environment: queryString(req.query.environment),
         before: queryString(req.query.before),
         after: queryString(req.query.after),
       },

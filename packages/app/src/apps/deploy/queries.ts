@@ -191,72 +191,21 @@ export async function metrics(
 }
 
 export interface DeploymentsOptions {
-  target?: string;
+  environment?: string;
   before?: string;
   after?: string;
   count: number;
-}
-
-const DeploymentEnvironmentsQuery = () => `
-query environments($owner:String!,$repo:String!) {
-  repository(owner:$owner,name:$repo) {
-    deployments(first:100,orderBy:{field:CREATED_AT,direction:DESC}) {
-      nodes { environment }
-    }
-  }
-}
-`;
-
-// Turns an environment from the deploy config into a pattern that matches the
-// names it renders to, e.g. `pr${{ pr }}` matches `pr1` and `pr42`.
-export function EnvironmentPattern(environment: string) {
-  const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const parts = environment.split(/\$\{\{.*?\}\}/);
-  return new RegExp(`^${parts.map(escape).join(".+")}$`);
-}
-
-// Resolves a deploy config environment to the environment names deployments
-// actually used. Templated ones are matched against recent deployments, since
-// GitHub can only filter deployments on exact names. A pattern like `pr.+` also
-// matches `production`, so names other targets use literally are excluded.
-export async function environments(
-  token: string,
-  owner: string,
-  repo: string,
-  environment: string,
-  exclude: string[] = [],
-): Promise<string[]> {
-  if (!environment.includes("${{")) {
-    return [environment];
-  }
-  const pattern = EnvironmentPattern(environment);
-  const result = await gql(token, DeploymentEnvironmentsQuery(), {
-    owner,
-    repo,
-  });
-  const names = (get(result, "repository.deployments.nodes", []) as any[]).map(
-    (node: any) => node.environment as string,
-  );
-  return names.filter(
-    (name, i) =>
-      pattern.test(name) &&
-      !exclude.includes(name) &&
-      names.indexOf(name) === i,
-  );
 }
 
 export async function deployments(
   token: string,
   owner: string,
   repo: string,
-  opts: DeploymentsOptions & { environments?: string[] },
+  opts: DeploymentsOptions,
 ) {
   const variables: any = { owner, repo };
-  if (opts.environments) {
-    if (opts.environments.length === 0) {
-      return DeploymentList(owner, repo, {});
-    }
-    variables.environments = opts.environments;
+  if (opts.environment) {
+    variables.environments = [opts.environment];
   }
   if (opts.before) {
     variables.last = opts.count;

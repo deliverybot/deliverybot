@@ -92,69 +92,50 @@ export async function Deployments({
   user,
   lock,
 }: DeploymentsProps) {
-  const out = await Base(
-    { csrf, path, user, repo, branch: "", lock },
-    { title: `${repo.owner}/${repo.repo} deployments` },
-  );
-
-  // Filter on a target from the deploy config. A target with a templated
-  // environment, like `review: pr${{ pr }}`, covers every name it rendered to.
-  const conf = out.config.config || {};
-  const target = options.target || "";
-  let environments: string[] | undefined;
-  if (target) {
-    const environment = conf[target]
-      ? conf[target].environment || "production"
-      : target;
-    const literal = Object.values(conf)
-      .map((t: any) => (t && t.environment) || "production")
-      .filter((env: string) => !env.includes("${{"));
-    environments = await queries.environments(
-      user.token,
-      repo.owner,
-      repo.repo,
-      environment,
-      literal,
-    );
-  }
-
   const { deployments, pagination } = await queries.deployments(
     user.token,
     repo.owner,
     repo.repo,
-    { ...options, environments },
+    options,
   );
+  const environment = options.environment || "";
   const link = (params: { [k: string]: string }) => {
     const query = new URLSearchParams(params);
-    if (target) query.set("target", target);
+    if (environment) query.set("environment", environment);
     const qs = query.toString();
     return qs ? `${path}?${qs}` : path;
   };
-  const names = Object.keys(conf);
-  if (target) names.push(target);
-  const filters = names
+  const out = await Base(
+    { csrf, path, user, repo, branch: "", lock },
+    {
+      title: `${repo.owner}/${repo.repo} deployments`,
+      deployments,
+      hasDeployments: deployments.length > 0,
+      pagination: {
+        // Cursors from Pagination() are already URI encoded.
+        prev:
+          pagination.prev &&
+          link({ before: decodeURIComponent(pagination.prev) }),
+        next:
+          pagination.next &&
+          link({ after: decodeURIComponent(pagination.next) }),
+      },
+    },
+  );
+  // Offer the environments from the deploy config as filters. Templated ones
+  // only resolve at deploy time, so they can't be listed here.
+  const names: string[] = out.locking.targets
+    .filter((t: any) => t.lockable)
+    .map((t: any) => t.environment as string);
+  if (environment) names.push(environment);
+  const environments = names
     .filter((name, i) => names.indexOf(name) === i)
     .sort()
     .map((name) => ({
       name,
-      url: `${path}?target=${encodeURIComponent(name)}`,
+      url: `${path}?environment=${encodeURIComponent(name)}`,
     }));
-
-  return {
-    ...out,
-    target,
-    filters,
-    deployments,
-    hasDeployments: deployments.length > 0,
-    pagination: {
-      // Cursors from Pagination() are already URI encoded.
-      prev:
-        pagination.prev &&
-        link({ before: decodeURIComponent(pagination.prev) }),
-      next:
-        pagination.next && link({ after: decodeURIComponent(pagination.next) }),
-    },
-  };
+  return { ...out, environment, environments };
 }
 
 export interface CommitProps extends BaseProps {

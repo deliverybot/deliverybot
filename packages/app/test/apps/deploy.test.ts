@@ -73,7 +73,7 @@ describe("Deploy", () => {
     );
   });
 
-  it("filters deployments by target", async () => {
+  it("filters deployments by environment", async () => {
     const scope = factory.deploymentsGql({
       environments: ["production"],
       after: "Y3Vyc29yOjI=",
@@ -82,49 +82,15 @@ describe("Deploy", () => {
     const response = await factory
       .request(app)
       .get("/Codertocat/Hello-World/deployments")
-      .query({ target: "production", after: "Y3Vyc29yOjI=" })
+      .query({ environment: "production", after: "Y3Vyc29yOjI=" })
       .set("cookie", session);
     expect(response.status).toBe(200);
     expect(scope.isDone()).toBe(true);
-    expect(response.text).toContain("Target: production");
-    expect(response.text).toContain(
-      "/Codertocat/Hello-World/deployments?target&#x3D;review",
-    );
+    expect(response.text).toContain("Environment: production");
     // Paging keeps the filter.
     expect(response.text).toContain(
-      "/Codertocat/Hello-World/deployments?after&#x3D;Y3Vyc29yOjI%3D&amp;target&#x3D;production",
+      "/Codertocat/Hello-World/deployments?after&#x3D;Y3Vyc29yOjI%3D&amp;environment&#x3D;production",
     );
-  });
-
-  it("filters deployments by a templated target", async () => {
-    const names = factory.deploymentEnvironmentsGql([
-      "pr1",
-      "production",
-      "pr2",
-      "pr1",
-    ]);
-    const scope = factory.deploymentsGql({ environments: ["pr1", "pr2"] });
-
-    const response = await factory
-      .request(app)
-      .get("/Codertocat/Hello-World/deployments")
-      .query({ target: "review" })
-      .set("cookie", session);
-    expect(response.status).toBe(200);
-    expect(names.isDone()).toBe(true);
-    expect(scope.isDone()).toBe(true);
-  });
-
-  it("shows nothing for a templated target that never deployed", async () => {
-    factory.deploymentEnvironmentsGql(["production"]);
-
-    const response = await factory
-      .request(app)
-      .get("/Codertocat/Hello-World/deployments")
-      .query({ target: "review" })
-      .set("cookie", session);
-    expect(response.status).toBe(200);
-    expect(response.text).toContain("No deployments for <code>review</code>");
   });
 
   it("not watch deployments", async () => {

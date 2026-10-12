@@ -72,16 +72,6 @@ export const deploymentsGql = (variables?: any) =>
       ),
     )
     .reply(200, { data: fixtures.deploymentsFull });
-export const deploymentEnvironmentsGql = (names: string[]) =>
-  nock("https://api.github.com")
-    .post("/graphql", (body: any) => body.query.includes("query environments"))
-    .reply(200, {
-      data: {
-        repository: {
-          deployments: { nodes: names.map((environment) => ({ environment })) },
-        },
-      },
-    });
 
 export const userInstallation = () =>
   nock("https://api.github.com")

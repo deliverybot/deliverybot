@@ -1,7 +1,7 @@
 import * as factory from "../factory.js";
 import { WatchStore } from "@deliverybot/deploybot";
 import { services } from "../app.js";
-import { commits, EnvironmentPattern } from "../../src/apps/deploy/queries.js";
+import { commits } from "../../src/apps/deploy/queries.js";
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
@@ -55,21 +55,5 @@ describe("Queries", () => {
       { minimal: false },
     );
     expect(result).toMatchSnapshot();
-  });
-});
-
-describe("EnvironmentPattern", () => {
-  it("matches the names a templated environment renders to", () => {
-    const pattern = EnvironmentPattern("pr${{ pr }}");
-    expect(pattern.test("pr1")).toBe(true);
-    expect(pattern.test("pr42")).toBe(true);
-    expect(pattern.test("pr")).toBe(false);
-    expect(pattern.test("staging")).toBe(false);
-  });
-
-  it("matches literal parts exactly", () => {
-    const pattern = EnvironmentPattern("app.${{ ref }}");
-    expect(pattern.test("app.main")).toBe(true);
-    expect(pattern.test("appxmain")).toBe(false);
   });
 });

@@ -17,11 +17,11 @@
     <details class="dropdown details-reset details-overlay d-inline-block">
       <summary class="btn btn-sm" aria-haspopup="true">
         <div class="dropdown-caret"></div>
-        Target: {{#if target}}{{target}}{{else}}all{{/if}}
+        Environment: {{#if environment}}{{environment}}{{else}}all{{/if}}
       </summary>
       <ul class="dropdown-menu dropdown-menu-se">
-        <li><a href="{{url.path}}" class="dropdown-item">All targets</a></li>
-        {{#each filters}}
+        <li><a href="{{url.path}}" class="dropdown-item">All environments</a></li>
+        {{#each environments}}
         <li><a href="{{url}}" class="dropdown-item"><code>{{name}}</code></a></li>
         {{/each}}
       </ul>
@@ -60,7 +60,7 @@
       {{/each}}
       {{else}}
       <div class="Box-body text-center text-gray-light p-4">
-        No deployments{{#if target}} for <code>{{target}}</code>{{/if}} yet.
+        No deployments{{#if environment}} to <code>{{environment}}</code>{{/if}} yet.
       </div>
       {{/if}}
     </div>
