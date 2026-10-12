@@ -7,7 +7,8 @@
 name: deliverybot
 url: https://deliverybot.dev
 description: Controls and configures deployments using the GitHub API.
-# Only installable by the account that owns the app.
+# Only the account that owns the app can install it. Set to true if other
+# accounts (for example your organization, when the app is yours) need it too.
 public: false
 
 hook_attributes:
