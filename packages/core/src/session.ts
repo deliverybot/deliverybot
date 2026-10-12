@@ -119,6 +119,17 @@ export class EncryptedStore extends Store {
   }
 }
 
+/** Forgets the signed in user but keeps the rest of the session. */
+export function signOut(req: Request) {
+  delete req.session.token;
+  delete req.session.refreshToken;
+  delete req.session.tokenExpiresAt;
+  delete req.session.userId;
+  delete req.session.login;
+  delete req.session.avatar;
+  delete req.session.verified;
+}
+
 const SAFE_METHODS = ["GET", "HEAD", "OPTIONS"];
 
 /**

@@ -13,7 +13,7 @@ import { Store } from "express-session";
 import "express-async-errors";
 
 import { logRequests } from "./middleware.js";
-import { sessions, csrf } from "./session.js";
+import { sessions, csrf, signOut } from "./session.js";
 import {
   Application,
   AppOptions,
@@ -48,6 +48,8 @@ export interface Options extends AppOptions {
   /** Where sessions are kept. Defaults to memory. */
   sessionStore?: Store;
 }
+
+const MINUTE = 60 * 1000;
 
 export function load(services: Services, apps: RegisterFunc[], opts: Options) {
   const app = express();
@@ -87,6 +89,17 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
       store: opts.sessionStore,
     }),
   );
+
+  // GitHub App user tokens expire after eight hours, well before the
+  // session does. Sign the user out shortly before that so they sign in
+  // again, which GitHub does without asking once the app is authorized.
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const expiresAt = req.session.tokenExpiresAt;
+    if (req.session.token && expiresAt && expiresAt < Date.now() + MINUTE) {
+      signOut(req);
+    }
+    next();
+  });
 
   // Application and parsing middleware.
   app.use(bodyParser.urlencoded({ verify: rawBodyBuffer, extended: true }));
@@ -142,6 +155,15 @@ export function load(services: Services, apps: RegisterFunc[], opts: Options) {
     }
     if (err.code === "EBADCSRFTOKEN") {
       res.status(403).sendFile(error5xx);
+      return;
+    }
+    // GitHub rejected the signed in user's token, for example because they
+    // revoked it. Sign them out so they can sign in again.
+    if (err.status === 401 && req.session?.token) {
+      req.log.info({ error: err.message }, "signing out rejected user");
+      signOut(req);
+      if (req.method === "GET") req.session.next = req.originalUrl;
+      res.redirect("/login");
       return;
     }
     next(err);
