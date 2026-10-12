@@ -5,6 +5,7 @@ import { EnvLockStore } from "./store.js";
 import {
   ConfigError,
   LockError,
+  UnknownTargetError,
   Targets,
   Target,
   DeployBody,
@@ -163,7 +164,7 @@ export async function deploy(
   const targetVal = conf[target];
   if (!targetVal) {
     log.info(logCtx, "deploy: halted - no target");
-    throw new ConfigError(`Deployment target "${target}" does not exist`);
+    throw new UnknownTargetError(target, Object.keys(conf));
   }
 
   const body = {
@@ -175,7 +176,7 @@ export async function deploy(
 
   if (await kv.isLocked(repository.data.id, body.environment)) {
     log.info(logCtx, "deploy: halted - environment locked");
-    throw new LockError(`Deployment environment locked`);
+    throw new LockError(`Deployment environment locked`, body.environment);
   }
 
   try {
