@@ -25,6 +25,23 @@ describe("pr-deploy", () => {
     expect(deploy.isDone()).toBe(true);
   });
 
+  test("drops comments that aren't deploy commands", async () => {
+    const seen: string[] = [];
+    probot.onAny(async (context) => {
+      if (context.name === "issue_comment")
+        seen.push(context.payload.comment.body);
+    });
+    const comment = factory.prDeployComment("review");
+    await probot.receive({
+      ...comment,
+      payload: {
+        ...comment.payload,
+        comment: { ...comment.payload.comment, body: "looks good" },
+      },
+    });
+    expect(seen).toEqual([]);
+  });
+
   test("creates a deployment production", async () => {
     factory.config({ valid: true });
     factory.permission({ admin: true });

@@ -1,4 +1,4 @@
-import { Application, Context } from "@deliverybot/core";
+import { Application, Context, WebhookEvent } from "@deliverybot/core";
 import { EnvLockStore } from "./store.js";
 import { deploy } from "./deploy.js";
 import { logCtx, canWrite } from "./util.js";
@@ -51,7 +51,22 @@ export async function handlePRDeploy(
   }
 }
 
+function isDeployCommand(event: WebhookEvent) {
+  const payload: any = event.payload;
+  return (
+    payload.action === "created" &&
+    typeof payload.comment?.body === "string" &&
+    payload.comment.body.startsWith("/deploy")
+  );
+}
+
 export function prDeploy(app: Application, locker: EnvLockStore) {
+  // Only `/deploy` comments need work, so don't queue every other comment
+  // and edit ahead of them.
+  app.ignore(
+    (event) => event.name === "issue_comment" && !isDeployCommand(event),
+  );
+
   app.on("issue_comment.created", async (context) => {
     if (context.payload.comment.body.startsWith("/deploy")) {
       await handlePRDeploy(

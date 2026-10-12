@@ -34,6 +34,7 @@ export interface AppOptions {
  */
 export class Application extends Probot {
   private dispatcher?: Dispatcher;
+  private ignored: ((event: WebhookEvent) => boolean)[] = [];
 
   public withDispatcher(d: Dispatcher) {
     this.dispatcher = d;
@@ -48,7 +49,20 @@ export class Application extends Probot {
     this.on(name as any, callback as any);
   }
 
+  /**
+   * Drop events that match `filter` before they are queued or processed.
+   * GitHub sends far more events than the handlers act on (every check run
+   * that starts, every comment), and queueing them all holds up the ones
+   * that matter, such as a `/deploy` comment.
+   */
+  public ignore(filter: (event: WebhookEvent) => boolean) {
+    this.ignored.push(filter);
+  }
+
   public async receive(event: WebhookEvent): Promise<void> {
+    if (this.ignored.some((filter) => filter(event))) {
+      return;
+    }
     if (this.dispatcher) {
       return this.dispatcher(event);
     }

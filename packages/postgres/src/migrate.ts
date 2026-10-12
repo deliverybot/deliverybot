@@ -62,6 +62,17 @@ export const migrations: string[] = [
   CREATE INDEX jobs_running ON jobs (installation_id)
     WHERE locked_until IS NOT NULL;
   `,
+  `
+  -- Urgent jobs (a person waiting on a /deploy comment) run first, and an
+  -- event id has at most one job waiting to run.
+  ALTER TABLE jobs ADD COLUMN priority smallint NOT NULL DEFAULT 0;
+  ALTER TABLE jobs ADD COLUMN event_id text;
+  DROP INDEX jobs_ready;
+  CREATE INDEX jobs_ready ON jobs (priority DESC, run_at, id)
+    WHERE state = 'queued';
+  CREATE UNIQUE INDEX jobs_waiting_event ON jobs (event_id)
+    WHERE state = 'queued' AND locked_until IS NULL;
+  `,
 ];
 
 // Arbitrary constant so concurrent processes don't migrate at the same time.
