@@ -17,6 +17,7 @@ export type WebhookEvent = EmitterWebhookEvent;
 export type WebhookPayload<E extends EmitterWebhookEventName> =
   EmitterWebhookEvent<E>["payload"];
 export type Dispatcher = (event: WebhookEvent) => Promise<void>;
+export type EventFilter = (event: WebhookEvent) => boolean | Promise<boolean>;
 
 export interface AppOptions {
   id: number;
@@ -34,7 +35,7 @@ export interface AppOptions {
  */
 export class Application extends Probot {
   private dispatcher?: Dispatcher;
-  private ignored: ((event: WebhookEvent) => boolean)[] = [];
+  private ignored: EventFilter[] = [];
 
   public withDispatcher(d: Dispatcher) {
     this.dispatcher = d;
@@ -53,20 +54,32 @@ export class Application extends Probot {
    * Drop events that match `filter` before they are queued or processed.
    * GitHub sends far more events than the handlers act on (every check run
    * that starts, every comment), and queueing them all holds up the ones
-   * that matter, such as a `/deploy` comment.
+   * that matter, such as a `/deploy` comment. A filter that throws keeps
+   * the event, so a failed lookup never loses one.
    */
-  public ignore(filter: (event: WebhookEvent) => boolean) {
+  public ignore(filter: EventFilter) {
     this.ignored.push(filter);
   }
 
   public async receive(event: WebhookEvent): Promise<void> {
-    if (this.ignored.some((filter) => filter(event))) {
+    if (await this.isIgnored(event)) {
       return;
     }
     if (this.dispatcher) {
       return this.dispatcher(event);
     }
     return super.receive(event);
+  }
+
+  private async isIgnored(event: WebhookEvent) {
+    for (const filter of this.ignored) {
+      try {
+        if (await filter(event)) return true;
+      } catch (error) {
+        this.log.warn({ error, event: event.name }, "event filter failed");
+      }
+    }
+    return false;
   }
 }
 
