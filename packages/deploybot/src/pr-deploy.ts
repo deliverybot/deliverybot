@@ -4,9 +4,6 @@ import { config, deploy } from "./deploy.js";
 import { LockError, UnknownTargetError } from "./types.js";
 import { logCtx, canWrite } from "./util.js";
 
-type Reaction =
-  "+1" | "-1" | "laugh" | "confused" | "heart" | "hooray" | "rocket" | "eyes";
-
 /**
  * Parses a `/deploy [target]` comment. Only the first line counts, so a
  * command followed by an explanation still works. Returns undefined when the
@@ -57,9 +54,9 @@ export function errorMessage(error: any, ref: string): string {
 }
 
 /**
- * Handles /deploy commands inside a pull request. The command comment gets an
- * :eyes: reaction straight away, then :rocket: when the deployment is created
- * or :confused: plus a reply explaining what went wrong.
+ * Handles /deploy commands inside a pull request. The command comment gets a
+ * :+1: straight away to show it was picked up. Only failures get a reply; a
+ * successful deployment already shows up in the pull request timeline.
  */
 export async function handlePRDeploy(
   context: Context,
@@ -73,17 +70,15 @@ export async function handlePRDeploy(
   const owner = context.payload.repository.owner.login;
   const repo = context.payload.repository.name;
 
-  // Reactions are feedback only, so a failed one must never stop the deploy.
-  // The :eyes: stays put: removing it would cost another write, and GitHub
-  // spaces out an installation's writes.
-  async function react(content: Reaction) {
+  // The reaction is feedback only, so a failed one must never stop the deploy.
+  async function acknowledge() {
     if (!commentId) return;
     try {
       await context.octokit.rest.reactions.createForIssueComment({
         owner,
         repo,
         comment_id: commentId,
-        content,
+        content: "+1",
       });
     } catch (error) {
       context.log.warn(logCtx(context, { error }), "pr deploy: react failed");
@@ -99,7 +94,7 @@ export async function handlePRDeploy(
   }
 
   const target = parseDeployCommand(command)?.target;
-  await react("eyes");
+  await acknowledge();
   let ref = "";
   try {
     const write = await canWrite(
@@ -139,10 +134,8 @@ export async function handlePRDeploy(
         pr: pr.data,
       }),
     );
-    await react("rocket");
   } catch (error) {
     await reply(errorMessage(error, ref || "this branch"));
-    await react("confused");
   }
 }
 

@@ -52,14 +52,12 @@ describe("pr-deploy", () => {
   test("creates a deployment", async () => {
     factory.config({ valid: true });
     factory.permission({ admin: true });
-    const eyes = factory.reaction("eyes", 100);
-    const rocket = factory.reaction("rocket", 101);
+    const ack = factory.reaction("+1");
     const deploy = factory.deploy();
 
     await probot.receive(factory.prDeployComment("review"));
     expect(deploy.isDone()).toBe(true);
-    expect(eyes.isDone()).toBe(true);
-    expect(rocket.isDone()).toBe(true);
+    expect(ack.isDone()).toBe(true);
   });
 
   test("deploys when the comment ends in a newline", async () => {
@@ -71,12 +69,12 @@ describe("pr-deploy", () => {
     expect(deploy.isDone()).toBe(true);
   });
 
-  test("still deploys when reactions fail", async () => {
+  test("still deploys when the reaction fails", async () => {
     factory.config({ valid: true });
     factory.permission({ admin: true });
     const deploy = factory.deploy();
 
-    // No reaction mocks, so every reaction request errors.
+    // No reaction mock, so the reaction request errors.
     await probot.receive(factory.prDeployComment("review"));
     expect(deploy.isDone()).toBe(true);
   });
@@ -129,7 +127,6 @@ describe("pr-deploy", () => {
     factory.config({ valid: true });
     factory.permission({ admin: true });
     const deploy = factory.deploy();
-    const confused = factory.reaction("confused", 101);
 
     const expected =
       "@Codertocat There is no `invalid` target in `.github/deploy.yml` on `refs/heads/changes`.\n\n" +
@@ -138,7 +135,6 @@ describe("pr-deploy", () => {
     await probot.receive(factory.prDeployComment("invalid"));
     expect(deploy.isDone()).toBe(false);
     expect(error.isDone()).toBe(true);
-    expect(confused.isDone()).toBe(true);
   });
 
   test("names the locked environment", async () => {
