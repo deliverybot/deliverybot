@@ -1,4 +1,4 @@
-import { KVStore, KVService } from "@deliverybot/core";
+import { KVStore, KVService, WebhookEvent } from "@deliverybot/core";
 import { Watch } from "./types.js";
 import { hash } from "./util.js";
 
@@ -60,6 +60,19 @@ export class WatchStore {
   private latestKey(repoId: number, watch: Watch) {
     return `repos/${repoId}/watches/${hash([watch.ref, watch.target])}`;
   }
+}
+
+/**
+ * The push_watch event that makes the worker look at a watch again. There is
+ * one id per watch, so the queue keeps a single waiting event per watch
+ * however many checks complete in a row.
+ */
+export function watchEvent(watch: Watch, installation: any): WebhookEvent {
+  return {
+    id: `push_watch:${watch.id}`,
+    name: "push_watch",
+    payload: { ...watch, installation },
+  } as any;
 }
 
 export class EnvLockStore {

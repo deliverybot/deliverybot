@@ -221,3 +221,136 @@ describe("pr-deploy", () => {
     expect(reply.isDone()).toBe(true);
   });
 });
+
+describe("pr-deploy queueing", () => {
+  const pending = [
+    { context: "continuous-integration/travis-ci/push", state: "pending" },
+  ];
+  const failed = [
+    { context: "continuous-integration/travis-ci/push", state: "failure" },
+  ];
+
+  afterEach(() => {
+    factory.cleanAll();
+  });
+
+  beforeEach(() => {
+    factory.token();
+    factory.repo().persist();
+    factory.gitCommit().persist();
+    factory.pr().persist();
+    factory.config({ valid: true });
+    factory.permission({ admin: true });
+    factory.reaction("+1");
+  });
+
+  // Queues the deploy: the command and the immediate re-check both find the
+  // check still pending.
+  async function queueDeploy() {
+    factory.gitRef();
+    factory.noDeployments();
+    const refused = factory
+      .deployChecksUnmet(pending)
+      .post("/repos/Codertocat/Hello-World/deployments")
+      .reply(409, {
+        errors: [{ field: "required_contexts", contexts: pending }],
+      });
+    const queued = factory.errorComment(
+      "@Codertocat Waiting for `continuous-integration/travis-ci/push` to pass, then I'll deploy to `review`.",
+    );
+    await probot.receive(factory.prDeployComment("review"));
+    expect(refused.isDone()).toBe(true);
+    expect(queued.isDone()).toBe(true);
+  }
+
+  test("deploys once pending checks pass", async () => {
+    await queueDeploy();
+
+    factory.gitRef();
+    factory.noDeployments();
+    const deploy = factory.deploy();
+    await probot.receive(factory.checkRun());
+    expect(deploy.isDone()).toBe(true);
+
+    // The watch is gone, so later checks don't deploy again.
+    const again = factory.deploy();
+    await probot.receive(factory.checkRun());
+    expect(again.isDone()).toBe(false);
+  });
+
+  test("keeps waiting while checks are pending", async () => {
+    await queueDeploy();
+
+    factory.gitRef();
+    factory.noDeployments();
+    factory.deployChecksUnmet(pending);
+    await probot.receive(factory.status());
+
+    factory.gitRef();
+    factory.noDeployments();
+    const deploy = factory.deploy();
+    await probot.receive(factory.checkRun());
+    expect(deploy.isDone()).toBe(true);
+  });
+
+  test("cancels when a required check fails", async () => {
+    await queueDeploy();
+
+    factory.gitRef();
+    factory.noDeployments();
+    factory.deployChecksUnmet(failed);
+    const cancelled = factory.errorComment(
+      "@Codertocat `continuous-integration/travis-ci/push` failed, so the queued deploy to `review` was cancelled.",
+    );
+    await probot.receive(factory.checkRun());
+    expect(cancelled.isDone()).toBe(true);
+
+    const deploy = factory.deploy();
+    await probot.receive(factory.checkRun());
+    expect(deploy.isDone()).toBe(false);
+  });
+
+  test("cancels when the branch moves on", async () => {
+    await queueDeploy();
+
+    factory.movedRef();
+    const cancelled = factory.errorComment(
+      "@Codertocat `changes` moved on to a newer commit, so the queued deploy to `review` was cancelled.",
+    );
+    await probot.receive(factory.checkRun());
+    expect(cancelled.isDone()).toBe(true);
+  });
+
+  test("tells when the environment got locked", async () => {
+    await queueDeploy();
+
+    const unlock = await factory.lockedEnvironment("pr1");
+    try {
+      factory.gitRef();
+      factory.noDeployments();
+      const deploy = factory.deploy();
+      const locked = factory.errorComment(
+        "@Codertocat `pr1` is locked, so nothing was deployed. Unlock it on the Deliverybot dashboard and comment again.",
+      );
+      await probot.receive(factory.checkRun());
+      expect(deploy.isDone()).toBe(false);
+      expect(locked.isDone()).toBe(true);
+    } finally {
+      await unlock();
+    }
+  });
+
+  test("doesn't queue when a required check already failed", async () => {
+    const refused = factory.deployChecksUnmet(failed);
+    const reply = factory.errorComment(
+      expect.stringMatching(/^@Codertocat GitHub refused the deployment/),
+    );
+    await probot.receive(factory.prDeployComment("review"));
+    expect(refused.isDone()).toBe(true);
+    expect(reply.isDone()).toBe(true);
+
+    const deploy = factory.deploy();
+    await probot.receive(factory.checkRun());
+    expect(deploy.isDone()).toBe(false);
+  });
+});

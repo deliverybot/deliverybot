@@ -8,7 +8,7 @@ export function deploybot({ robot, kvService, lockService }: Dependencies) {
   const lockStore = new EnvLockStore(kvService);
   const watchStore = new WatchStore(kvService);
   prClose(robot);
-  prDeploy(robot, lockStore);
+  prDeploy(robot, lockStore, watchStore, robot.receive.bind(robot));
   auto(robot, lockService, watchStore, lockStore, robot.receive.bind(robot));
 }
 

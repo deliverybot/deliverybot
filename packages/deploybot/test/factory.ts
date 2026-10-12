@@ -157,6 +157,35 @@ export const deployConflict = () =>
     .post("/repos/Codertocat/Hello-World/deployments")
     .reply(409, { id: 1 });
 
+// GitHub's refusal when required contexts haven't all passed.
+export const deployChecksUnmet = (
+  contexts: { context: string; state: string }[],
+) =>
+  nock("https://api.github.com")
+    .post("/repos/Codertocat/Hello-World/deployments")
+    .reply(409, {
+      message: "Conflict: Commit status checks failed for changes.",
+      errors: [
+        {
+          contexts,
+          resource: "Deployment",
+          field: "required_contexts",
+          code: "invalid",
+        },
+      ],
+    });
+
+export const movedRef = () =>
+  nock("https://api.github.com")
+    .get(/^\/repos\/Codertocat\/Hello-World\/git\/ref\/heads(\/|%2F)changes$/)
+    .reply(200, {
+      ...fixtures.ref,
+      object: {
+        type: "commit",
+        sha: "1111111111111111111111111111111111111111",
+      },
+    });
+
 export const prDeployComment = (env: string): any => ({
   name: "issue_comment",
   payload: {

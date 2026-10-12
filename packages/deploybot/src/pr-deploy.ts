@@ -1,8 +1,16 @@
-import { Application, Context, WebhookEvent } from "@deliverybot/core";
-import { EnvLockStore } from "./store.js";
-import { config, deploy } from "./deploy.js";
-import { LockError, UnknownTargetError } from "./types.js";
+import { randomUUID as uuid } from "crypto";
+import {
+  Application,
+  Context,
+  RestEndpointMethodTypes,
+  WebhookEvent,
+} from "@deliverybot/core";
+import { EnvLockStore, WatchStore, watchEvent } from "./store.js";
+import { config, deploy, unmetChecks } from "./deploy.js";
+import { LockError, UnknownTargetError, Watch } from "./types.js";
 import { logCtx, canWrite } from "./util.js";
+
+type PullRequest = RestEndpointMethodTypes["pulls"]["get"]["response"]["data"];
 
 /**
  * Parses a `/deploy [target]` comment. Only the first line counts, so a
@@ -57,6 +65,10 @@ export function errorMessage(error: any, ref: string): string {
  * Handles /deploy commands inside a pull request. The command comment gets a
  * :+1: straight away to show it was picked up. Only failures get a reply; a
  * successful deployment already shows up in the pull request timeline.
+ *
+ * When GitHub refuses the deployment because required checks are still
+ * running, the deploy is queued as a watch instead, and goes out once they
+ * pass (see auto.ts).
  */
 export async function handlePRDeploy(
   context: Context,
@@ -64,6 +76,8 @@ export async function handlePRDeploy(
   prNumber: number,
   user: string,
   kv: EnvLockStore,
+  watchStore: WatchStore,
+  publish: (event: WebhookEvent) => Promise<any>,
 ) {
   context.log.info(logCtx(context, { command }), "pr deploy: handling command");
   const commentId: number | undefined = context.payload.comment?.id;
@@ -93,9 +107,54 @@ export async function handlePRDeploy(
     });
   }
 
+  /**
+   * Queues the deploy when required checks are still pending. Returns false
+   * when the refusal can't be waited out: a check already failed, or GitHub
+   * refused for another reason.
+   */
+  async function queue(error: any, target: string, pr: PullRequest) {
+    const checks = unmetChecks(error);
+    if (!checks || checks.failed.length || !checks.pending.length) {
+      return false;
+    }
+    // The head branch of a fork isn't in this repository, so it can't be
+    // watched for new commits.
+    if (pr.head.repo && pr.head.repo.id !== context.payload.repository.id) {
+      return false;
+    }
+    const conf = await config(context.octokit, {
+      owner,
+      repo,
+      ref: pr.head.ref,
+    });
+    const watch: Watch = {
+      id: uuid(),
+      repository: context.payload.repository,
+      target,
+      targetVal: conf[target]!,
+      ref: `heads/${pr.head.ref.replace(/^refs\/heads\//, "")}`,
+      sha: pr.head.sha,
+      prNumber,
+      requestedBy: user,
+    };
+    context.log.info(
+      logCtx(context, { target, sha: watch.sha, pending: checks.pending }),
+      "pr deploy: queued until checks pass",
+    );
+    await watchStore.addWatch(watch.repository.id, watch);
+    await reply(
+      `Waiting for ${checks.pending.map((c) => `\`${c}\``).join(", ")} to pass, ` +
+        `then I'll deploy to \`${target}\`.`,
+    );
+    // A check may have finished while this ran, so look once more now.
+    await publish(watchEvent(watch, context.payload.installation));
+    return true;
+  }
+
   const target = parseDeployCommand(command)?.target;
   await acknowledge();
   let ref = "";
+  let pr: PullRequest | undefined;
   try {
     const write = await canWrite(
       context.octokit,
@@ -107,12 +166,14 @@ export async function handlePRDeploy(
       return;
     }
 
-    const pr = await context.octokit.rest.pulls.get({
-      owner,
-      repo,
-      pull_number: prNumber,
-    });
-    ref = pr.data.head.ref;
+    pr = (
+      await context.octokit.rest.pulls.get({
+        owner,
+        repo,
+        pull_number: prNumber,
+      })
+    ).data;
+    ref = pr.head.ref;
 
     if (!target) {
       const targets = await config(context.octokit, { owner, repo, ref });
@@ -130,11 +191,12 @@ export async function handlePRDeploy(
       context.repo({
         target,
         ref,
-        sha: pr.data.head.sha,
-        pr: pr.data,
+        sha: pr.head.sha,
+        pr,
       }),
     );
   } catch (error) {
+    if (pr && target && (await queue(error, target, pr))) return;
     await reply(errorMessage(error, ref || "this branch"));
   }
 }
@@ -150,7 +212,12 @@ function isDeployCommand(event: WebhookEvent) {
   );
 }
 
-export function prDeploy(app: Application, locker: EnvLockStore) {
+export function prDeploy(
+  app: Application,
+  locker: EnvLockStore,
+  watchStore: WatchStore,
+  publish: (event: WebhookEvent) => Promise<any>,
+) {
   // Only `/deploy` comments need work, so don't queue every other comment
   // and edit ahead of them.
   app.ignore(
@@ -164,6 +231,8 @@ export function prDeploy(app: Application, locker: EnvLockStore) {
       context.payload.issue.number,
       context.payload.comment.user?.login || "",
       locker,
+      watchStore,
+      publish,
     );
   });
 }

@@ -5,10 +5,11 @@ import {
   LockService,
   WebhookEvent,
 } from "@deliverybot/core";
-import { WatchStore, EnvLockStore } from "./store.js";
+import { WatchStore, EnvLockStore, watchEvent } from "./store.js";
 import { PayloadRepository, Watch } from "./types.js";
 import { logCtx } from "./util.js";
-import { config, deploy } from "./deploy.js";
+import { config, deploy, unmetChecks } from "./deploy.js";
+import { errorMessage } from "./pr-deploy.js";
 import { hash } from "./util.js";
 
 export function match(auto: string | undefined, ref: string) {
@@ -103,6 +104,20 @@ export function auto(
   }
 
   /**
+   * Tells whoever queued a deploy with `/deploy` why it won't go out. Auto
+   * deploy watches have nobody to tell, so they stay quiet.
+   */
+  async function tellRequester(context: Context, watch: Watch, body: string) {
+    if (!watch.requestedBy || !watch.prNumber) return;
+    await context.octokit.rest.issues.createComment({
+      owner: context.payload.repository.owner.login,
+      repo: context.payload.repository.name,
+      issue_number: watch.prNumber,
+      body: `@${watch.requestedBy} ${body}`,
+    });
+  }
+
+  /**
    * Process watch determines if given a watch it needs to be re-deployed. It
    * returns true if this watch is done and can be removed. Watches are done for
    * a variety of scenarios:
@@ -129,6 +144,11 @@ export function auto(
       context.log.info(
         logCtx(context, { ref, sha, currentSha }),
         "auto deploy: old watch",
+      );
+      await tellRequester(
+        context,
+        watch,
+        `\`${ref.replace(/^(refs\/)?heads\//, "")}\` moved on to a newer commit, so the queued deploy to \`${target}\` was cancelled.`,
       );
       return true;
     }
@@ -177,23 +197,41 @@ export function auto(
       // Catch deploy errors and return if this is a normal scenario for an
       // auto deployment.
       switch (error.status) {
-        case 409:
+        case 409: {
+          // A queued /deploy gives up once a required check fails. Auto
+          // deploys keep waiting, since a re-run can still turn it green.
+          const failed = unmetChecks(error)?.failed || [];
+          if (watch.requestedBy && failed.length) {
+            context.log.info(
+              logCtx(context, { target, ref, failed }),
+              "auto deploy: queued deploy checks failed",
+            );
+            await tellRequester(
+              context,
+              watch,
+              `${failed.map((c) => `\`${c}\``).join(", ")} failed, so the queued deploy to \`${target}\` was cancelled.`,
+            );
+            return true;
+          }
           context.log.info(
             logCtx(context, { target, ref, error }),
             "auto deploy: checks not ready",
           );
           return false;
+        }
         case "LockError":
           context.log.info(
             logCtx(context, { target, ref, error }),
             "auto deploy: environment locked",
           );
+          await tellRequester(context, watch, errorMessage(error, ref));
           return true; // We don't wait for "unlock" events and redeploy.
         case "ConfigError":
           context.log.info(
             logCtx(context, { target, ref, error }),
             "auto deploy: target config error",
           );
+          await tellRequester(context, watch, errorMessage(error, ref));
           return true;
         default:
           context.log.error(
@@ -254,16 +292,7 @@ export function auto(
     );
     await Promise.all(
       watches.map((watch) =>
-        publish({
-          // One id per watch, so the queue keeps a single waiting event per
-          // watch however many checks complete in a row.
-          id: `push_watch:${watch.id}`,
-          name: "push_watch",
-          payload: {
-            ...watch,
-            installation: context.payload.installation,
-          },
-        } as any),
+        publish(watchEvent(watch, context.payload.installation)),
       ),
     );
   }
