@@ -13,6 +13,8 @@ declare module "express-session" {
     userId: string;
     login: string;
     avatar: string;
+    /** Whether this session's user is in the users table. */
+    userRecorded: boolean;
     /** Where to go after signing in. */
     next: string;
     /** Repos the user has write access to, by "owner/repo". */

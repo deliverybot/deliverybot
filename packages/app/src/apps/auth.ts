@@ -151,10 +151,31 @@ export function auth({ app, csrf, userService, config }: Dependencies) {
     req.session.userId = `${user.data.id}`;
     req.session.login = user.data.login;
     if (slackId) req.session.slackId = slackId;
+    await recordUser(req);
     res.set("csrf-token", req.csrfToken());
     const url = next || "/";
     res.redirect(url);
   }
+
+  // Records the signed in user once per session, so sessions from before
+  // sign ins were recorded show up too.
+  async function recordUser(req: Request) {
+    const { userId, login } = req.session;
+    if (!userId || !login) return;
+    await userService().update({ id: userId, username: login, email: "" });
+    req.session.userRecorded = true;
+  }
+
+  app.use(async (req: Request, res: Response, next: NextFunction) => {
+    if (req.session?.token && !req.session.userRecorded) {
+      try {
+        await recordUser(req);
+      } catch (error) {
+        req.log.warn({ error }, "could not record user");
+      }
+    }
+    next();
+  });
 
   app.get("/login", (req: Request, res: Response) => res.redirect(loginUrl));
   app.get("/login/cb", csrf, callback);

@@ -20,6 +20,7 @@ export const opts: Options = {
     baseUrl: env("BASE_URL"),
     githubClientId: env("CLIENT_ID"),
     githubClientSecret: env("CLIENT_SECRET"),
+    adminLogins: env("ADMIN_GITHUB_LOGINS"),
   },
   locals: info as any,
   root: path.dirname(

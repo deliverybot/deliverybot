@@ -1,9 +1,45 @@
-import { Dependencies, Context, KVStore } from "@deliverybot/core";
+import {
+  Application,
+  Context,
+  Dependencies,
+  InstallationStore,
+  KVStore,
+} from "@deliverybot/core";
 
 /**
- * Tracks GitHub App installations, which are Deliverybot's tenants, and
- * deletes a repository's stored data (environment locks and pending
- * auto-deploys) once the app loses access to it.
+ * Copies every installation GitHub lists for the app into the store, for
+ * installations made before they were tracked or whose webhooks were
+ * missed. Returns how many it saved.
+ */
+export async function syncInstallations(
+  robot: Application,
+  store: InstallationStore,
+) {
+  const octokit = await robot.auth();
+  const list = await octokit.paginate(octokit.rest.apps.listInstallations, {
+    per_page: 100,
+  });
+  let saved = 0;
+  for (const i of list) {
+    // Enterprise installations have no login.
+    if (!i.account || !("login" in i.account)) continue;
+    await store.upsert({
+      id: i.id,
+      account: i.account.login,
+      accountType: i.account.type,
+      repositorySelection: i.repository_selection,
+      suspended: !!i.suspended_at,
+    });
+    saved++;
+  }
+  return saved;
+}
+
+/**
+ * Tracks GitHub App installations, which are Deliverybot's tenants, and the
+ * last event of each of their repositories. Deletes a repository's stored
+ * data (environment locks, pending auto-deploys and activity) once the app
+ * loses access to it.
  */
 export function installations({
   robot,
@@ -29,6 +65,7 @@ export function installations({
   }
 
   async function forget(context: Context, repos: { id: number }[]) {
+    await store.forgetRepositories(repos.map((r) => r.id));
     for (const repo of repos) {
       await kv.delPrefix(`repos/${repo.id}/`);
       await kv.delPrefix(`queue/${repo.id}-`);
@@ -40,6 +77,17 @@ export function installations({
       );
     }
   }
+
+  robot.onAny(async (context) => {
+    const { installation, repository, action } = context.payload as any;
+    if (!installation || !repository) return;
+    await store.recordActivity({
+      id: repository.id,
+      installationId: installation.id,
+      fullName: repository.full_name,
+      lastEvent: action ? `${context.name}.${action}` : context.name,
+    });
+  });
 
   robot.on(
     [

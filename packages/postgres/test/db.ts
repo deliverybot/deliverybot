@@ -10,6 +10,8 @@ export async function setup() {
     lock: { minRetries: 1, maxRetries: 1, retryDelay: 10 },
   });
   await migrate(db.pool);
-  await db.pool.query("TRUNCATE kv, users, jobs, session, installations");
+  await db.pool.query(
+    "TRUNCATE kv, users, jobs, session, installations, repositories",
+  );
   return db;
 }

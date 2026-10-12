@@ -118,6 +118,7 @@ jobs:
           SLACK_CLIENT_ID: ${{ secrets.SLACK_CLIENT_ID }}
           SLACK_CLIENT_SECRET: ${{ secrets.SLACK_CLIENT_SECRET }}
           SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
+          ADMIN_GITHUB_LOGINS: ${{ vars.ADMIN_GITHUB_LOGINS }}
         run: |
           set -o pipefail
           overlay=deploy/kubernetes/overlays/$ENVIRONMENT
@@ -133,6 +134,7 @@ jobs:
             --from-literal=SLACK_CLIENT_ID="$SLACK_CLIENT_ID" \
             --from-literal=SLACK_CLIENT_SECRET="$SLACK_CLIENT_SECRET" \
             --from-literal=SLACK_SIGNING_SECRET="$SLACK_SIGNING_SECRET" \
+            --from-literal=ADMIN_GITHUB_LOGINS="$ADMIN_GITHUB_LOGINS" \
             --dry-run=client -o yaml | kubectl apply -f - | tee "$RUNNER_TEMP/secret.log"
           echo "NAMESPACE=$namespace" >> "$GITHUB_ENV"
           # Pods read the secret only at start, so a changed secret needs a

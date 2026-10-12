@@ -1,17 +1,54 @@
-import { Installation } from "../services.js";
+import {
+  Installation,
+  InstallationRecord,
+  RepositoryActivity,
+} from "../services.js";
 
 export class InstallationStore {
-  private installations: { [id: number]: Installation } = {};
+  private installations: { [id: number]: InstallationRecord } = {};
+  private activity: { [id: number]: RepositoryActivity } = {};
 
   async upsert(installation: Installation): Promise<void> {
-    this.installations[installation.id] = installation;
+    const now = new Date().toISOString();
+    const existing = this.installations[installation.id];
+    this.installations[installation.id] = {
+      ...installation,
+      createdAt: existing ? existing.createdAt : now,
+      updatedAt: now,
+    };
   }
 
   async get(id: number): Promise<Installation | undefined> {
-    return this.installations[id];
+    const i = this.installations[id];
+    if (!i) return undefined;
+    const { createdAt, updatedAt, ...installation } = i;
+    return installation;
   }
 
   async delete(id: number): Promise<void> {
     delete this.installations[id];
+    for (const a of Object.values(this.activity)) {
+      if (a.installationId === id) delete this.activity[a.id];
+    }
+  }
+
+  async list(): Promise<InstallationRecord[]> {
+    return Object.values(this.installations).sort((a, b) =>
+      b.createdAt.localeCompare(a.createdAt),
+    );
+  }
+
+  async recordActivity(a: Omit<RepositoryActivity, "lastEventAt">) {
+    this.activity[a.id] = { ...a, lastEventAt: new Date().toISOString() };
+  }
+
+  async listActivity(installationId: number): Promise<RepositoryActivity[]> {
+    return Object.values(this.activity)
+      .filter((a) => a.installationId === installationId)
+      .sort((a, b) => b.lastEventAt.localeCompare(a.lastEventAt));
+  }
+
+  async forgetRepositories(ids: number[]): Promise<void> {
+    for (const id of ids) delete this.activity[id];
   }
 }

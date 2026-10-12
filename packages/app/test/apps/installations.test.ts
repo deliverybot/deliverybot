@@ -1,4 +1,6 @@
+import nock from "nock";
 import { app, services } from "../app.js";
+import { syncInstallations } from "../../src/apps/installations.js";
 
 const installation = {
   id: 42,
@@ -51,6 +53,31 @@ describe("Installations", () => {
     expect(await kv.get("queue/11-abc/jobs/w1")).toBeDefined();
   });
 
+  it("records the latest event of each repository", async () => {
+    const repository = { id: 1, full_name: "octo-org/repo" };
+    await receive("public", { installation, repository });
+    await receive("star", {
+      action: "created",
+      installation,
+      repository,
+    });
+    const activity = await store.listActivity(42);
+    expect(activity).toHaveLength(1);
+    expect(activity[0]).toMatchObject({
+      id: 1,
+      installationId: 42,
+      fullName: "octo-org/repo",
+      lastEvent: "star.created",
+    });
+
+    await receive("installation_repositories", {
+      action: "removed",
+      installation,
+      repositories_removed: [{ id: 1 }],
+    });
+    expect(await store.listActivity(42)).toEqual([]);
+  });
+
   it("forgets deleted installations and their repositories", async () => {
     await receive("installation", { action: "created", installation });
     await receive("installation", {
@@ -61,5 +88,29 @@ describe("Installations", () => {
     expect(await store.get(42)).toBeUndefined();
     expect(await kv.get("repos/1/locks/prod")).toBeUndefined();
     expect(await kv.get("repos/11/locks/prod")).toBeUndefined();
+  });
+
+  it("copies installations GitHub lists", async () => {
+    nock("https://api.github.com")
+      .get("/app/installations")
+      .query(true)
+      .reply(200, [
+        {
+          id: 88,
+          account: { login: "old-org", type: "Organization" },
+          repository_selection: "all",
+          suspended_at: "2020-01-01T00:00:00Z",
+        },
+        { id: 89, account: { slug: "enterprise" } },
+      ]);
+    expect(await syncInstallations(app.probot, store)).toBe(1);
+    expect(await store.get(88)).toEqual({
+      id: 88,
+      account: "old-org",
+      accountType: "Organization",
+      repositorySelection: "all",
+      suspended: true,
+    });
+    await store.delete(88);
   });
 });

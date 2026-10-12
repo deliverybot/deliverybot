@@ -18,6 +18,7 @@ export const app = load(services, apps, {
   }),
   config: {
     baseUrl: "https://deliverybot.test",
+    adminLogins: "codertocat, other-admin",
     slackClientId: "slack-client",
     slackClientSecret: "slack-secret",
     slackSigningSecret: "slack-signing",
