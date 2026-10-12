@@ -88,6 +88,31 @@ test("succeeds on a later attempt", async () => {
   expect(calls).toBe(2);
 });
 
+test("gives up on a job that runs past its lease and retries it", async () => {
+  const q = queue({ lease: 50 });
+  let calls = 0;
+  await q.dispatcher(event(1));
+  q.work(async () => {
+    // The first attempt never returns, like a call on a dead connection.
+    if (++calls < 2) await new Promise(() => {});
+  });
+  await until(async () => (await jobs()).length === 0);
+  expect(calls).toBe(2);
+  // The stuck attempt no longer holds one of the worker's slots.
+  await q.stop();
+});
+
+test("reports unhealthy once the loop stops coming round", async () => {
+  const q = queue();
+  expect(q.healthy()).toBe(false);
+  q.work(async () => {});
+  expect(q.healthy()).toBe(true);
+  await new Promise((r) => setTimeout(r, 50));
+  expect(q.healthy(20)).toBe(true);
+  await q.stop();
+  expect(q.healthy()).toBe(false);
+});
+
 test("workers never run the same job twice", async () => {
   const other = new Pool({ connectionString: DATABASE_URL });
   const a = queue();

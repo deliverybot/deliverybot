@@ -23,6 +23,9 @@ spec:
         - name: worker
           image: deliverybot
           command: ["node", "packages/run/lib/worker.js"]
+          ports:
+            - name: health
+              containerPort: 8080
           envFrom:
             - configMapRef:
                 name: deliverybot
@@ -34,6 +37,15 @@ spec:
                 secretKeyRef:
                   name: deliverybot-db-app
                   key: uri
+          # The queue loop comes round at least every few seconds when it
+          # works, so a failing check means it is stuck.
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 3
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
