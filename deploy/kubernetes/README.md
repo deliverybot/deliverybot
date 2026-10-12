@@ -63,6 +63,8 @@ Create two environments under the repository's Settings, Environments:
 - Secrets for the GitHub App that environment uses: `APP_ID`, `PRIVATE_KEY`,
   `WEBHOOK_SECRET`, `CLIENT_ID`, `CLIENT_SECRET`, and `SESSION_SECRET` (any
   long random string).
+- Optional variable `ADMIN_GITHUB_LOGINS`: GitHub logins, comma separated,
+  that can open the admin dashboard.
 - Optional Slack secrets: `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`,
   `SLACK_SIGNING_SECRET`. See `packages/slackbot/README.md` for creating the
   Slack app.
@@ -77,6 +79,13 @@ on every deploy. After the first run, make the
 cluster can pull the image without credentials. Set the GitHub App's webhook URL to
 `https://<host>/api/github/webhooks` and its callback URL to
 `https://<host>/login/cb`.
+
+## Admin dashboard
+
+`/_/admin` lists installations, their repositories and recent activity, and
+who signed in to the dashboard. Only the GitHub logins in the
+`ADMIN_GITHUB_LOGINS` environment variable can open it; everyone else gets a
+404.
 
 ## Database
 

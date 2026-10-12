@@ -53,10 +53,13 @@ export {
   MessageBus,
   UserService,
   UserStore,
+  UserRecord,
   KVService,
   KVStore,
   Installation,
   InstallationService,
   InstallationStore,
+  InstallationRecord,
+  RepositoryActivity,
 } from "./services.js";
 export { local as localServices } from "./local/index.js";

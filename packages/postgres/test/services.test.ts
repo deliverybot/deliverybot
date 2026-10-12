@@ -15,7 +15,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  await db.pool.query("TRUNCATE kv, users, jobs, installations");
+  await db.pool.query("TRUNCATE kv, users, jobs, installations, repositories");
 });
 
 describe("migrate", () => {
@@ -147,6 +147,17 @@ describe("users", () => {
     await users.delete("1");
     expect((await db.pool.query("SELECT * FROM users")).rowCount).toBe(0);
   });
+
+  test("lists users, most recently signed in first", async () => {
+    const users = db.services.userService();
+    await users.update({ id: "1", username: "first", email: "" });
+    await users.update({ id: "2", username: "second", email: "" });
+    await users.update({ id: "1", username: "first", email: "" });
+    const list = await users.list();
+    expect(list.map((u) => u.username)).toEqual(["first", "second"]);
+    expect(list[0].createdAt).toBeTruthy();
+    expect(list[0].updatedAt).toBeTruthy();
+  });
 });
 
 describe("installations", () => {
@@ -165,5 +176,61 @@ describe("installations", () => {
     expect(await store.get(42)).toEqual({ ...i, suspended: true });
     await store.delete(42);
     expect(await store.get(42)).toBeUndefined();
+  });
+});
+
+describe("repository activity", () => {
+  const install = (id: number, account: string) => ({
+    id,
+    account,
+    accountType: "User",
+    repositorySelection: "all",
+    suspended: false,
+  });
+
+  test("lists installations and their latest repository activity", async () => {
+    const store = db.services.installationService();
+    await store.upsert(install(1, "first"));
+    await store.upsert(install(2, "second"));
+    const list = await store.list();
+    expect(list.map((i) => i.account).sort()).toEqual(["first", "second"]);
+    expect(list[0].createdAt).toBeTruthy();
+
+    await store.recordActivity({
+      id: 10,
+      installationId: 1,
+      fullName: "first/a",
+      lastEvent: "push",
+    });
+    await store.recordActivity({
+      id: 11,
+      installationId: 1,
+      fullName: "first/b",
+      lastEvent: "push",
+    });
+    await store.recordActivity({
+      id: 10,
+      installationId: 1,
+      fullName: "first/a",
+      lastEvent: "deployment_status.created",
+    });
+    await store.recordActivity({
+      id: 20,
+      installationId: 2,
+      fullName: "second/a",
+      lastEvent: "push",
+    });
+    const activity = await store.listActivity(1);
+    expect(activity.map((a) => [a.fullName, a.lastEvent])).toEqual([
+      ["first/a", "deployment_status.created"],
+      ["first/b", "push"],
+    ]);
+
+    await store.forgetRepositories([11]);
+    expect((await store.listActivity(1)).map((a) => a.id)).toEqual([10]);
+
+    await store.delete(1);
+    expect(await store.listActivity(1)).toEqual([]);
+    expect((await store.listActivity(2)).map((a) => a.id)).toEqual([20]);
   });
 });

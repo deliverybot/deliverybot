@@ -31,6 +31,9 @@
 
       <nav class="menu position-absolute right-0 mr-2 mt-2 box-shadow-medium" style="z-index: 1000; width: 200px;">
         <a class="text-gray menu-item" href="/settings">Settings</a>
+        {{#if isAdmin}}
+        <a class="text-gray menu-item" href="/_/admin">Admin</a>
+        {{/if}}
         <a class="text-gray menu-item" href="/logout">Logout</a>
       </nav>
     </details>

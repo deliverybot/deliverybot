@@ -151,6 +151,11 @@ export function auth({ app, csrf, userService, config }: Dependencies) {
     req.session.userId = `${user.data.id}`;
     req.session.login = user.data.login;
     if (slackId) req.session.slackId = slackId;
+    await userService().update({
+      id: `${user.data.id}`,
+      username: user.data.login,
+      email: "",
+    });
     res.set("csrf-token", req.csrfToken());
     const url = next || "/";
     res.redirect(url);

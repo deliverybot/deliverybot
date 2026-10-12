@@ -1,5 +1,10 @@
 import { Pool } from "pg";
-import { Installation, InstallationStore } from "@deliverybot/core";
+import {
+  Installation,
+  InstallationRecord,
+  InstallationStore,
+  RepositoryActivity,
+} from "@deliverybot/core";
 
 export class PostgresInstallationStore implements InstallationStore {
   constructor(private pool: Pool) {}
@@ -22,17 +27,65 @@ export class PostgresInstallationStore implements InstallationStore {
       [id],
     );
     if (!rows.length) return undefined;
-    const r = rows[0];
-    return {
-      id: Number(r.id),
-      account: r.account,
-      accountType: r.account_type,
-      repositorySelection: r.repository_selection,
-      suspended: r.suspended,
-    };
+    const { createdAt, updatedAt, ...installation } = toInstallation(rows[0]);
+    return installation;
   }
 
   async delete(id: number): Promise<void> {
     await this.pool.query("DELETE FROM installations WHERE id = $1", [id]);
+    await this.pool.query(
+      "DELETE FROM repositories WHERE installation_id = $1",
+      [id],
+    );
   }
+
+  async list(): Promise<InstallationRecord[]> {
+    const { rows } = await this.pool.query(
+      "SELECT * FROM installations ORDER BY created_at DESC, id DESC",
+    );
+    return rows.map(toInstallation);
+  }
+
+  async recordActivity(a: Omit<RepositoryActivity, "lastEventAt">) {
+    await this.pool.query(
+      `INSERT INTO repositories (id, installation_id, full_name, last_event)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (id) DO UPDATE SET
+         installation_id = $2, full_name = $3, last_event = $4,
+         last_event_at = now()`,
+      [a.id, a.installationId, a.fullName, a.lastEvent],
+    );
+  }
+
+  async listActivity(installationId: number): Promise<RepositoryActivity[]> {
+    const { rows } = await this.pool.query(
+      `SELECT * FROM repositories WHERE installation_id = $1
+       ORDER BY last_event_at DESC, id DESC`,
+      [installationId],
+    );
+    return rows.map((r) => ({
+      id: Number(r.id),
+      installationId: Number(r.installation_id),
+      fullName: r.full_name,
+      lastEvent: r.last_event,
+      lastEventAt: r.last_event_at.toISOString(),
+    }));
+  }
+
+  async forgetRepositories(ids: number[]): Promise<void> {
+    if (!ids.length) return;
+    await this.pool.query("DELETE FROM repositories WHERE id = ANY($1)", [ids]);
+  }
+}
+
+function toInstallation(r: any): InstallationRecord {
+  return {
+    id: Number(r.id),
+    account: r.account,
+    accountType: r.account_type,
+    repositorySelection: r.repository_selection,
+    suspended: r.suspended,
+    createdAt: r.created_at.toISOString(),
+    updatedAt: r.updated_at.toISOString(),
+  };
 }

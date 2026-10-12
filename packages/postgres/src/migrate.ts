@@ -73,6 +73,28 @@ export const migrations: string[] = [
   CREATE UNIQUE INDEX jobs_waiting_event ON jobs (event_id)
     WHERE state = 'queued' AND locked_until IS NULL;
   `,
+  `
+  -- The last webhook event seen per repository, for the admin dashboard.
+  CREATE TABLE IF NOT EXISTS repositories (
+    id bigint PRIMARY KEY,
+    installation_id bigint NOT NULL,
+    full_name text NOT NULL,
+    last_event text NOT NULL,
+    last_event_at timestamptz NOT NULL DEFAULT now()
+  );
+  CREATE INDEX IF NOT EXISTS repositories_installation
+    ON repositories (installation_id);
+
+  -- A preview build of this migration once ran as version 5, so databases
+  -- it ran on skipped the real version 5. Apply it again where it's missing.
+  ALTER TABLE jobs ADD COLUMN IF NOT EXISTS priority smallint NOT NULL DEFAULT 0;
+  ALTER TABLE jobs ADD COLUMN IF NOT EXISTS event_id text;
+  DROP INDEX IF EXISTS jobs_ready;
+  CREATE INDEX jobs_ready ON jobs (priority DESC, run_at, id)
+    WHERE state = 'queued';
+  CREATE UNIQUE INDEX IF NOT EXISTS jobs_waiting_event ON jobs (event_id)
+    WHERE state = 'queued' AND locked_until IS NULL;
+  `,
 ];
 
 // Arbitrary constant so concurrent processes don't migrate at the same time.

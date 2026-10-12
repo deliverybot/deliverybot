@@ -1,0 +1,61 @@
+{{> header}}
+
+<div class="content d-flex flex-justify-between mt-5">
+  <h2>
+    <a href="/_/admin">Admin</a> / {{install.account}}
+  </h2>
+  <div>
+    <a target="_blank" href="https://github.com/{{install.account}}" class="btn btn-default">
+      View on GitHub
+    </a>
+  </div>
+</div>
+
+<nav class="UnderlineNav mt-2">
+  <div class="content">
+    <div class="UnderlineNav-body p-3">
+      <span class="text-gray">
+        {{install.accountType}} &middot; {{install.repositorySelection}} repositories
+        {{#if install.suspended}}&middot; <span class="Label Label--orange">Suspended</span>{{/if}}
+      </span>
+    </div>
+  </div>
+</nav>
+</header>
+
+<main class="bg-white fill pt-3 pb-8">
+  <div class="content">
+    {{#if reposError}}
+    <div class="flash flash-warn mt-5">
+      Could not list this installation's repositories on GitHub. Showing the ones with recorded activity only.
+    </div>
+    {{/if}}
+    {{#if hasRepos}}
+    <table class="width-full mt-5" data-test="repositories">
+      <thead>
+        <tr class="text-left border-bottom">
+          <th class="p-2">Repository</th>
+          <th class="p-2">Last event</th>
+          <th class="p-2">When</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each repos}}
+        <tr class="border-bottom">
+          <td class="p-2">
+            <a target="_blank" href="https://github.com/{{fullName}}"><strong>{{fullName}}</strong></a>
+            {{#if private}}<span class="Label Label--outline ml-1">Private</span>{{/if}}
+          </td>
+          <td class="p-2">{{#if lastEvent}}<code>{{lastEvent}}</code>{{else}}<span class="text-gray">None recorded</span>{{/if}}</td>
+          <td class="p-2 text-gray">{{lastEventAgo}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{else}}
+    <p class="mt-5 text-gray">No repositories.</p>
+    {{/if}}
+  </div>
+</main>
+
+{{> footer}}

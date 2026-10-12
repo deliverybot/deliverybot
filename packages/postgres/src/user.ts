@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { User, UserStore } from "@deliverybot/core";
+import { User, UserRecord, UserStore } from "@deliverybot/core";
 
 export class PostgresUserStore implements UserStore {
   constructor(private pool: Pool) {}
@@ -17,5 +17,18 @@ export class PostgresUserStore implements UserStore {
 
   async delete(id: string) {
     await this.pool.query("DELETE FROM users WHERE id = $1", [id]);
+  }
+
+  async list(): Promise<UserRecord[]> {
+    const { rows } = await this.pool.query(
+      "SELECT * FROM users ORDER BY updated_at DESC, id",
+    );
+    return rows.map((r) => ({
+      id: r.id,
+      username: r.username,
+      email: r.email,
+      createdAt: r.created_at.toISOString(),
+      updatedAt: r.updated_at.toISOString(),
+    }));
   }
 }

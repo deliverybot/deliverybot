@@ -1,9 +1,10 @@
 import { Dependencies, Context, KVStore } from "@deliverybot/core";
 
 /**
- * Tracks GitHub App installations, which are Deliverybot's tenants, and
- * deletes a repository's stored data (environment locks and pending
- * auto-deploys) once the app loses access to it.
+ * Tracks GitHub App installations, which are Deliverybot's tenants, and the
+ * last event of each of their repositories. Deletes a repository's stored
+ * data (environment locks, pending auto-deploys and activity) once the app
+ * loses access to it.
  */
 export function installations({
   robot,
@@ -29,6 +30,7 @@ export function installations({
   }
 
   async function forget(context: Context, repos: { id: number }[]) {
+    await store.forgetRepositories(repos.map((r) => r.id));
     for (const repo of repos) {
       await kv.delPrefix(`repos/${repo.id}/`);
       await kv.delPrefix(`queue/${repo.id}-`);
@@ -40,6 +42,17 @@ export function installations({
       );
     }
   }
+
+  robot.onAny(async (context) => {
+    const { installation, repository, action } = context.payload as any;
+    if (!installation || !repository) return;
+    await store.recordActivity({
+      id: repository.id,
+      installationId: installation.id,
+      fullName: repository.full_name,
+      lastEvent: action ? `${context.name}.${action}` : context.name,
+    });
+  });
 
   robot.on(
     [

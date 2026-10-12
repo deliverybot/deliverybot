@@ -6,6 +6,7 @@ import { slackbot } from "@deliverybot/slackbot";
 import { deploybot } from "@deliverybot/deploybot";
 import { util } from "./util.js";
 import { installations } from "./installations.js";
+import { admin } from "./admin.js";
 
 /**
  * Url structure is similar to GitHub in that you reach a org/user and repo with
@@ -19,6 +20,7 @@ export const apps = [
   util,
   auth,
   slackbot,
+  admin,
   dashboard,
   deploy,
   watch,
@@ -26,6 +28,6 @@ export const apps = [
   installations,
 ];
 
-export const main = [util, auth, dashboard, deploy, watch];
+export const main = [util, auth, admin, dashboard, deploy, watch];
 export const slack = [slackbot];
 export const jobs = [deploybot, watch, installations];

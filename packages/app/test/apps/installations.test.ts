@@ -51,6 +51,31 @@ describe("Installations", () => {
     expect(await kv.get("queue/11-abc/jobs/w1")).toBeDefined();
   });
 
+  it("records the latest event of each repository", async () => {
+    const repository = { id: 1, full_name: "octo-org/repo" };
+    await receive("public", { installation, repository });
+    await receive("star", {
+      action: "created",
+      installation,
+      repository,
+    });
+    const activity = await store.listActivity(42);
+    expect(activity).toHaveLength(1);
+    expect(activity[0]).toMatchObject({
+      id: 1,
+      installationId: 42,
+      fullName: "octo-org/repo",
+      lastEvent: "star.created",
+    });
+
+    await receive("installation_repositories", {
+      action: "removed",
+      installation,
+      repositories_removed: [{ id: 1 }],
+    });
+    expect(await store.listActivity(42)).toEqual([]);
+  });
+
   it("forgets deleted installations and their repositories", async () => {
     await receive("installation", { action: "created", installation });
     await receive("installation", {
