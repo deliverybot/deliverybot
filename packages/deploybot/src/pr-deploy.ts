@@ -15,7 +15,7 @@ export async function handlePRDeploy(
 ) {
   context.log.info(logCtx(context, { command }), "pr deploy: handling command");
   try {
-    const target = command.split(" ")[1];
+    const target = command.trim().split(/\s+/)[1];
     const pr = await context.octokit.rest.pulls.get({
       owner: context.payload.repository.owner.login,
       repo: context.payload.repository.name,

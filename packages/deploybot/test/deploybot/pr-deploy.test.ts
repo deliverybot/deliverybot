@@ -25,6 +25,15 @@ describe("pr-deploy", () => {
     expect(deploy.isDone()).toBe(true);
   });
 
+  test("ignores whitespace around the target", async () => {
+    factory.config({ valid: true });
+    factory.permission({ admin: true });
+    const deploy = factory.deploy();
+
+    await probot.receive(factory.prDeployComment(" review\n"));
+    expect(deploy.isDone()).toBe(true);
+  });
+
   test("drops comments that aren't deploy commands", async () => {
     const seen: string[] = [];
     probot.onAny(async (context) => {
