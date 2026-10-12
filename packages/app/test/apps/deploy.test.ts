@@ -115,6 +115,65 @@ describe("Deploy", () => {
     expect(response.get("content-type")).toBe(json);
   });
 
+  describe("with services", () => {
+    beforeEach(() => {
+      factory.cleanAll();
+      factory.permission({ admin: true });
+      factory.repo();
+      factory.configYaml(`
+api:
+  environment: api
+  path: services/api/
+web:
+  environment: web
+  path: services/web
+production:
+  environment: production
+`);
+    });
+
+    it("lists the targets with a path as services", async () => {
+      const query = factory.commitsMinimalGqlFor(undefined);
+
+      const response = await factory
+        .request(app)
+        .get("/Codertocat/Hello-World/branch/master")
+        .set("cookie", session);
+      expect(response.status).toBe(200);
+      expect(query.isDone()).toBe(true);
+      expect(response.text).toContain("Service: All");
+      expect(response.text).toContain(
+        'href="/Codertocat/Hello-World/branch/master?target&#x3D;web"',
+      );
+      expect(response.text).not.toContain("?target&#x3D;production");
+    });
+
+    it("filters commits by the selected service's path", async () => {
+      const query = factory.commitsMinimalGqlFor("services/api");
+
+      const response = await factory
+        .request(app)
+        .get("/Codertocat/Hello-World/branch/master?target=api")
+        .set("cookie", session);
+      expect(response.status).toBe(200);
+      expect(query.isDone()).toBe(true);
+      expect(response.text).toContain("Service: api");
+      expect(response.text).toContain('<option value="api" selected>');
+    });
+
+    it("ignores a target without a path", async () => {
+      const query = factory.commitsMinimalGqlFor(undefined);
+
+      const response = await factory
+        .request(app)
+        .get("/Codertocat/Hello-World/branch/master?target=production")
+        .set("cookie", session);
+      expect(response.status).toBe(200);
+      expect(query.isDone()).toBe(true);
+      expect(response.text).toContain("Service: All");
+    });
+  });
+
   it("watches commits", async () => {
     const response = await factory
       .request(app)

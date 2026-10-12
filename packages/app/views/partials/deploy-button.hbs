@@ -15,9 +15,9 @@
   </button>
 
   <select name="target" class="form-select ml-2 text-gray-light" required>
-    <option disabled selected value="">Target</option>
+    <option disabled {{#unless @root.service}}selected{{/unless}} value="">Target</option>
     {{#each @root.targets}}
-      <option value="{{name}}">{{name}}</option>
+      <option value="{{name}}" {{#if selected}}selected{{/if}}>{{name}}</option>
     {{/each}}
   </select>
 

@@ -10,6 +10,19 @@ import { PayloadRepository, Watch } from "./types.js";
 import { logCtx } from "./util.js";
 import { config, deploy } from "./deploy.js";
 import { hash } from "./util.js";
+import { touches } from "./paths.js";
+
+/**
+ * Lists the files a push or pull request changed, or returns null when that
+ * can't be known for sure. Targets with a `path` deploy anyway in that case.
+ */
+type ChangedFiles = () => Promise<string[] | null>;
+
+// GitHub stops listing commits in a push payload, and files in a pull request
+// or comparison, at these limits.
+const maxPushCommits = 2048;
+const maxPullFiles = 3000;
+const maxCompareFiles = 300;
 
 export function match(auto: string | undefined, ref: string) {
   if (!auto) return false;
@@ -42,15 +55,28 @@ export function auto(
     ref: string,
     sha: string,
     repository: PayloadRepository,
+    changedFiles: ChangedFiles,
     prNumber?: number,
   ) {
     try {
       let anyAdded = false;
+      let files: Promise<string[] | null> | undefined;
       const conf = await config(context.octokit, context.repo());
       for (const target in conf) {
         const targetVal = conf[target]!;
         if (!match(targetVal.auto_deploy_on, matchRef)) {
           continue;
+        }
+        if (targetVal.path) {
+          files = files || changedFiles();
+          const changed = await files;
+          if (changed && !touches(targetVal.path, changed)) {
+            context.log.info(
+              logCtx(context, { ref, sha, target, path: targetVal.path }),
+              "auto deploy: path not changed",
+            );
+            continue;
+          }
         }
         context.log.info(
           logCtx(context, {
@@ -110,11 +136,15 @@ export function auto(
    * - The watch is old and should not be processed.
    * - The watch is already deployed.
    * - There is a non-retryable configuration error.
+   *
+   * A watch for a target with a path moves to a newer commit on its ref when
+   * the newer commits leave the path alone, since deploying the ref deploys
+   * that commit. It returns the sha it moved to then.
    */
   async function processWatch(
     context: Context,
     watch: Watch,
-  ): Promise<boolean> {
+  ): Promise<boolean | string> {
     const { sha, ref, target, targetVal } = watch;
 
     // Check if the current sha for this ref is equal to this watch. Since
@@ -124,6 +154,21 @@ export function auto(
       context.repo({ ref: ref.replace("refs/", "") }),
     );
     const currentSha = refreshed.data.object.sha;
+    if (
+      currentSha !== sha &&
+      (await unchangedSince(context, targetVal.path, sha, currentSha))
+    ) {
+      context.log.info(
+        logCtx(context, { ref, sha, currentSha, target }),
+        "auto deploy: path unchanged, moving watch",
+      );
+      await watchStore.addWatch(watch.repository.id, {
+        ...watch,
+        id: uuid(),
+        sha: currentSha,
+      });
+      return currentSha;
+    }
     if (currentSha !== sha) {
       // This is an old watch, return true.
       context.log.info(
@@ -203,6 +248,28 @@ export function auto(
           throw error;
       }
     }
+  }
+
+  /**
+   * A target with a path only watches commits that change it, so a newer
+   * commit on the ref that leaves the path alone doesn't make its watch old.
+   */
+  async function unchangedSince(
+    context: Context,
+    path: string | undefined,
+    sha: string,
+    currentSha: string,
+  ) {
+    if (!path) return false;
+    const compare = await context.octokit.rest.repos.compareCommitsWithBasehead(
+      context.repo({ basehead: `${sha}...${currentSha}` }),
+    );
+    const files = (compare.data.files || []).map((f) => f.filename);
+    return (
+      compare.data.status === "ahead" &&
+      files.length < maxCompareFiles &&
+      !touches(path, files)
+    );
   }
 
   /**
@@ -297,12 +364,17 @@ export function auto(
 
   // Handles a synthetic push watch event. This fires whenever a change happens
   // to a specific commit where a watch exists on that commit.
-  app.onCustom("push_watch", (context) =>
-    lockWatch(context, (): Promise<boolean> => {
-      const watch = context.payload as unknown as Watch;
-      return processWatch(context, watch);
-    }),
-  );
+  app.onCustom("push_watch", async (context) => {
+    const watch = context.payload as unknown as Watch;
+    let movedTo: string | undefined;
+    await lockWatch(context, async () => {
+      const result = await processWatch(context, watch);
+      if (typeof result === "string") movedTo = result;
+      return result !== false;
+    });
+    // Outside the lock, which the moved watch takes too.
+    if (movedTo) await emitWatches(context, watch.repository.id, movedTo);
+  });
 
   // Push handles creating new watches that need to appear.
   app.on("push", async (context) => {
@@ -312,6 +384,16 @@ export function auto(
       context.payload.ref,
       context.payload.after,
       context.payload.repository,
+      async () => {
+        const { commits, created, forced } = context.payload;
+        if (created || forced || !commits?.length) return null;
+        if (commits.length >= maxPushCommits) return null;
+        return commits.flatMap((c) => [
+          ...(c.added || []),
+          ...(c.modified || []),
+          ...(c.removed || []),
+        ]);
+      },
     );
   });
 
@@ -323,6 +405,7 @@ export function auto(
       `heads/${context.payload.pull_request.head.ref}`,
       context.payload.pull_request.head.sha,
       context.payload.repository,
+      () => pullRequestFiles(context),
       context.payload.number,
     );
   });
@@ -335,7 +418,22 @@ export function auto(
       `heads/${context.payload.pull_request.head.ref}`,
       context.payload.pull_request.head.sha,
       context.payload.repository,
+      () => pullRequestFiles(context),
       context.payload.number,
     );
   });
+}
+
+/** Files changed by the pull request, including the old names of renames. */
+async function pullRequestFiles(
+  context: Context<"pull_request">,
+): Promise<string[] | null> {
+  const files = await context.octokit.paginate(
+    context.octokit.rest.pulls.listFiles,
+    context.pullRequest({ per_page: 100 }),
+  );
+  if (files.length >= maxPullFiles) return null;
+  return files.flatMap((f) =>
+    f.previous_filename ? [f.filename, f.previous_filename] : [f.filename],
+  );
 }

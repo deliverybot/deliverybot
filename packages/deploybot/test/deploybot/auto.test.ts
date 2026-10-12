@@ -1,10 +1,11 @@
 import * as factory from "../factory.js";
 import { app, services } from "../app.js";
 import { match } from "../../src/auto.js";
-import { EnvLockStore } from "../../src/store.js";
+import { EnvLockStore, WatchStore } from "../../src/store.js";
 
 const probot = app.probot;
 const lockStore = new EnvLockStore(services.kvService);
+const watchStore = new WatchStore(services.kvService);
 
 describe("auto", () => {
   afterEach(() => {
@@ -183,5 +184,136 @@ describe("auto", () => {
 
     await probot.receive(factory.push());
     expect(deploy.isDone()).toBe(false);
+  });
+
+  describe("with paths", () => {
+    // Watches whose deploy is still waiting on checks outlive a test.
+    afterEach(async () => {
+      const sha = factory.fixtures.push.after;
+      for (const watch of await watchStore.listWatchBySha(1, sha)) {
+        await watchStore.delWatch(1, watch);
+      }
+    });
+
+    const monorepo = `
+api:
+  auto_deploy_on: refs/heads/changes
+  environment: api
+  path: ./services/api/
+web:
+  auto_deploy_on: refs/heads/changes
+  environment: web
+  path: services/web
+`;
+
+    test("deploys only the targets whose path a push changes", async () => {
+      factory.configYaml(monorepo);
+      factory.noDeployments();
+      const api = factory.deployTo("api");
+      const web = factory.deployTo("web");
+
+      await probot.receive(factory.pushFiles(["services/api/index.ts"]));
+      expect(api.isDone()).toBe(true);
+      expect(web.isDone()).toBe(false);
+    });
+
+    test("doesn't match a sibling with the same prefix", async () => {
+      factory.configYaml(monorepo);
+      const api = factory.deployTo("api");
+
+      await probot.receive(factory.pushFiles(["services/api-docs/README.md"]));
+      expect(api.isDone()).toBe(false);
+    });
+
+    test("deploys when a push lists no files", async () => {
+      factory.configYaml(monorepo);
+      factory.noDeployments();
+      factory.noDeployments();
+      const api = factory.deployTo("api");
+      const web = factory.deployTo("web");
+
+      await probot.receive(factory.push());
+      expect(api.isDone()).toBe(true);
+      expect(web.isDone()).toBe(true);
+    });
+
+    test("deploys a pull request only if it changes the path", async () => {
+      factory.configYaml(`
+review-api:
+  auto_deploy_on: pr
+  environment: api-pr
+  path: services/api
+review-web:
+  auto_deploy_on: pr
+  environment: web-pr
+  path: services/web
+`);
+      factory.prFiles(["services/web/app.css"]);
+      factory.noDeployments();
+      const api = factory.deployTo("api-pr");
+      const web = factory.deployTo("web-pr");
+
+      await probot.receive(factory.prOpened());
+      expect(api.isDone()).toBe(false);
+      expect(web.isDone()).toBe(true);
+    });
+
+    describe("after newer commits on the ref", () => {
+      const newer = "1111111111111111111111111111111111111111";
+
+      beforeEach(async () => {
+        factory.configYaml(monorepo);
+        factory.noDeployments();
+        const pending = factory.deployConflict();
+        await probot.receive(factory.pushFiles(["services/api/index.ts"]));
+        expect(pending.isDone()).toBe(true);
+
+        // The ref moves on before the checks of the watched commit pass.
+        factory.cleanAll();
+        factory.token();
+        factory.deploymentStatus();
+        factory.repo().persist();
+        factory.gitCommit().persist();
+        factory.configYaml(monorepo);
+        factory.gitRefAt(newer);
+      });
+
+      afterEach(async () => {
+        for (const watch of await watchStore.listWatchBySha(1, newer)) {
+          await watchStore.delWatch(1, watch);
+        }
+      });
+
+      test("deploys the newer commit if they leave the path alone", async () => {
+        factory.compare("ahead", ["services/web/index.ts"]);
+        factory.noDeployments();
+        const api = factory.deployTo("api");
+
+        await probot.receive(factory.status());
+        expect(api.isDone()).toBe(true);
+        expect(await watchStore.listWatchBySha(1, newer)).toEqual([]);
+      });
+
+      test("keeps watching the newer commit until its checks pass", async () => {
+        factory.compare("ahead", ["services/web/index.ts"]);
+        factory.noDeployments();
+        const pending = factory.deployConflict();
+
+        await probot.receive(factory.status());
+        expect(pending.isDone()).toBe(true);
+        const moved = await watchStore.listWatchBySha(1, newer);
+        expect(moved.map((w) => w.target)).toEqual(["api"]);
+        const old = factory.fixtures.push.after;
+        expect(await watchStore.listWatchBySha(1, old)).toEqual([]);
+      });
+
+      test("discards the watch if they change the path", async () => {
+        factory.compare("ahead", ["services/api/other.ts"]);
+        const api = factory.deployTo("api");
+
+        await probot.receive(factory.status());
+        expect(api.isDone()).toBe(false);
+      });
+    });
   });
 });

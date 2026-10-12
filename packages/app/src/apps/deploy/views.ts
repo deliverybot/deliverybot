@@ -12,16 +12,25 @@ interface BaseProps {
   lock: EnvLockStore;
 }
 
-async function Base(
-  { csrf, path, user, repo, branch, lock }: BaseProps,
-  data: any,
-) {
-  const config = await queries.config(
+function loadConfig({
+  user,
+  repo,
+  branch,
+}: Pick<BaseProps, "user" | "repo" | "branch">) {
+  return queries.config(
     user.github,
     repo.owner,
     repo.repo,
     branch || repo.defaultBranch,
   );
+}
+
+async function Base(
+  { csrf, path, user, repo, branch, lock }: BaseProps,
+  data: any,
+  preloaded?: Awaited<ReturnType<typeof queries.config>>,
+) {
+  const config = preloaded || (await loadConfig({ user, repo, branch }));
   const targets = queries.Targets(config.config);
   const locking = await queries.locks(config, repo, lock);
 
@@ -47,6 +56,8 @@ async function Base(
 export interface CommitsProps extends BaseProps {
   options: queries.Options;
   watch: WatchStore;
+  // The target whose path filters the commit list, if any.
+  target?: string;
 }
 
 export async function Commits({
@@ -58,7 +69,16 @@ export async function Commits({
   branch,
   user,
   lock,
+  target,
 }: CommitsProps) {
+  const config = await loadConfig({ user, repo, branch });
+  const services = queries.Services(
+    repo.owner,
+    repo.repo,
+    branch || repo.defaultBranch,
+    config.config,
+    target,
+  );
   const result = await queries.commits(
     watch,
     user.token,
@@ -66,7 +86,7 @@ export async function Commits({
     repo.repo,
     repo.id,
     branch || repo.defaultBranch,
-    options,
+    { ...options, path: services.service?.path },
   );
 
   return Base(
@@ -76,7 +96,11 @@ export async function Commits({
       page: "commits",
       ...result,
       ...options,
+      ...services,
+      // Deploy buttons default to the selected service.
+      targets: queries.Targets(config.config, services.service?.name),
     },
+    config,
   );
 }
 

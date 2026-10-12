@@ -36,6 +36,9 @@
         },
         "auto_merge": {
           "type": "boolean"
+        },
+        "path": {
+          "type": "string"
         }
       }
     }

@@ -13,6 +13,7 @@ import {
 import schema from "./schema.json" with { type: "json" };
 import { render } from "./render.js";
 import { withPreview } from "./util.js";
+import { normalizePath } from "./paths.js";
 
 type ReposGetContentParams =
   RestEndpointMethodTypes["repos"]["getContent"]["parameters"];
@@ -78,6 +79,9 @@ export async function config(
   }
   for (const key in conf) {
     conf[key].name = key;
+    const path = normalizePath(conf[key].path);
+    if (path) conf[key].path = path;
+    else delete conf[key].path;
   }
   return conf;
 }

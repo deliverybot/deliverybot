@@ -27,13 +27,34 @@
           <ul class="dropdown-menu dropdown-menu-se">
             {{#each branches}}
             <li>
-              <a href="/{{../owner}}/{{../repo}}/branch/{{branchencode name}}" class="dropdown-item">
+              <a href="/{{../owner}}/{{../repo}}/branch/{{branchencode name}}{{#if ../serviceQuery}}?{{../serviceQuery}}{{/if}}" class="dropdown-item">
                 <code>{{name}}</code>
               </a>
             </li>
             {{/each}}
           </ul>
         </details>
+
+        {{#if services.length}}
+        <details class="dropdown details-reset details-overlay d-inline-block ml-2">
+          <summary class="btn btn-sm" aria-haspopup="true">
+            <div class="dropdown-caret"></div>
+            Service: {{#if service}}{{service.name}}{{else}}All{{/if}}
+          </summary>
+          <ul class="dropdown-menu dropdown-menu-se">
+            <li>
+              <a href="{{allUrl}}" class="dropdown-item">All commits</a>
+            </li>
+            {{#each services}}
+            <li>
+              <a href="{{url}}" class="dropdown-item">
+                {{name}} <code class="text-gray-light">{{path}}</code>
+              </a>
+            </li>
+            {{/each}}
+          </ul>
+        </details>
+        {{/if}}
 
         <div class="d-inline-block" data-target="commits.lock">
           {{> lock_modal}}
@@ -43,7 +64,7 @@
         {{> lock_states}}
       </div>
       <div class="d-inline-block d-none ml-2" data-target="commits.new">
-        <a class="btn btn-outline btn-sm" href="/{{owner}}/{{repo}}/branch/{{branch}}">New commits available</a>
+        <a class="btn btn-outline btn-sm" href="/{{owner}}/{{repo}}/branch/{{branch}}{{#if serviceQuery}}?{{serviceQuery}}{{/if}}">New commits available</a>
       </div>
     </div>
 

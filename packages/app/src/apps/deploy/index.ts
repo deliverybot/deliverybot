@@ -163,6 +163,7 @@ export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
       repo: req.user!.repo!,
       branch: branch.decode(req.params.branch),
       csrf: req.csrfToken(),
+      target: queryString(req.query.target),
       options: {
         count: 10,
         before: queryString(req.query.before),

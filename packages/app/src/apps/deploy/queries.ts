@@ -11,7 +11,12 @@ import get from "lodash.get";
 import { Repo } from "../auth.js";
 import { timeAgoInWords, hash } from "../util.js";
 import { Measure, Measurements } from "./metrics.js";
-import { newDeployFileUrl, editDeployFileUrl, yamlEncode } from "../util.js";
+import {
+  newDeployFileUrl,
+  editDeployFileUrl,
+  yamlEncode,
+  branch as branchPath,
+} from "../util.js";
 
 export async function gql(token: string, query: string, variables: any) {
   const resp = await ghRequest({
@@ -36,6 +41,8 @@ export interface Options {
   before?: string;
   after?: string;
   count?: number;
+  // Only list commits that change files below this path.
+  path?: string;
 }
 
 const CommitData = ({ minimal }: Options) => `
@@ -60,14 +67,14 @@ deployments(last: 50) {
 const CommitsQuery = (opts: Options) => `
 query commits(
   $owner: String!, $repo: String!, $branch: String!,
-  $after: String, $before: String, $first: Int, $last: Int
+  $after: String, $before: String, $first: Int, $last: Int, $path: String
 ) {
   repository(owner:$owner,name:$repo) {
     refs(refPrefix:"refs/heads/",first:50) { nodes { name } }
     ref(qualifiedName:$branch) {
       target {
         ... on Commit {
-          history(first:$first, last:$last, before:$before, after:$after) {
+          history(first:$first, last:$last, before:$before, after:$after, path:$path) {
             edges { node { ${CommitData(opts)} } }
             pageInfo {
               hasNextPage
@@ -131,7 +138,7 @@ export async function commits(
   branch: string,
   opts: Options,
 ) {
-  const variables: any = { owner, repo, branch };
+  const variables: any = { owner, repo, branch, path: opts.path };
   if (opts.before) {
     variables.last = opts.count;
     variables.before = opts.before;
@@ -451,13 +458,45 @@ export function Branches(
   }));
 }
 
-export function Targets(conf: Targets | null) {
+export function Targets(conf: Targets | null, selected?: string) {
   return (
     conf &&
     Object.keys(conf).map((name: string) => ({
       name,
+      path: conf[name]!.path,
+      selected: name === selected,
     }))
   );
+}
+
+/**
+ * Targets with a path are the services of a monorepo. Picking one filters the
+ * commit list down to the commits that change its path.
+ */
+export function Services(
+  owner: string,
+  repo: string,
+  branch: string,
+  conf: Targets | null,
+  selected?: string,
+) {
+  const base = `/${owner}/${repo}/branch/${branchPath.encode(branch)}`;
+  const services = Object.keys(conf || {})
+    .filter((name) => conf![name]!.path)
+    .map((name) => ({
+      name,
+      path: conf![name]!.path!,
+      active: name === selected,
+      url: `${base}?target=${encodeURIComponent(name)}`,
+    }));
+  const active = services.find((s) => s.active) || null;
+  return {
+    services,
+    service: active,
+    allUrl: base,
+    // Appended to links on this page so they keep the service filter.
+    serviceQuery: active ? `target=${encodeURIComponent(active.name)}` : "",
+  };
 }
 
 interface Config {

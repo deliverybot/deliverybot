@@ -25,6 +25,11 @@ export interface Target {
   environment: string;
   description: string;
 
+  // Only commits that change files below this path belong to the target. Used
+  // for monorepos: the dashboard filters commits by it and auto deploys skip
+  // pushes that don't touch it.
+  path?: string;
+
   // Required contexts  are required to be matched across all deployments in the
   // target set. This is so that one deployment does not succeed before another
   // causing the set to fail.

@@ -237,3 +237,50 @@ export const lockedEnvironment = async (env: string) => {
   await store.lock(1, env);
   return () => store.unlock(1, env);
 };
+
+export const configYaml = (yaml: string) =>
+  nock("https://api.github.com")
+    .persist()
+    .get(
+      /^\/repos\/Codertocat\/Hello-World\/contents\/\.github(\/|%2F)deploy\.yml/,
+    )
+    .query(() => true)
+    .reply(200, { content: Buffer.from(yaml).toString("base64") });
+
+export const deployTo = (environment: string) =>
+  nock("https://api.github.com")
+    .post(
+      "/repos/Codertocat/Hello-World/deployments",
+      (body: any) => body.environment === environment,
+    )
+    .reply(200, { id: 1 });
+
+export const gitRefAt = (sha: string) =>
+  nock("https://api.github.com")
+    .persist()
+    .get(/^\/repos\/Codertocat\/Hello-World\/git\/ref\/heads(\/|%2F)changes$/)
+    .reply(200, { ...fixtures.ref, object: { ...fixtures.ref.object, sha } });
+
+export const prFiles = (files: string[]) =>
+  nock("https://api.github.com")
+    .get("/repos/Codertocat/Hello-World/pulls/1/files")
+    .query(true)
+    .reply(
+      200,
+      files.map((filename) => ({ filename })),
+    );
+
+export const compare = (status: string, files: string[]) =>
+  nock("https://api.github.com")
+    .get(/^\/repos\/Codertocat\/Hello-World\/compare\//)
+    .query(true)
+    .reply(200, { status, files: files.map((filename) => ({ filename })) });
+
+export const pushFiles = (files: string[]): any => ({
+  name: "push",
+  id: "push-event",
+  payload: {
+    ...fixtures.push,
+    commits: [{ id: "1", added: [], removed: [], modified: files }],
+  },
+});

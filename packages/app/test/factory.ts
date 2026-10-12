@@ -233,3 +233,18 @@ export const errorComment = (expected: string) =>
       return true;
     })
     .reply(200);
+
+export const configYaml = (yaml: string) =>
+  nock("https://api.github.com")
+    .persist()
+    .get(
+      /^\/repos\/Codertocat\/Hello-World\/contents\/\.github(\/|%2F)deploy\.yml/,
+    )
+    .query(true)
+    .reply(200, { content: Buffer.from(yaml).toString("base64") });
+
+/** Answers the commits query, checking it filters by the given path. */
+export const commitsMinimalGqlFor = (path: string | undefined) =>
+  nock("https://api.github.com")
+    .post("/graphql", (body: any) => body.variables.path === path)
+    .reply(200, { data: fixtures.commitsMinimal });
