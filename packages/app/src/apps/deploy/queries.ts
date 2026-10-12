@@ -108,6 +108,30 @@ query deployments($owner:String!,$repo:String!) {
 }
 `;
 
+const DeploymentsQuery = () => `
+query deployments(
+  $owner: String!, $repo: String!, $environments: [String!],
+  $after: String, $before: String, $first: Int, $last: Int
+) {
+  repository(owner:$owner,name:$repo) {
+    deployments(
+      first:$first, last:$last, after:$after, before:$before,
+      environments:$environments,
+      orderBy:{field:CREATED_AT,direction:DESC}
+    ) {
+      pageInfo { hasNextPage endCursor hasPreviousPage startCursor }
+      nodes {
+        id environment description createdAt
+        creator { login }
+        ref { name }
+        commit { oid messageHeadline }
+        latestStatus { state logUrl environmentUrl }
+      }
+    }
+  }
+}
+`;
+
 interface Watches {
   [k: string]: Watch[];
 }
@@ -164,6 +188,115 @@ export async function metrics(
   // require('fs').writeFileSync(`./test/fixtures/metrics.json`, JSON.stringify(result, null, 2));
   const measures = Measures(result, start, end);
   return new Measurements(start, end, measures).toJSON();
+}
+
+export interface DeploymentsOptions {
+  target?: string;
+  before?: string;
+  after?: string;
+  count: number;
+}
+
+const DeploymentEnvironmentsQuery = () => `
+query environments($owner:String!,$repo:String!) {
+  repository(owner:$owner,name:$repo) {
+    deployments(first:100,orderBy:{field:CREATED_AT,direction:DESC}) {
+      nodes { environment }
+    }
+  }
+}
+`;
+
+// Turns an environment from the deploy config into a pattern that matches the
+// names it renders to, e.g. `pr${{ pr }}` matches `pr1` and `pr42`.
+export function EnvironmentPattern(environment: string) {
+  const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const parts = environment.split(/\$\{\{.*?\}\}/);
+  return new RegExp(`^${parts.map(escape).join(".+")}$`);
+}
+
+// Resolves a deploy config environment to the environment names deployments
+// actually used. Templated ones are matched against recent deployments, since
+// GitHub can only filter deployments on exact names. A pattern like `pr.+` also
+// matches `production`, so names other targets use literally are excluded.
+export async function environments(
+  token: string,
+  owner: string,
+  repo: string,
+  environment: string,
+  exclude: string[] = [],
+): Promise<string[]> {
+  if (!environment.includes("${{")) {
+    return [environment];
+  }
+  const pattern = EnvironmentPattern(environment);
+  const result = await gql(token, DeploymentEnvironmentsQuery(), {
+    owner,
+    repo,
+  });
+  const names = (get(result, "repository.deployments.nodes", []) as any[]).map(
+    (node: any) => node.environment as string,
+  );
+  return names.filter(
+    (name, i) =>
+      pattern.test(name) &&
+      !exclude.includes(name) &&
+      names.indexOf(name) === i,
+  );
+}
+
+export async function deployments(
+  token: string,
+  owner: string,
+  repo: string,
+  opts: DeploymentsOptions & { environments?: string[] },
+) {
+  const variables: any = { owner, repo };
+  if (opts.environments) {
+    if (opts.environments.length === 0) {
+      return DeploymentList(owner, repo, {});
+    }
+    variables.environments = opts.environments;
+  }
+  if (opts.before) {
+    variables.last = opts.count;
+    variables.before = opts.before;
+  } else if (opts.after) {
+    variables.first = opts.count;
+    variables.after = opts.after;
+  } else {
+    variables.first = opts.count;
+  }
+  const result = await gql(token, DeploymentsQuery(), variables);
+  return DeploymentList(owner, repo, result);
+}
+
+export function DeploymentList(owner: string, repo: string, data: any) {
+  const deployments = (
+    get(data, "repository.deployments.nodes", []) as any[]
+  ).map((node: any) => {
+    const createdAt = Date.parse(node.createdAt);
+    const sha: string = get(node, "commit.oid", "");
+    return {
+      id: node.id,
+      environment: node.environment,
+      description: node.description || "",
+      status: Status(get(node, "latestStatus.state")),
+      state: get(node, "latestStatus.state", "waiting").toLowerCase(),
+      creator: get(node, "creator.login"),
+      ref: get(node, "ref.name"),
+      sha,
+      shaShort: sha.substr(0, 7),
+      message: get(node, "commit.messageHeadline", ""),
+      commitUrl: sha && `https://github.com/${owner}/${repo}/commit/${sha}`,
+      logUrl: get(node, "latestStatus.logUrl"),
+      environmentUrl: get(node, "latestStatus.environmentUrl"),
+      createdAt,
+      createdAtWords: timeAgoInWords(createdAt),
+    };
+  });
+  const pagination = get(data, "repository.deployments.pageInfo", {});
+  return { deployments, pagination: Pagination(pagination) };
 }
 
 export function View(

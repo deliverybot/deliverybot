@@ -1,0 +1,85 @@
+{{> repo_header}}
+
+<nav class="UnderlineNav mt-2">
+  <div class="content">
+    <div class="UnderlineNav-body">
+      <a href="/{{owner}}/{{repo}}" role="tab" title="Commits" class="UnderlineNav-item">Commits</a>
+      <a href="/{{owner}}/{{repo}}/deployments" role="tab" title="Deployments" class="UnderlineNav-item" aria-current="page">Deployments</a>
+      <a href="/{{owner}}/{{repo}}/config" role="tab" title="Config" class="UnderlineNav-item">Config</a>
+      <a href="/{{owner}}/{{repo}}/metrics" role="tab" title="Metrics" class="UnderlineNav-item">Metrics</a>
+    </div>
+  </div>
+</nav>
+</header>
+
+<main class="bg-white fill pt-3 pb-8">
+  <div class="content">
+    <details class="dropdown details-reset details-overlay d-inline-block">
+      <summary class="btn btn-sm" aria-haspopup="true">
+        <div class="dropdown-caret"></div>
+        Target: {{#if target}}{{target}}{{else}}all{{/if}}
+      </summary>
+      <ul class="dropdown-menu dropdown-menu-se">
+        <li><a href="{{url.path}}" class="dropdown-item">All targets</a></li>
+        {{#each filters}}
+        <li><a href="{{url}}" class="dropdown-item"><code>{{name}}</code></a></li>
+        {{/each}}
+      </ul>
+    </details>
+
+    <div class="Box mt-3">
+      {{#if hasDeployments}}
+      {{#each deployments}}
+      <div class="Box-row d-flex flex-items-center">
+        <div class="text-{{status.color}} mr-2" title="{{state}}">
+          {{#if status.success}}{{> icon_check}}{{/if}}
+          {{#if status.pending}}{{> icon_dot}}{{/if}}
+          {{#if status.failure}}{{> icon_x}}{{/if}}
+          {{#if status.waiting}}{{> icon_clock}}{{/if}}
+          {{#if status.nothing}}{{> icon_dot}}{{/if}}
+        </div>
+        <div class="flex-auto" style="min-width: 0;">
+          <div class="css-truncate css-truncate-target" style="max-width: 100%;">
+            <strong>{{environment}}</strong>
+            <span class="text-gray-light">&middot; {{state}}</span>
+            &middot;
+            {{#if commitUrl}}<a class="text-gray-dark" href="{{commitUrl}}" target="_blank">{{message}}</a>{{/if}}
+          </div>
+          <div class="text-gray-light">
+            {{#if shaShort}}<strong><code>{{shaShort}}</code></strong>{{/if}}
+            {{#if ref}}on <code>{{ref}}</code>{{/if}}
+            {{#if creator}}by <a href="https://github.com/{{creator}}">@{{creator}}</a>{{/if}}
+            {{createdAtWords}}
+          </div>
+        </div>
+        <div class="text-right f6 ml-2" style="white-space: nowrap;">
+          {{#if environmentUrl}}<a href="{{environmentUrl}}" target="_blank">View</a>{{/if}}
+          {{#if logUrl}}<a class="ml-2" href="{{logUrl}}" target="_blank">Logs</a>{{/if}}
+        </div>
+      </div>
+      {{/each}}
+      {{else}}
+      <div class="Box-body text-center text-gray-light p-4">
+        No deployments{{#if target}} for <code>{{target}}</code>{{/if}} yet.
+      </div>
+      {{/if}}
+    </div>
+
+    <nav class="paginate-container" aria-label="Pagination">
+      <div class="pagination">
+        {{#if pagination.prev}}
+        <a rel="prev" href="{{pagination.prev}}" aria-label="Previous page">Previous</a>
+        {{else}}
+        <span class="disabled">Previous</span>
+        {{/if}}
+        {{#if pagination.next}}
+        <a rel="next" href="{{pagination.next}}" aria-label="Next page">Next</a>
+        {{else}}
+        <span class="disabled">Next</span>
+        {{/if}}
+      </div>
+    </nav>
+  </div>
+</main>
+
+{{> footer}}
