@@ -82,7 +82,10 @@ default_permissions:
 
   # Pull requests and related comments, assignees, labels, milestones, and merges.
   # https://developer.github.com/v3/apps/permissions/#permission-on-pull-requests
-  pull_requests: read
+  # Write is needed to comment on and react to /deploy commands in pull
+  # requests: GitHub refuses those with only Issues: write when a repository
+  # has issues turned off.
+  pull_requests: write
 
   # Manage the post-receive hooks for a repository.
   # https://developer.github.com/v3/apps/permissions/#permission-on-repository-hooks
