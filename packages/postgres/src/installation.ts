@@ -27,7 +27,8 @@ export class PostgresInstallationStore implements InstallationStore {
       [id],
     );
     if (!rows.length) return undefined;
-    const { createdAt, updatedAt, ...installation } = toInstallation(rows[0]);
+    const { createdAt, updatedAt, repositoryCount, ...installation } =
+      toInstallation(rows[0]);
     return installation;
   }
 
@@ -44,6 +45,13 @@ export class PostgresInstallationStore implements InstallationStore {
       "SELECT * FROM installations ORDER BY created_at DESC, id DESC",
     );
     return rows.map(toInstallation);
+  }
+
+  async setRepositoryCount(id: number, count: number): Promise<void> {
+    await this.pool.query(
+      "UPDATE installations SET repository_count = $2 WHERE id = $1",
+      [id, count],
+    );
   }
 
   async recordActivity(a: Omit<RepositoryActivity, "lastEventAt">) {
@@ -85,6 +93,7 @@ function toInstallation(r: any): InstallationRecord {
     accountType: r.account_type,
     repositorySelection: r.repository_selection,
     suspended: r.suspended,
+    repositoryCount: r.repository_count,
     createdAt: r.created_at.toISOString(),
     updatedAt: r.updated_at.toISOString(),
   };

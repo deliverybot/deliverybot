@@ -195,6 +195,12 @@ describe("repository activity", () => {
     const list = await store.list();
     expect(list.map((i) => i.account).sort()).toEqual(["first", "second"]);
     expect(list[0].createdAt).toBeTruthy();
+    expect(list[0].repositoryCount).toBeNull();
+    await store.setRepositoryCount(1, 7);
+    await store.upsert(install(1, "first"));
+    const first = (await store.list()).find((i) => i.id === 1)!;
+    expect(first.repositoryCount).toBe(7);
+    expect(await store.get(1)).toEqual(install(1, "first"));
 
     await store.recordActivity({
       id: 10,

@@ -56,10 +56,7 @@ describe("Admin", () => {
 
   it("lists installations, repository counts and users", async () => {
     const [, cookie] = await factory.login(app);
-    nock("https://api.github.com")
-      .get("/installation/repositories")
-      .query({ per_page: 1 })
-      .reply(200, { total_count: 3, repositories: [] });
+    await store.setRepositoryCount(77, 3);
 
     const response = await factory
       .request(app)

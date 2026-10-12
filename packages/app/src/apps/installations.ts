@@ -6,10 +6,18 @@ import {
   KVStore,
 } from "@deliverybot/core";
 
+/** Repositories an installation's client can access. */
+async function countRepositories(octokit: any): Promise<number> {
+  const { data } = await octokit.rest.apps.listReposAccessibleToInstallation({
+    per_page: 1,
+  });
+  return data.total_count;
+}
+
 /**
- * Copies every installation GitHub lists for the app into the store, for
- * installations made before they were tracked or whose webhooks were
- * missed. Returns how many it saved.
+ * Copies every installation GitHub lists for the app into the store, with
+ * its repository count, for installations made before they were tracked or
+ * whose webhooks were missed. Returns how many it saved.
  */
 export async function syncInstallations(
   robot: Application,
@@ -30,6 +38,14 @@ export async function syncInstallations(
       repositorySelection: i.repository_selection,
       suspended: !!i.suspended_at,
     });
+    if (!i.suspended_at) {
+      try {
+        const count = await countRepositories(await robot.auth(i.id));
+        await store.setRepositoryCount(i.id, count);
+      } catch (error) {
+        robot.log.warn({ error, installation: i.id }, "repo count failed");
+      }
+    }
     saved++;
   }
   return saved;
@@ -64,6 +80,18 @@ export function installations({
     );
   }
 
+  async function refreshCount(context: Context) {
+    const id = context.payload.installation.id;
+    try {
+      await store.setRepositoryCount(
+        id,
+        await countRepositories(context.octokit),
+      );
+    } catch (error) {
+      context.log.warn({ error, installation: id }, "repo count failed");
+    }
+  }
+
   async function forget(context: Context, repos: { id: number }[]) {
     await store.forgetRepositories(repos.map((r) => r.id));
     for (const repo of repos) {
@@ -95,7 +123,10 @@ export function installations({
       "installation.new_permissions_accepted",
       "installation.unsuspend",
     ],
-    (context) => save(context, false),
+    async (context) => {
+      await save(context, false);
+      await refreshCount(context);
+    },
   );
   robot.on("installation.suspend", (context) => save(context, true));
 
@@ -110,5 +141,10 @@ export function installations({
 
   robot.on("installation_repositories.removed", (context) =>
     forget(context, context.payload.repositories_removed),
+  );
+
+  robot.on(
+    ["installation_repositories.added", "installation_repositories.removed"],
+    refreshCount,
   );
 }

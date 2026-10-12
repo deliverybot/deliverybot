@@ -1,9 +1,5 @@
 import { Response, NextFunction } from "express";
-import {
-  Dependencies,
-  Application,
-  InstallationRecord,
-} from "@deliverybot/core";
+import { Dependencies } from "@deliverybot/core";
 import { AuthedRequest, authenticate } from "./auth.js";
 import { timeAgoInWords } from "./util.js";
 
@@ -23,21 +19,6 @@ export function parseLogins(value: string | undefined): Set<string> {
 
 function ago(iso: string) {
   return timeAgoInWords(Date.parse(iso));
-}
-
-/** Repositories the app can access on an installation, or null if unknown. */
-async function repoCount(robot: Application, i: InstallationRecord) {
-  if (i.suspended) return null;
-  try {
-    const octokit = await robot.auth(i.id);
-    const { data } = await octokit.rest.apps.listReposAccessibleToInstallation({
-      per_page: 1,
-    });
-    return data.total_count;
-  } catch (error) {
-    robot.log.warn({ error, installation: i.id }, "admin: repo count failed");
-    return null;
-  }
 }
 
 /**
@@ -81,10 +62,9 @@ export function admin({
       store.list(),
       userService().list(),
     ]);
-    const counts = await Promise.all(installs.map((i) => repoCount(robot, i)));
-    const installations = installs.map((i, n) => ({
+    const installations = installs.map((i) => ({
       ...i,
-      repoCount: counts[n] === null ? "?" : counts[n],
+      repoCount: i.repositoryCount === null ? "?" : i.repositoryCount,
       installed: ago(i.createdAt),
     }));
     res.render("admin", {
@@ -93,7 +73,10 @@ export function admin({
       user: user(req),
       installations,
       hasInstallations: installations.length > 0,
-      totalRepos: counts.reduce<number>((sum, c) => sum + (c || 0), 0),
+      totalRepos: installs.reduce(
+        (sum, i) => sum + (i.repositoryCount || 0),
+        0,
+      ),
       users: users.map((u) => ({
         username: u.username,
         firstSeen: ago(u.createdAt),

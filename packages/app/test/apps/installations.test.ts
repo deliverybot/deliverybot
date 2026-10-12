@@ -23,8 +23,20 @@ describe("Installations", () => {
     await kv.put("queue/11-abc/jobs/w1", { json: "{}" });
   });
 
+  const count = (n: number) =>
+    nock("https://api.github.com")
+      .get("/installation/repositories")
+      .query({ per_page: 1 })
+      .reply(200, { total_count: n, repositories: [] });
+
+  afterEach(() => nock.cleanAll());
+
   it("saves new installations", async () => {
+    count(4);
     await receive("installation", { action: "created", installation });
+    expect((await store.list()).find((i) => i.id === 42)).toMatchObject({
+      repositoryCount: 4,
+    });
     expect(await store.get(42)).toEqual({
       id: 42,
       account: "octo-org",
@@ -34,9 +46,24 @@ describe("Installations", () => {
     });
   });
 
+  it("recounts repositories when they're added or removed", async () => {
+    count(1);
+    await receive("installation", { action: "created", installation });
+    count(2);
+    await receive("installation_repositories", {
+      action: "added",
+      installation,
+      repositories_added: [{ id: 3 }],
+    });
+    expect((await store.list()).find((i) => i.id === 42)).toMatchObject({
+      repositoryCount: 2,
+    });
+  });
+
   it("marks suspended installations", async () => {
     await receive("installation", { action: "suspend", installation });
     expect((await store.get(42))!.suspended).toBe(true);
+    count(1);
     await receive("installation", { action: "unsuspend", installation });
     expect((await store.get(42))!.suspended).toBe(false);
   });
@@ -79,6 +106,7 @@ describe("Installations", () => {
   });
 
   it("forgets deleted installations and their repositories", async () => {
+    count(2);
     await receive("installation", { action: "created", installation });
     await receive("installation", {
       action: "deleted",
@@ -103,6 +131,7 @@ describe("Installations", () => {
         },
         { id: 89, account: { slug: "enterprise" } },
       ]);
+    // Suspended installations aren't counted.
     expect(await syncInstallations(app.probot, store)).toBe(1);
     expect(await store.get(88)).toEqual({
       id: 88,
