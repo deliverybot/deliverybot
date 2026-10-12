@@ -28,18 +28,38 @@ describe("auto", () => {
       ["refs/*", "refs/tags/simple-tag"],
       ["refs/tags/*", "refs/tags/simple-tag"],
       ["refs/tags/v*", "refs/tags/v1.2.3"],
+      ["refs/heads/*", "refs/heads/feature/nested"],
+      ["refs/tags/v*-rc*", "refs/tags/v1.2.3-rc1"],
+      ["refs/tags/v?", "refs/tags/v2"],
+      ["refs/tags/v[0-9]*", "refs/tags/v10"],
+      ["refs/tags/v[!a-z]", "refs/tags/v2"],
+      ["refs/tags/v1.0", "refs/tags/v1.0"],
+      [["refs/heads/master", "refs/tags/*"], "refs/tags/v1"],
+      [["refs/tags/v*", "!refs/tags/v*a*"], "refs/tags/v2"],
+      [["pr"], "pr"],
     ];
     const unmatched = [
       ["refs/heads/staging", "refs/heads/master"],
       ["refs/tags/v", "refs/tags/v1.2.3"],
       ["refs/heads/*", "refs/tags/simple-tag"],
+      ["refs/tags/v*-rc*", "refs/tags/v1.2.3"],
+      ["refs/tags/v?", "refs/tags/v10"],
+      ["refs/tags/v[0-9]*", "refs/tags/vx"],
+      ["refs/tags/v[!a-z]", "refs/tags/va"],
+      ["refs/tags/v1.0", "refs/tags/v1x0"],
+      ["refs/tags/v[1", "refs/tags/v1"],
+      [["refs/tags/v*", "!refs/tags/v*a*"], "refs/tags/v2a2"],
+      [["!refs/tags/beta"], "refs/tags/v1"],
+      [[], "refs/heads/master"],
     ];
 
     matches.forEach((m) => {
-      it(`matches ${m[0]}`, () => expect(match(m[0], m[1])).toBe(true));
+      it(`matches ${m[0]} with ${m[1]}`, () =>
+        expect(match(m[0], m[1] as string)).toBe(true));
     });
     unmatched.forEach((m) => {
-      it(`unmatched ${m[0]}`, () => expect(match(m[0], m[1])).toBe(false));
+      it(`does not match ${m[0]} with ${m[1]}`, () =>
+        expect(match(m[0], m[1] as string)).toBe(false));
     });
   });
 

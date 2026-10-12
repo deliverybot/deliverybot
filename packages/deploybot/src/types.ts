@@ -18,7 +18,7 @@ export interface DeployBody {
 
 export interface Target {
   name: string;
-  auto_deploy_on: string;
+  auto_deploy_on: string | string[];
   auto_merge: boolean;
   task: string;
   payload: any;

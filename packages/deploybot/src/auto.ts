@@ -12,13 +12,50 @@ import { config, deploy, unmetChecks } from "./deploy.js";
 import { errorMessage } from "./pr-deploy.js";
 import { hash } from "./util.js";
 
-export function match(auto: string | undefined, ref: string) {
-  if (!auto) return false;
-  for (let i = 0; i < auto.length; i++) {
-    if (auto[i] === "*") return true;
-    if (auto[i] !== ref[i]) return false;
+/**
+ * Turns one glob pattern into an anchored regular expression. `*` matches any
+ * run of characters, including `/` so that `refs/heads/*` covers nested branch
+ * names, `?` matches a single character and `[...]` a character class.
+ */
+function globToRegExp(glob: string): RegExp {
+  let source = "";
+  for (let i = 0; i < glob.length; i++) {
+    const c = glob[i]!;
+    if (c === "*") {
+      source += ".*";
+    } else if (c === "?") {
+      source += ".";
+    } else if (c === "[" && glob.indexOf("]", i + 2) !== -1) {
+      const end = glob.indexOf("]", i + 2);
+      let set = glob.slice(i + 1, end).replace(/\\/g, "\\\\");
+      if (set[0] === "!") set = "^" + set.slice(1);
+      source += `[${set}]`;
+      i = end;
+    } else {
+      source += c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
   }
-  return auto.length === ref.length;
+  return new RegExp(`^${source}$`);
+}
+
+/**
+ * Reports whether a ref matches the `auto_deploy_on` setting, which is one
+ * glob or a list of them. In a list, a pattern starting with `!` excludes the
+ * refs it matches, so `[refs/tags/v*, "!refs/tags/v*-rc*"]` deploys every
+ * version tag except release candidates.
+ */
+export function match(auto: string | string[] | undefined, ref: string) {
+  if (!auto) return false;
+  const patterns = Array.isArray(auto) ? auto : [auto];
+  let matched = false;
+  for (const pattern of patterns) {
+    if (pattern.startsWith("!")) {
+      if (globToRegExp(pattern.slice(1)).test(ref)) return false;
+    } else if (globToRegExp(pattern).test(ref)) {
+      matched = true;
+    }
+  }
+  return matched;
 }
 
 /**
