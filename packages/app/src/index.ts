@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import type { Probot } from "probot";
 export { apps, main, slack, jobs } from "./apps/index.js";
+export { syncInstallations } from "./apps/installations.js";
 export { load, logger } from "@deliverybot/core";
 
 const pkg = JSON.parse(

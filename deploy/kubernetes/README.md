@@ -87,6 +87,13 @@ who signed in to the dashboard. Only the GitHub logins in the
 `ADMIN_GITHUB_LOGINS` environment variable can open it; everyone else gets a
 404.
 
+Installations are recorded from installation webhooks. To copy in ones made
+before that, or to repair missed webhooks, run once per environment:
+
+```sh
+kubectl -n deliverybot-staging exec deploy/web -- node packages/run/lib/sync-installations.js
+```
+
 ## Database
 
 CloudNativePG creates the `deliverybot` database and a `deliverybot-db-app`

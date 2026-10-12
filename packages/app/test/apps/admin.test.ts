@@ -57,10 +57,6 @@ describe("Admin", () => {
   it("lists installations, repository counts and users", async () => {
     const [, cookie] = await factory.login(app);
     nock("https://api.github.com")
-      .get("/app/installations")
-      .query(true)
-      .reply(200, []);
-    nock("https://api.github.com")
       .get("/installation/repositories")
       .query({ per_page: 1 })
       .reply(200, { total_count: 3, repositories: [] });
@@ -75,37 +71,6 @@ describe("Admin", () => {
     expect(response.text).toMatch(/<td class="p-2">\s*3\s*<span/);
     // The sign in above recorded the user.
     expect(response.text).toContain("https://github.com/Codertocat");
-  });
-
-  it("copies installations GitHub knows about", async () => {
-    const [, cookie] = await factory.login(app);
-    nock("https://api.github.com")
-      .get("/app/installations")
-      .query(true)
-      .reply(200, [
-        {
-          id: 88,
-          account: { login: "old-org", type: "Organization" },
-          repository_selection: "all",
-          suspended_at: null,
-          created_at: "2020-01-01T00:00:00Z",
-        },
-      ]);
-    nock("https://api.github.com")
-      .get("/installation/repositories")
-      .query({ per_page: 1 })
-      .times(2)
-      .reply(200, { total_count: 1, repositories: [] });
-
-    const response = await factory
-      .request(app)
-      .get("/_/admin")
-      .set("cookie", cookie);
-    expect(response.status).toBe(200);
-    expect(response.text).toContain("old-org");
-    expect(response.text).toMatch(/\d+ years ago/);
-    expect(await store.get(88)).toMatchObject({ account: "old-org" });
-    await store.delete(88);
   });
 
   it("shows repositories with their latest activity", async () => {

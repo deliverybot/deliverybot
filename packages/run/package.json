@@ -16,7 +16,8 @@
     "bundle": "webpack --config config/webpack.config.cjs",
     "bundle:watch": "webpack --config config/webpack.config.cjs --watch",
     "run": "node lib/server.js",
-    "worker": "node lib/worker.js"
+    "worker": "node lib/worker.js",
+    "sync-installations": "node lib/sync-installations.js"
   },
   "dependencies": {
     "@deliverybot/app": "0.7.2",

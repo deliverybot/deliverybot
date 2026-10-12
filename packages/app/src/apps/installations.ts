@@ -1,4 +1,39 @@
-import { Dependencies, Context, KVStore } from "@deliverybot/core";
+import {
+  Application,
+  Context,
+  Dependencies,
+  InstallationStore,
+  KVStore,
+} from "@deliverybot/core";
+
+/**
+ * Copies every installation GitHub lists for the app into the store, for
+ * installations made before they were tracked or whose webhooks were
+ * missed. Returns how many it saved.
+ */
+export async function syncInstallations(
+  robot: Application,
+  store: InstallationStore,
+) {
+  const octokit = await robot.auth();
+  const list = await octokit.paginate(octokit.rest.apps.listInstallations, {
+    per_page: 100,
+  });
+  let saved = 0;
+  for (const i of list) {
+    // Enterprise installations have no login.
+    if (!i.account || !("login" in i.account)) continue;
+    await store.upsert({
+      id: i.id,
+      account: i.account.login,
+      accountType: i.account.type,
+      repositorySelection: i.repository_selection,
+      suspended: !!i.suspended_at,
+    });
+    saved++;
+  }
+  return saved;
+}
 
 /**
  * Tracks GitHub App installations, which are Deliverybot's tenants, and the

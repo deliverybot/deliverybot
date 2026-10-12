@@ -76,37 +76,7 @@ export function admin({
     return { user: u.id, login: u.username, avatar: u.avatar };
   }
 
-  // Installations made before they were tracked, or whose webhooks were
-  // missed, are only known to GitHub. Copy them in before listing, and
-  // return when GitHub says each was installed.
-  async function syncInstallations(req: AuthedRequest) {
-    const installedAt = new Map<number, string>();
-    try {
-      const octokit = await robot.auth();
-      const list = await octokit.paginate(octokit.rest.apps.listInstallations, {
-        per_page: 100,
-      });
-      for (const i of list) {
-        const account =
-          i.account && "login" in i.account ? i.account : undefined;
-        if (!account) continue;
-        installedAt.set(i.id, i.created_at);
-        await store.upsert({
-          id: i.id,
-          account: account.login,
-          accountType: account.type,
-          repositorySelection: i.repository_selection,
-          suspended: !!i.suspended_at,
-        });
-      }
-    } catch (error) {
-      req.log.warn({ error }, "admin: installation sync failed");
-    }
-    return installedAt;
-  }
-
   async function index(req: AuthedRequest, res: Response) {
-    const installedAt = await syncInstallations(req);
     const [installs, users] = await Promise.all([
       store.list(),
       userService().list(),
@@ -115,7 +85,7 @@ export function admin({
     const installations = installs.map((i, n) => ({
       ...i,
       repoCount: counts[n] === null ? "?" : counts[n],
-      installed: ago(installedAt.get(i.id) || i.createdAt),
+      installed: ago(i.createdAt),
     }));
     res.render("admin", {
       title: "Admin",
