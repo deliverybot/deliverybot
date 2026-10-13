@@ -35,6 +35,7 @@ export const fixtures = {
   commitsMinimal: require("./fixtures/query-commits.minimal.json"),
   commitsFull: require("./fixtures/query-commits.full.json"),
   metricsFull: require("./fixtures/metrics.json"),
+  deploymentsFull: require("./fixtures/query-deployments.json"),
 };
 
 export const login = async (app: Application) => {
@@ -63,6 +64,14 @@ export const commitFullGql = () => gql(fixtures.commitFull);
 export const commitsMinimalGql = () => gql(fixtures.commitsMinimal);
 export const commitsFullGql = () => gql(fixtures.commitsFull);
 export const metricsGql = () => gql(fixtures.metricsFull);
+export const deploymentsGql = (variables?: any) =>
+  nock("https://api.github.com")
+    .post("/graphql", (body: any) =>
+      Object.entries(variables || {}).every(
+        ([k, v]) => JSON.stringify(body.variables[k]) === JSON.stringify(v),
+      ),
+    )
+    .reply(200, { data: fixtures.deploymentsFull });
 
 export const userInstallation = () =>
   nock("https://api.github.com")

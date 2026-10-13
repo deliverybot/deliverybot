@@ -1,0 +1,48 @@
+{
+  "repository": {
+    "deployments": {
+      "pageInfo": {
+        "hasNextPage": true,
+        "endCursor": "Y3Vyc29yOjI=",
+        "hasPreviousPage": false,
+        "startCursor": "Y3Vyc29yOjE="
+      },
+      "nodes": [
+        {
+          "id": "MDEwOkRlcGxveW1lbnQy",
+          "environment": "production",
+          "description": "Deploy to production",
+          "createdAt": "2019-11-03T12:00:00Z",
+          "creator": { "login": "Codertocat" },
+          "ref": { "name": "main" },
+          "commit": {
+            "oid": "6dcb09b5b57875f334f61aebed695e2e4193db5e",
+            "messageHeadline": "Fix all the bugs"
+          },
+          "latestStatus": {
+            "state": "FAILURE",
+            "logUrl": "https://example.com/logs/2",
+            "environmentUrl": null
+          }
+        },
+        {
+          "id": "MDEwOkRlcGxveW1lbnQx",
+          "environment": "staging",
+          "description": null,
+          "createdAt": "2019-11-02T12:00:00Z",
+          "creator": { "login": "Codertocat" },
+          "ref": null,
+          "commit": {
+            "oid": "7638417db6d59f3c431d3e1f261cc637155684cd",
+            "messageHeadline": "Add a feature"
+          },
+          "latestStatus": {
+            "state": "SUCCESS",
+            "logUrl": null,
+            "environmentUrl": "https://staging.example.com"
+          }
+        }
+      ]
+    }
+  }
+}

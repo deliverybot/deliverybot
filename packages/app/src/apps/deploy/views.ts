@@ -80,6 +80,64 @@ export async function Commits({
   );
 }
 
+export interface DeploymentsProps extends BaseProps {
+  options: queries.DeploymentsOptions;
+}
+
+export async function Deployments({
+  csrf,
+  path,
+  options,
+  repo,
+  user,
+  lock,
+}: DeploymentsProps) {
+  const { deployments, pagination } = await queries.deployments(
+    user.token,
+    repo.owner,
+    repo.repo,
+    options,
+  );
+  const environment = options.environment || "";
+  const link = (params: { [k: string]: string }) => {
+    const query = new URLSearchParams(params);
+    if (environment) query.set("environment", environment);
+    const qs = query.toString();
+    return qs ? `${path}?${qs}` : path;
+  };
+  const out = await Base(
+    { csrf, path, user, repo, branch: "", lock },
+    {
+      title: `${repo.owner}/${repo.repo} deployments`,
+      deployments,
+      hasDeployments: deployments.length > 0,
+      pagination: {
+        // Cursors from Pagination() are already URI encoded.
+        prev:
+          pagination.prev &&
+          link({ before: decodeURIComponent(pagination.prev) }),
+        next:
+          pagination.next &&
+          link({ after: decodeURIComponent(pagination.next) }),
+      },
+    },
+  );
+  // Offer the environments from the deploy config as filters. Templated ones
+  // only resolve at deploy time, so they can't be listed here.
+  const names: string[] = out.locking.targets
+    .filter((t: any) => t.lockable)
+    .map((t: any) => t.environment as string);
+  if (environment) names.push(environment);
+  const environments = names
+    .filter((name, i) => names.indexOf(name) === i)
+    .sort()
+    .map((name) => ({
+      name,
+      url: `${path}?environment=${encodeURIComponent(name)}`,
+    }));
+  return { ...out, environment, environments };
+}
+
 export interface CommitProps extends BaseProps {
   error?: any;
   sha: string;

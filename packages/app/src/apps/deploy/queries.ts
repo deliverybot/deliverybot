@@ -108,6 +108,30 @@ query deployments($owner:String!,$repo:String!) {
 }
 `;
 
+const DeploymentsQuery = () => `
+query deployments(
+  $owner: String!, $repo: String!, $environments: [String!],
+  $after: String, $before: String, $first: Int, $last: Int
+) {
+  repository(owner:$owner,name:$repo) {
+    deployments(
+      first:$first, last:$last, after:$after, before:$before,
+      environments:$environments,
+      orderBy:{field:CREATED_AT,direction:DESC}
+    ) {
+      pageInfo { hasNextPage endCursor hasPreviousPage startCursor }
+      nodes {
+        id environment description createdAt
+        creator { login }
+        ref { name }
+        commit { oid messageHeadline }
+        latestStatus { state logUrl environmentUrl }
+      }
+    }
+  }
+}
+`;
+
 interface Watches {
   [k: string]: Watch[];
 }
@@ -164,6 +188,64 @@ export async function metrics(
   // require('fs').writeFileSync(`./test/fixtures/metrics.json`, JSON.stringify(result, null, 2));
   const measures = Measures(result, start, end);
   return new Measurements(start, end, measures).toJSON();
+}
+
+export interface DeploymentsOptions {
+  environment?: string;
+  before?: string;
+  after?: string;
+  count: number;
+}
+
+export async function deployments(
+  token: string,
+  owner: string,
+  repo: string,
+  opts: DeploymentsOptions,
+) {
+  const variables: any = { owner, repo };
+  if (opts.environment) {
+    variables.environments = [opts.environment];
+  }
+  if (opts.before) {
+    variables.last = opts.count;
+    variables.before = opts.before;
+  } else if (opts.after) {
+    variables.first = opts.count;
+    variables.after = opts.after;
+  } else {
+    variables.first = opts.count;
+  }
+  const result = await gql(token, DeploymentsQuery(), variables);
+  return DeploymentList(owner, repo, result);
+}
+
+export function DeploymentList(owner: string, repo: string, data: any) {
+  const deployments = (
+    get(data, "repository.deployments.nodes", []) as any[]
+  ).map((node: any) => {
+    const createdAt = Date.parse(node.createdAt);
+    const sha: string = get(node, "commit.oid", "");
+    return {
+      id: node.id,
+      environment: node.environment,
+      description: node.description || "",
+      status: Status(get(node, "latestStatus.state")),
+      state: get(node, "latestStatus.state", "waiting").toLowerCase(),
+      creator: get(node, "creator.login"),
+      ref: get(node, "ref.name"),
+      sha,
+      shaShort: sha.substr(0, 7),
+      message: get(node, "commit.messageHeadline", ""),
+      commitUrl: sha && `https://github.com/${owner}/${repo}/commit/${sha}`,
+      logUrl: get(node, "latestStatus.logUrl"),
+      environmentUrl: get(node, "latestStatus.environmentUrl"),
+      createdAt,
+      createdAtWords: timeAgoInWords(createdAt),
+    };
+  });
+  const pagination = get(data, "repository.deployments.pageInfo", {});
+  return { deployments, pagination: Pagination(pagination) };
 }
 
 export function View(

@@ -2,7 +2,7 @@ import { Response } from "express";
 import { Dependencies } from "@deliverybot/core";
 import { WatchStore, EnvLockStore } from "@deliverybot/deploybot";
 import { AuthedRequest, authenticate, verifyRepo } from "../auth.js";
-import { Commits, Watch, Config, Metrics } from "./views.js";
+import { Commits, Watch, Config, Metrics, Deployments } from "./views.js";
 import { Promote, Deploy, SetLock } from "./commands.js";
 import { branch } from "../util.js";
 import { publishRepoUpdated } from "../watch.js";
@@ -14,6 +14,7 @@ export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
   const baseUrl = "/:owner/:repo";
   const configUrl = `${baseUrl}/config`;
   const metricsUrl = `${baseUrl}/metrics`;
+  const deploymentsUrl = `${baseUrl}/deployments`;
   const indexUrl = `${baseUrl}/branch/:branch`;
   const lockUrl = `${indexUrl}/lock`;
   const unlockUrl = `${indexUrl}/unlock`;
@@ -28,6 +29,29 @@ export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
   app.post(promoteUrl, csrf, authenticate, verifyRepo, promote);
   app.get(configUrl, csrf, authenticate, verifyRepo, config);
   app.get(metricsUrl, csrf, authenticate, verifyRepo, metrics);
+  app.get(deploymentsUrl, csrf, authenticate, verifyRepo, deployments);
+
+  async function deployments(req: AuthedRequest, res: Response) {
+    if (req.query.watch) {
+      res.json({ watch: false });
+      return;
+    }
+    const data = await Deployments({
+      path: req.path,
+      lock: lockStore,
+      csrf: req.csrfToken(),
+      user: req.user!,
+      repo: req.user!.repo!,
+      branch: "",
+      options: {
+        count: 25,
+        environment: queryString(req.query.environment),
+        before: queryString(req.query.before),
+        after: queryString(req.query.after),
+      },
+    });
+    res.render("deployments", data);
+  }
 
   async function metrics(req: AuthedRequest, res: Response) {
     if (req.query.watch) {

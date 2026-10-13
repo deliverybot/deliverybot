@@ -55,6 +55,53 @@ describe("Deploy", () => {
     expect(response.get("content-type")).toBe(json);
   });
 
+  it("lists deployments", async () => {
+    const scope = factory.deploymentsGql({ first: 25 });
+
+    const response = await factory
+      .request(app)
+      .get("/Codertocat/Hello-World/deployments")
+      .set("cookie", session);
+    expect(response.status).toBe(200);
+    expect(scope.isDone()).toBe(true);
+    expect(response.text).toContain("Fix all the bugs");
+    expect(response.text).toContain("failure");
+    expect(response.text).toContain("https://example.com/logs/2");
+    expect(response.text).toContain("https://staging.example.com");
+    expect(response.text).toContain(
+      "/Codertocat/Hello-World/deployments?after&#x3D;Y3Vyc29yOjI%3D",
+    );
+  });
+
+  it("filters deployments by environment", async () => {
+    const scope = factory.deploymentsGql({
+      environments: ["production"],
+      after: "Y3Vyc29yOjI=",
+    });
+
+    const response = await factory
+      .request(app)
+      .get("/Codertocat/Hello-World/deployments")
+      .query({ environment: "production", after: "Y3Vyc29yOjI=" })
+      .set("cookie", session);
+    expect(response.status).toBe(200);
+    expect(scope.isDone()).toBe(true);
+    expect(response.text).toContain("Environment: production");
+    // Paging keeps the filter.
+    expect(response.text).toContain(
+      "/Codertocat/Hello-World/deployments?after&#x3D;Y3Vyc29yOjI%3D&amp;environment&#x3D;production",
+    );
+  });
+
+  it("not watch deployments", async () => {
+    const response = await factory
+      .request(app)
+      .get("/Codertocat/Hello-World/deployments?watch=true")
+      .set("cookie", session);
+    expect(response.status).toBe(200);
+    expect(response.body.watch).toBe(false);
+  });
+
   it("gets config", async () => {
     const response = await factory
       .request(app)
