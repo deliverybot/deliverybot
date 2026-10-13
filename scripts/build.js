@@ -74,7 +74,6 @@ async function main() {
   }
 
   const watch = process.argv[2] == '--watch';
-  const publish = process.argv[2] == '--publish';
   const test = process.argv[2] == '--test';
 
   if (watch) {
@@ -118,13 +117,6 @@ async function main() {
     ]);
     await run('run', 'build');
     await run('run', 'bundle');
-  }
-
-  if (publish) {
-    console.log("\n\nPublishing...")
-    await run('app', 'publish');
-    await run('client', 'publish');
-    await run('core', 'publish');
   }
 
   console.log("done");

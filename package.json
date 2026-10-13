@@ -11,13 +11,11 @@
     "packages/run"
   ],
   "scripts": {
-    "bump": "./bump.sh",
     "start": "node ./scripts/build.js --watch",
     "test": "node ./scripts/build.js --test",
     "server": "node ./scripts/server.js",
     "format": "prettier --write 'packages/*/src/**/*.{ts,js}'",
-    "build": "node ./scripts/build.js",
-    "push": "node ./scripts/build.js --publish"
+    "build": "node ./scripts/build.js"
   },
   "prettier": {
     "trailingComma": "all"
@@ -25,8 +23,7 @@
   "devDependencies": {
     "@types/node": "22.20.5",
     "prettier": "3.9.9",
-    "smee-client": "^1.1.0",
-    "standard-version": "8.0.1"
+    "smee-client": "^1.1.0"
   },
   "resolutions": {
     "@types/express": "4.17.21",
