@@ -79,3 +79,41 @@ main {
     text-shadow:
       .25em 0 0 black,
       .5em 0 0 black;}}
+
+/* Dropdown menus with a filter input (see the filter controller). */
+.filter-menu {
+  width: 240px;
+}
+.filter-menu-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Searchable selects (see the select controller) keep Primer's form-select
+   look; Tom Select's own control box sits inside it without a border. */
+.ts-wrapper.form-select {
+  display: inline-block;
+  width: 160px;
+  vertical-align: middle;
+}
+.ts-wrapper.form-select .ts-control {
+  flex-wrap: nowrap;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  min-height: 0;
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  background: transparent;
+  box-shadow: none;
+}
+.ts-wrapper.form-select .ts-control > input {
+  font-size: inherit;
+  line-height: inherit;
+}
+.ts-wrapper.form-select .ts-dropdown {
+  margin-top: 4px;
+  font-size: 14px;
+}

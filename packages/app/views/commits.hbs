@@ -20,20 +20,28 @@
 
     <div class="d-flex">
       <div class="flex-auto">
-        <details class="dropdown details-reset details-overlay d-inline-block">
+        <details class="dropdown details-reset details-overlay d-inline-block"
+          data-controller="filter" data-action="toggle->filter#toggle keydown->filter#keydown">
           <summary class="btn btn-sm" aria-haspopup="true">
             <div class="dropdown-caret"></div>
             Branch: {{branch}}
           </summary>
-          <ul class="dropdown-menu dropdown-menu-se">
-            {{#each branches}}
-            <li>
-              <a href="/{{../owner}}/{{../repo}}/branch/{{branchencode name}}" class="dropdown-item">
-                <code>{{name}}</code>
-              </a>
-            </li>
-            {{/each}}
-          </ul>
+          <div class="dropdown-menu dropdown-menu-se filter-menu">
+            <div class="px-2 pb-1">
+              <input type="text" class="form-control input-sm input-block" placeholder="Filter branches"
+                aria-label="Filter branches" autocomplete="off" data-target="filter.input" data-action="input->filter#filter">
+            </div>
+            <ul class="list-style-none filter-menu-list">
+              {{#each branches}}
+              <li data-target="filter.item">
+                <a href="/{{../owner}}/{{../repo}}/branch/{{branchencode name}}" class="dropdown-item">
+                  <code>{{name}}</code>
+                </a>
+              </li>
+              {{/each}}
+            </ul>
+            <div class="px-3 py-1 text-gray d-none" data-target="filter.empty">No matching branches</div>
+          </div>
         </details>
       </div>
       <div data-target="commits.lockstates">
