@@ -26,10 +26,10 @@
     "@types/jsonschema": "^1.1.1",
     "@types/mustache": "^4.2.6",
     "@types/picomatch": "4.0.3",
-    "@types/supertest": "2.0.8",
+    "@types/supertest": "7.2.1",
     "nock": "15.0.1",
     "probot": "14.3.2",
-    "supertest": "4.0.2",
+    "supertest": "7.3.1",
     "typescript": "5.6.3",
     "vitest": "4.1.11"
   },
