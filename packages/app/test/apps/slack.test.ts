@@ -180,8 +180,8 @@ describe("Slack", () => {
       const responded = new Promise<any>((resolve) =>
         nock("https://hooks.slack.test")
           .post("/response")
-          .reply(200, (uri, body) => {
-            resolve(body);
+          .reply(200, async (request: Request) => {
+            resolve(await request.json());
             return {};
           }),
       );
@@ -203,8 +203,8 @@ describe("Slack", () => {
     const responded = new Promise<any>((resolve) =>
       nock("https://hooks.slack.test")
         .post("/response")
-        .reply(200, (uri, body) => {
-          resolve(body);
+        .reply(200, async (request: Request) => {
+          resolve(await request.json());
           return {};
         }),
     );
