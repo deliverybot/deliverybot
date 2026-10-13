@@ -190,6 +190,7 @@ export async function deploy(
       log.info({ ...logCtx, error, body }, "deploy: auto merge conflict");
       throw new AutoMergeError(
         `Could not merge ${repository.data.default_branch} into ${branch}: resolve the conflicts and deploy again`,
+        false,
       );
     }
     if (error.status === 409) {
@@ -202,12 +203,14 @@ export async function deploy(
 
   // With auto_merge GitHub may merge the default branch into the ref instead of
   // creating a deployment. The merge pushes a new commit, which is the one to
-  // deploy once its checks pass.
+  // deploy once its checks pass. Callers that know who asked for the deploy
+  // queue it with queueAfterMerge.
   // https://docs.github.com/en/rest/deployments/deployments#create-a-deployment
   if (!("id" in created.data)) {
     log.info({ ...logCtx, body }, "deploy: auto merged default branch");
     throw new AutoMergeError(
       `Merged ${repository.data.default_branch} into ${branch} instead of deploying: deploy the new commit once its checks pass`,
+      true,
     );
   }
   log.info({ ...logCtx, body }, "deploy: successful");

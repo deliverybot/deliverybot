@@ -234,21 +234,6 @@ describe("pr-deploy", () => {
     expect(error.isDone()).toBe(true);
   });
 
-  test("explains an auto merge instead of a deployment", async () => {
-    factory.config({ valid: true });
-    factory.permission({ admin: true });
-    const deploy = factory.mergedDeploy();
-
-    const error = factory.errorComment(
-      expect.stringMatching(
-        /^@Codertocat Merged master into .+ instead of deploying: deploy the new commit once its checks pass\.$/,
-      ),
-    );
-    await probot.receive(factory.prDeployComment("review"));
-    expect(deploy.isDone()).toBe(true);
-    expect(error.isDone()).toBe(true);
-  });
-
   test("error comment on api error", async () => {
     factory.config({ valid: true });
     factory.permission({ admin: true });
@@ -393,20 +378,6 @@ describe("pr-deploy queueing", () => {
     }
   });
 
-  test("tells when an auto merge replaced the queued deploy", async () => {
-    await queueDeploy();
-
-    factory.gitRef();
-    factory.noDeployments();
-    const merge = factory.mergedDeploy();
-    const merged = factory.errorComment(
-      "@Codertocat Merged master into changes instead of deploying: deploy the new commit once its checks pass.",
-    );
-    await probot.receive(factory.checkRun());
-    expect(merge.isDone()).toBe(true);
-    expect(merged.isDone()).toBe(true);
-  });
-
   test("doesn't queue when a required check already failed", async () => {
     const refused = factory.deployChecksUnmet(failed);
     const reply = factory.errorComment(
@@ -419,5 +390,86 @@ describe("pr-deploy queueing", () => {
     const deploy = factory.deploy();
     await probot.receive(factory.checkRun());
     expect(deploy.isDone()).toBe(false);
+  });
+
+  describe("after an auto merge", () => {
+    const mergeSha = "1111111111111111111111111111111111111111";
+    const merged =
+      "@Codertocat `changes` was behind, so GitHub merged the default branch into it first. I'll deploy the merge commit to `review` once its checks pass.";
+    const mergeCheckRun = () => {
+      const event = factory.checkRun();
+      return {
+        ...event,
+        payload: {
+          ...event.payload,
+          check_run: {
+            ...event.payload.check_run,
+            head_sha: mergeSha,
+            check_suite: {
+              ...event.payload.check_run.check_suite,
+              head_sha: mergeSha,
+            },
+          },
+        },
+      };
+    };
+
+    // The immediate re-check of the merge commit finds its checks pending.
+    function mergeCommitPending() {
+      factory.movedRef();
+      factory.noDeployments();
+      return factory.deployChecksUnmet(pending);
+    }
+
+    async function deploysMergeCommit() {
+      factory.movedRef();
+      factory.noDeployments();
+      const deploy = factory.deploy();
+      await probot.receive(mergeCheckRun());
+      expect(deploy.isDone()).toBe(true);
+    }
+
+    test("queues the merge commit when /deploy merges", async () => {
+      const merge = factory.mergedDeploy();
+      factory.movedRef();
+      const reply = factory.errorComment(merged);
+      const recheck = mergeCommitPending();
+      await probot.receive(factory.prDeployComment("review"));
+      expect(merge.isDone()).toBe(true);
+      expect(reply.isDone()).toBe(true);
+      expect(recheck.isDone()).toBe(true);
+
+      await deploysMergeCommit();
+    });
+
+    test("follows a queued deploy onto the merge commit", async () => {
+      await queueDeploy();
+
+      factory.gitRef();
+      factory.noDeployments();
+      const merge = factory.mergedDeploy();
+      factory.movedRef();
+      const reply = factory.errorComment(merged);
+      const recheck = mergeCommitPending();
+      await probot.receive(factory.checkRun());
+      expect(merge.isDone()).toBe(true);
+      expect(reply.isDone()).toBe(true);
+      expect(recheck.isDone()).toBe(true);
+
+      await deploysMergeCommit();
+    });
+
+    test("tells a queued deploy about a merge conflict", async () => {
+      await queueDeploy();
+
+      factory.gitRef();
+      factory.noDeployments();
+      factory.conflictDeploy("Conflict merging master into changes.");
+      const reply = factory.errorComment(
+        "@Codertocat Could not merge master into changes: resolve the conflicts and deploy again.",
+      );
+      await probot.receive(factory.checkRun());
+      expect(reply.isDone()).toBe(true);
+    });
   });
 });

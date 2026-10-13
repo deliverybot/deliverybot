@@ -10,7 +10,7 @@ import { WatchStore, EnvLockStore, watchEvent } from "./store.js";
 import { PayloadRepository, Watch } from "./types.js";
 import { listChecks, logCtx } from "./util.js";
 import { config, deploy, unmetChecks } from "./deploy.js";
-import { dashboardUrl, errorMessage } from "./pr-deploy.js";
+import { dashboardUrl, errorMessage, queueAfterMerge } from "./pr-deploy.js";
 import { hash } from "./util.js";
 
 // In bash mode `*` also matches `/`, so `refs/heads/*` covers nested branch
@@ -259,13 +259,33 @@ export function auto(
           );
           return true;
         case "AutoMergeError":
-          // The merge commit arrives as a new push or pull request
-          // synchronize event, which adds its own watch.
           context.log.info(
             logCtx(context, { target, ref, error }),
             "auto deploy: auto merge",
           );
-          await tellRequester(context, watch, errorMessage(error, ref));
+          if (!watch.requestedBy) {
+            // The merge commit arrives as a new push or pull request
+            // synchronize event, which adds its own watch.
+            return true;
+          }
+          // A queued /deploy follows the branch onto the merge commit, or
+          // gives up on a merge conflict.
+          if (error.merged) {
+            const queued = await queueAfterMerge(
+              context,
+              watchStore,
+              watch,
+              (b) => tellRequester(context, watch, b),
+            );
+            // Check the merge commit now rather than publishing a push_watch:
+            // this watch's lock covers the same ref and target, so a push_watch
+            // handled inline would wait on it forever.
+            if (await processWatch(context, queued)) {
+              await watchStore.delWatch(queued.repository.id, queued);
+            }
+          } else {
+            await tellRequester(context, watch, errorMessage(error, ref));
+          }
           return true;
         default:
           context.log.error(
