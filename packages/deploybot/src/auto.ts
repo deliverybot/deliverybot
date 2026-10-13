@@ -1,4 +1,5 @@
 import { randomUUID as uuid } from "crypto";
+import picomatch from "picomatch";
 import {
   Application,
   Context,
@@ -12,13 +13,28 @@ import { config, deploy, unmetChecks } from "./deploy.js";
 import { errorMessage } from "./pr-deploy.js";
 import { hash } from "./util.js";
 
-export function match(auto: string | undefined, ref: string) {
+// In bash mode `*` also matches `/`, so `refs/heads/*` covers nested branch
+// names as it always has.
+const globOptions: picomatch.PicomatchOptions = { bash: true, dot: true };
+
+/**
+ * Reports whether a ref matches the `auto_deploy_on` setting, which is one
+ * glob or a list of them. In a list, a pattern starting with `!` excludes the
+ * refs it matches, so `[refs/tags/v*, "!refs/tags/v*-rc*"]` deploys every
+ * version tag except release candidates.
+ */
+export function match(auto: string | string[] | undefined, ref: string) {
   if (!auto) return false;
-  for (let i = 0; i < auto.length; i++) {
-    if (auto[i] === "*") return true;
-    if (auto[i] !== ref[i]) return false;
+  const patterns = Array.isArray(auto) ? auto : [auto];
+  let matched = false;
+  for (const pattern of patterns) {
+    if (pattern.startsWith("!")) {
+      if (picomatch.isMatch(ref, pattern.slice(1), globOptions)) return false;
+    } else if (picomatch.isMatch(ref, pattern, globOptions)) {
+      matched = true;
+    }
   }
-  return auto.length === ref.length;
+  return matched;
 }
 
 /**
