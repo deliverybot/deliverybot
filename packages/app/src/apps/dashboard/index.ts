@@ -1,7 +1,7 @@
 import { AuthedRequest, authenticate } from "../auth.js";
 import { Response } from "express";
 import { Dependencies } from "@deliverybot/core";
-import { Index, Repos, InstallSettings, MySettings } from "./views.js";
+import { Index, Repos, MySettings } from "./views.js";
 
 export function dashboard({ app, csrf }: Dependencies) {
   async function index(req: AuthedRequest, res: Response) {
@@ -23,16 +23,6 @@ export function dashboard({ app, csrf }: Dependencies) {
     return res.render("repos", data);
   }
 
-  async function installSettings(req: AuthedRequest, res: Response) {
-    const { name } = req.params;
-    const data = await InstallSettings({
-      user: req.user!,
-      csrf: req.csrfToken(),
-      name,
-    });
-    res.render("install-settings", data);
-  }
-
   async function mySettings(req: AuthedRequest, res: Response) {
     const data = await MySettings({
       user: req.user!,
@@ -44,5 +34,4 @@ export function dashboard({ app, csrf }: Dependencies) {
   app.get("/", csrf, authenticate, index);
   app.get("/settings", csrf, authenticate, mySettings);
   app.get("/:name", csrf, authenticate, repos);
-  app.get("/settings/:name", csrf, authenticate, installSettings);
 }
