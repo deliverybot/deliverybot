@@ -15,11 +15,11 @@ export function withPreview<T>(arg: T): T {
   return arg as T;
 }
 
+const listFormat = new Intl.ListFormat("en-GB", { type: "conjunction" });
+
 /** Formats check names for a reply: `a`, `a` and `b`, `a`, `b` and `c`. */
 export function listChecks(names: string[]) {
-  const quoted = names.map((n) => `\`${n}\``);
-  if (quoted.length < 2) return quoted.join("");
-  return `${quoted.slice(0, -1).join(", ")} and ${quoted[quoted.length - 1]}`;
+  return listFormat.format(names.map((n) => `\`${n}\``));
 }
 
 export function logCtx(context: Context, params: any) {
