@@ -26,20 +26,40 @@ export function parseDeployCommand(
   return { target: match[1] };
 }
 
+// Every mention of the config file in a reply links to its reference docs.
+const configDocs = "https://deliverybot.dev/docs/configuration/";
+const configFile = `[\`.github/deploy.yml\`](${configDocs})`;
+
+/**
+ * The dashboard page for a repository, or undefined when this deployment of
+ * Deliverybot has no BASE_URL to link to.
+ */
+export function dashboardUrl(
+  baseUrl: string | undefined,
+  repository: { full_name: string },
+) {
+  if (!baseUrl) return undefined;
+  return `${baseUrl.replace(/\/+$/, "")}/${repository.full_name}`;
+}
+
 function formatTargets(targets: string[]) {
   return targets.length
     ? targets.map((t) => `\`${t}\``).join(", ")
-    : "none, add one to `.github/deploy.yml`";
+    : `none, add one to ${configFile}`;
 }
 
 /**
  * Turns a deploy failure into a reply that says what went wrong and what to
- * do about it.
+ * do about it, linking to the dashboard when there is one.
  */
-export function errorMessage(error: any, ref: string): string {
+export function errorMessage(
+  error: any,
+  ref: string,
+  dashboard?: string,
+): string {
   if (error instanceof UnknownTargetError) {
     return (
-      `There is no \`${error.target}\` target in \`.github/deploy.yml\` on \`${ref}\`.\n\n` +
+      `There is no \`${error.target}\` target in ${configFile} on \`${ref}\`.\n\n` +
       `Available targets: ${formatTargets(error.targets)}.`
     );
   }
@@ -47,13 +67,16 @@ export function errorMessage(error: any, ref: string): string {
     const env = error.environment
       ? `\`${error.environment}\``
       : "This environment";
-    return `${env} is locked, so nothing was deployed. Unlock it on the Deliverybot dashboard and comment again.`;
+    const where = dashboard
+      ? `[Deliverybot dashboard](${dashboard})`
+      : "Deliverybot dashboard";
+    return `${env} is locked, so nothing was deployed. Unlock it on the ${where} and comment again.`;
   }
   if (error?.status === "ConfigError") {
-    return `\`.github/deploy.yml\` on \`${ref}\` is invalid: ${error.message}`;
+    return `${configFile} on \`${ref}\` is invalid: ${error.message}`;
   }
   if (error?.status === 404 && /contents/.test(error?.request?.url || "")) {
-    return `\`.github/deploy.yml\` wasn't found on \`${ref}\`.`;
+    return `${configFile} wasn't found on \`${ref}\`.`;
   }
   if (error?.status === 409) {
     return `GitHub refused the deployment, usually because required checks haven't passed yet: ${error.message}`;
@@ -78,6 +101,7 @@ export async function handlePRDeploy(
   kv: EnvLockStore,
   watchStore: WatchStore,
   publish: (event: WebhookEvent) => Promise<any>,
+  baseUrl?: string,
 ) {
   context.log.info(logCtx(context, { command }), "pr deploy: handling command");
   const commentId: number | undefined = context.payload.comment?.id;
@@ -197,7 +221,13 @@ export async function handlePRDeploy(
     );
   } catch (error) {
     if (pr && target && (await queue(error, target, pr))) return;
-    await reply(errorMessage(error, ref || "this branch"));
+    await reply(
+      errorMessage(
+        error,
+        ref || "this branch",
+        dashboardUrl(baseUrl, context.payload.repository),
+      ),
+    );
   }
 }
 
@@ -217,6 +247,7 @@ export function prDeploy(
   locker: EnvLockStore,
   watchStore: WatchStore,
   publish: (event: WebhookEvent) => Promise<any>,
+  baseUrl?: string,
 ) {
   // Only `/deploy` comments need work, so don't queue every other comment
   // and edit ahead of them.
@@ -233,6 +264,7 @@ export function prDeploy(
       locker,
       watchStore,
       publish,
+      baseUrl,
     );
   });
 }

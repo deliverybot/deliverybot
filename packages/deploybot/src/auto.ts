@@ -10,7 +10,7 @@ import { WatchStore, EnvLockStore, watchEvent } from "./store.js";
 import { PayloadRepository, Watch } from "./types.js";
 import { listChecks, logCtx } from "./util.js";
 import { config, deploy, unmetChecks } from "./deploy.js";
-import { errorMessage } from "./pr-deploy.js";
+import { dashboardUrl, errorMessage } from "./pr-deploy.js";
 import { hash } from "./util.js";
 
 // In bash mode `*` also matches `/`, so `refs/heads/*` covers nested branch
@@ -47,6 +47,7 @@ export function auto(
   watchStore: WatchStore,
   envLockStore: EnvLockStore,
   publish: (event: WebhookEvent) => Promise<any>,
+  baseUrl?: string,
 ) {
   /**
    * Add watch adds a watch on a specific ref, sha and repository.
@@ -240,14 +241,22 @@ export function auto(
             logCtx(context, { target, ref, error }),
             "auto deploy: environment locked",
           );
-          await tellRequester(context, watch, errorMessage(error, ref));
+          await tellRequester(
+            context,
+            watch,
+            errorMessage(error, ref, dashboardUrl(baseUrl, watch.repository)),
+          );
           return true; // We don't wait for "unlock" events and redeploy.
         case "ConfigError":
           context.log.info(
             logCtx(context, { target, ref, error }),
             "auto deploy: target config error",
           );
-          await tellRequester(context, watch, errorMessage(error, ref));
+          await tellRequester(
+            context,
+            watch,
+            errorMessage(error, ref, dashboardUrl(baseUrl, watch.repository)),
+          );
           return true;
         default:
           context.log.error(
