@@ -15,6 +15,13 @@ export function withPreview<T>(arg: T): T {
   return arg as T;
 }
 
+/** Formats check names for a reply: `a`, `a` and `b`, `a`, `b` and `c`. */
+export function listChecks(names: string[]) {
+  const quoted = names.map((n) => `\`${n}\``);
+  if (quoted.length < 2) return quoted.join("");
+  return `${quoted.slice(0, -1).join(", ")} and ${quoted[quoted.length - 1]}`;
+}
+
 export function logCtx(context: Context, params: any) {
   return {
     context: {

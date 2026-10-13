@@ -7,7 +7,7 @@ import {
 } from "@deliverybot/core";
 import { WatchStore, EnvLockStore, watchEvent } from "./store.js";
 import { PayloadRepository, Watch } from "./types.js";
-import { logCtx } from "./util.js";
+import { listChecks, logCtx } from "./util.js";
 import { config, deploy, unmetChecks } from "./deploy.js";
 import { errorMessage } from "./pr-deploy.js";
 import { hash } from "./util.js";
@@ -209,7 +209,7 @@ export function auto(
             await tellRequester(
               context,
               watch,
-              `${failed.map((c) => `\`${c}\``).join(", ")} failed, so the queued deploy to \`${target}\` was cancelled.`,
+              `${listChecks(failed)} failed, so the queued deploy to \`${target}\` was cancelled.`,
             );
             return true;
           }

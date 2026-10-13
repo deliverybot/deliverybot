@@ -8,7 +8,7 @@ import {
 import { EnvLockStore, WatchStore, watchEvent } from "./store.js";
 import { config, deploy, unmetChecks } from "./deploy.js";
 import { LockError, UnknownTargetError, Watch } from "./types.js";
-import { logCtx, canWrite } from "./util.js";
+import { logCtx, canWrite, listChecks } from "./util.js";
 
 type PullRequest = RestEndpointMethodTypes["pulls"]["get"]["response"]["data"];
 
@@ -143,7 +143,7 @@ export async function handlePRDeploy(
     );
     await watchStore.addWatch(watch.repository.id, watch);
     await reply(
-      `Waiting for ${checks.pending.map((c) => `\`${c}\``).join(", ")} to pass, ` +
+      `Waiting for ${listChecks(checks.pending)} to pass, ` +
         `then I'll deploy to \`${target}\`.`,
     );
     // A check may have finished while this ran, so look once more now.

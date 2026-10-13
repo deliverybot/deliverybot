@@ -1,6 +1,7 @@
 import * as factory from "../factory.js";
 import { app } from "../app.js";
 import { parseDeployCommand } from "../../src/pr-deploy.js";
+import { listChecks } from "../../src/util.js";
 
 const probot = app.probot;
 
@@ -34,6 +35,16 @@ describe("parseDeployCommand", () => {
       expect(parseDeployCommand(body)).toBeUndefined();
     },
   );
+});
+
+describe("listChecks", () => {
+  test.each([
+    [["a"], "`a`"],
+    [["a", "b"], "`a` and `b`"],
+    [["a", "b", "c"], "`a`, `b` and `c`"],
+  ])("lists %j", (names, expected) => {
+    expect(listChecks(names)).toBe(expected);
+  });
 });
 
 describe("pr-deploy", () => {
