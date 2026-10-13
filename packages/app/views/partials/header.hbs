@@ -19,7 +19,9 @@
     <a href="/">
       <h3 class="text-mono" style="display: inline;">deliverybot</h3>
     </a>
-    <span class="Label Label--outline v-align-middle ml-2 text-gray-light">v{{info.version}}</span>
+    {{#if info.commit}}
+    <a href="{{info.commitUrl}}" target="_blank" class="Label Label--outline v-align-middle ml-2 text-gray-light text-mono">{{info.commit}}</a>
+    {{/if}}
   </div>
   <div>
     <a target="_blank" class="mr-2" href="{{info.documentation}}">Docs</a>
