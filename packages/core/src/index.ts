@@ -34,6 +34,7 @@ export {
   Application,
   Context,
   Dispatcher,
+  EventFilter,
   Octokit,
   WebhookEvent,
   WebhookPayload,

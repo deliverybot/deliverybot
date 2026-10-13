@@ -324,6 +324,23 @@ export function auto(
     );
   });
 
+  // Finished checks only matter for a commit with a watch on it, and most
+  // have none: every commit in a repository without auto deploys, or
+  // without a deploy.yml at all. A watch is stored before its checks are
+  // first looked at, so a check that finishes later still finds it.
+  app.ignore(async (event) => {
+    const payload: any = event.payload;
+    const sha =
+      event.name === "status"
+        ? payload.sha
+        : event.name === "check_run"
+          ? payload.check_run?.check_suite?.head_sha
+          : undefined;
+    if (!sha || !payload.repository) return false;
+    const watches = await watchStore.listWatchBySha(payload.repository.id, sha);
+    return watches.length === 0;
+  });
+
   // Status events emit different watches to auto-deploy code.
   app.on("status", async (context) => {
     await emitWatches(

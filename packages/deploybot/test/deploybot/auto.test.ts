@@ -176,6 +176,30 @@ describe("auto", () => {
     expect(deploy.isDone()).toBe(true);
   });
 
+  test("drops finished checks on commits without a watch", async () => {
+    const seen: string[] = [];
+    probot.onAny(async (context) => {
+      seen.push(context.name);
+    });
+    await probot.receive(factory.checkRun("completed"));
+    await probot.receive(factory.status("success"));
+    expect(seen).toEqual([]);
+  });
+
+  test("drops pull request actions that don't deploy", async () => {
+    const seen: string[] = [];
+    probot.onAny(async (context) => {
+      if (context.name === "pull_request") seen.push(context.payload.action);
+    });
+    for (const action of ["labeled", "edited", "review_requested"]) {
+      await probot.receive({
+        ...factory.prOpened(),
+        payload: { ...factory.prOpened().payload, action },
+      });
+    }
+    expect(seen).toEqual([]);
+  });
+
   test("discards if not the latest", async () => {
     factory.config({ valid: true });
     factory.noDeployments();

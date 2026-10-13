@@ -7,6 +7,16 @@ import { EnvLockStore, WatchStore } from "./store.js";
 export function deploybot({ robot, kvService, lockService }: Dependencies) {
   const lockStore = new EnvLockStore(kvService);
   const watchStore = new WatchStore(kvService);
+
+  // Only these pull request actions start or end a deployment. The rest
+  // (labels, reviews, edits) would be queued for nothing.
+  const prActions = ["opened", "synchronize", "closed"];
+  robot.ignore(
+    (event) =>
+      event.name === "pull_request" &&
+      !prActions.includes((event.payload as any).action),
+  );
+
   prClose(robot);
   prDeploy(robot, lockStore, watchStore, robot.receive.bind(robot));
   auto(robot, lockService, watchStore, lockStore, robot.receive.bind(robot));
