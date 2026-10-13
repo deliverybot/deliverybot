@@ -39,7 +39,12 @@ export async function freshToken<T extends GitHubToken>(
       refresh_token: github.refreshToken,
     }),
   });
-  const body = await resp.json();
+  const body = (await resp.json()) as {
+    access_token?: string;
+    refresh_token?: string;
+    expires_in?: number;
+    error?: string;
+  };
   if (!body.access_token) {
     throw new Error(`GitHub token refresh failed: ${body.error}`);
   }
