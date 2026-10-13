@@ -67,25 +67,6 @@ export async function Repos({ user, name, query, csrf }: ReposProps) {
   });
 }
 
-interface InstallSettingsProps extends BaseProps {
-  name: string;
-}
-
-export async function InstallSettings({
-  user,
-  csrf,
-  name,
-}: InstallSettingsProps) {
-  const install = await queries.install(user, name);
-
-  return Base({
-    user,
-    csrf,
-    title: `${name} settings`,
-    install,
-  });
-}
-
 export async function MySettings({ user, csrf }: BaseProps) {
   return Base({
     user,
