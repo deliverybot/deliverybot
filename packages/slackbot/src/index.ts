@@ -64,7 +64,11 @@ export function slackbot({ app, kvService, config }: Dependencies) {
         redirect_uri: redirectUri,
       }),
     });
-    const body = await resp.json();
+    const body = (await resp.json()) as {
+      ok?: boolean;
+      error?: string;
+      authed_user?: { id?: string };
+    };
     const userId = body.ok && body.authed_user && body.authed_user.id;
     if (!userId) {
       req.log.error({ error: body.error }, "slack callback failed");

@@ -103,11 +103,13 @@ export async function verifyRepo(
 export function auth({ app, csrf, userService, config }: Dependencies) {
   const loginUrl = `https://github.com/login/oauth/authorize?scope=user&client_id=${config.githubClientId}&redirect_uri=${config.baseUrl}/login/cb`;
 
-  async function accessToken(code: string): Promise<{
+  type AccessTokenResponse = {
     access_token?: string;
     refresh_token?: string;
     expires_in?: number;
-  }> {
+  };
+
+  async function accessToken(code: string): Promise<AccessTokenResponse> {
     const resp = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
@@ -120,7 +122,7 @@ export function auth({ app, csrf, userService, config }: Dependencies) {
         code,
       }),
     });
-    return resp.json();
+    return (await resp.json()) as AccessTokenResponse;
   }
 
   async function callback(req: Request, res: Response) {
