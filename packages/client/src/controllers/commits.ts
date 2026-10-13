@@ -33,7 +33,16 @@ export class CommitsController extends RefreshController {
       }
       if (el.getAttribute("data-hash") !== data.hash) {
         el.setAttribute("data-hash", data.hash);
+        // Re-rendering replaces any open popover (like the lock modal), so
+        // reopen the ones the user had open.
+        const open = Array.from(el.querySelectorAll("details[open][id]")).map(
+          (d) => d.id,
+        );
         el.innerHTML = partials[partial]!(data);
+        open.forEach((id) => {
+          const details = el.querySelector(`details#${CSS.escape(id)}`);
+          if (details) details.setAttribute("open", "");
+        });
       }
     };
 
