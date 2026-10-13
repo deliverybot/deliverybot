@@ -70,4 +70,8 @@ export interface Watch {
   sha: string;
   ref: string;
   prNumber?: number;
+  // Set when someone queued this deploy with `/deploy` on a pull request
+  // before its required checks had passed. Holds their login, so they can be
+  // told if the queued deploy can't go out.
+  requestedBy?: string;
 }

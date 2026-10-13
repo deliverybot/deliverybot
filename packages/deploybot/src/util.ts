@@ -15,6 +15,13 @@ export function withPreview<T>(arg: T): T {
   return arg as T;
 }
 
+const listFormat = new Intl.ListFormat("en-GB", { type: "conjunction" });
+
+/** Formats check names for a reply: `a`, `a` and `b`, `a`, `b` and `c`. */
+export function listChecks(names: string[]) {
+  return listFormat.format(names.map((n) => `\`${n}\``));
+}
+
 export function logCtx(context: Context, params: any) {
   return {
     context: {

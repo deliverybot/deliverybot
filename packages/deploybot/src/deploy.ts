@@ -195,3 +195,26 @@ export async function deploy(
     throw error;
   }
 }
+
+/**
+ * Reads the required contexts GitHub listed when it refused a deployment
+ * with a 409. Returns undefined when the refusal wasn't about required
+ * checks, such as a merge conflict from auto_merge.
+ */
+export function unmetChecks(
+  error: any,
+): { failed: string[]; pending: string[] } | undefined {
+  if (error?.status !== 409) return undefined;
+  const errors: any[] = error.response?.data?.errors || [];
+  const contexts: { context: string; state: string }[] = errors.flatMap(
+    (e) => (e?.field === "required_contexts" && e.contexts) || [],
+  );
+  if (!contexts.length) return undefined;
+  const failed = contexts
+    .filter((c) => c.state === "failure" || c.state === "error")
+    .map((c) => c.context);
+  const pending = contexts
+    .filter((c) => c.state !== "success" && !failed.includes(c.context))
+    .map((c) => c.context);
+  return { failed, pending };
+}
