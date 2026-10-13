@@ -1,15 +1,16 @@
-import * as fs from "fs";
-import * as path from "path";
 import type { Probot } from "probot";
 export { apps, main, slack, jobs } from "./apps/index.js";
 export { syncInstallations } from "./apps/installations.js";
 export { load, logger } from "@deliverybot/core";
 
-const pkg = JSON.parse(
-  fs.readFileSync(path.join(import.meta.dirname, "..", "package.json"), "utf8"),
-);
+// The image build sets COMMIT_SHA to the commit it was built from.
+const commit = process.env.COMMIT_SHA || "";
+
 export const info: { [k: string]: string } = {
-  version: pkg.version,
+  commit: commit.slice(0, 7),
+  commitUrl: commit
+    ? `https://github.com/deliverybot/deliverybot/commit/${commit}`
+    : "",
   homepage: "https://deliverybot.dev",
   blog: "https://deliverybot.dev/blog/",
   integrations: "https://deliverybot.dev/integrations/",

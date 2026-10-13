@@ -18,5 +18,8 @@ WORKDIR /app
 COPY --from=build --chown=node:node /app /app
 # Numeric so Kubernetes can verify runAsNonRoot. 1000 is the `node` user.
 USER 1000:1000
+# Shown in the app header. Declared last so it doesn't bust the build cache.
+ARG COMMIT_SHA=""
+ENV COMMIT_SHA=$COMMIT_SHA
 EXPOSE 3000
 CMD ["node", "packages/run/lib/server.js"]
