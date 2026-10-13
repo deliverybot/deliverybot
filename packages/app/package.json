@@ -37,7 +37,7 @@
     "probot": "14.3.2",
     "supertest": "7.3.1",
     "typescript": "5.6.3",
-    "vitest": "4.1.11",
+    "vitest": "5.0.3",
     "walk": "^2.3.15"
   },
   "description": "Controls and configures deployments using the GitHub API.",

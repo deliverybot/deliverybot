@@ -25,7 +25,7 @@
     "@types/express-session": "1.19.0",
     "@types/pg": "8.23.1",
     "typescript": "5.6.3",
-    "vitest": "4.1.11"
+    "vitest": "5.0.3"
   },
   "description": "Postgres storage for Deliverybot.",
   "author": "Deliverybot <support@deliverybot.dev> (https://github.com/deliverybot/deliverybot)",
