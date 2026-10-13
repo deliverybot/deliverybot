@@ -7,6 +7,8 @@ import { CommitsController } from "./controllers/commits";
 import { MetricsController } from "./controllers/metrics";
 import { RecentsController } from "./controllers/recents";
 import { FormController } from "./controllers/form";
+import { FilterController } from "./controllers/filter";
+import { SelectController } from "./controllers/select";
 import { ToastController } from "./controllers/toast";
 import { RefreshController } from "./controllers/refresh";
 
@@ -16,6 +18,8 @@ application.register("commits", CommitsController);
 application.register("metrics", MetricsController);
 application.register("recents", RecentsController);
 application.register("form", FormController);
+application.register("filter", FilterController);
+application.register("select", SelectController);
 application.register("toast", ToastController);
 
 // Watcher defines how we can watch repositories for changes. This allows for
