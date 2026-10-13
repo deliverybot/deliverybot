@@ -4,7 +4,12 @@ import { prDeploy } from "./pr-deploy.js";
 import { auto } from "./auto.js";
 import { EnvLockStore, WatchStore } from "./store.js";
 
-export function deploybot({ robot, kvService, lockService }: Dependencies) {
+export function deploybot({
+  robot,
+  kvService,
+  lockService,
+  config,
+}: Dependencies) {
   const lockStore = new EnvLockStore(kvService);
   const watchStore = new WatchStore(kvService);
 
@@ -18,8 +23,9 @@ export function deploybot({ robot, kvService, lockService }: Dependencies) {
   );
 
   prClose(robot);
-  prDeploy(robot, lockStore, watchStore, robot.receive.bind(robot));
-  auto(robot, lockService, watchStore, lockStore, robot.receive.bind(robot));
+  const publish = robot.receive.bind(robot);
+  prDeploy(robot, lockStore, watchStore, publish, config.baseUrl);
+  auto(robot, lockService, watchStore, lockStore, publish, config.baseUrl);
 }
 
 export { config, deploy } from "./deploy.js";

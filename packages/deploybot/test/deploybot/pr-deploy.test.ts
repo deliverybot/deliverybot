@@ -1,6 +1,11 @@
 import * as factory from "../factory.js";
 import { app } from "../app.js";
-import { parseDeployCommand } from "../../src/pr-deploy.js";
+import {
+  dashboardUrl,
+  errorMessage,
+  parseDeployCommand,
+} from "../../src/pr-deploy.js";
+import { LockError } from "../../src/types.js";
 import { listChecks } from "../../src/util.js";
 
 const probot = app.probot;
@@ -35,6 +40,28 @@ describe("parseDeployCommand", () => {
       expect(parseDeployCommand(body)).toBeUndefined();
     },
   );
+});
+
+describe("dashboardUrl", () => {
+  const repository = { full_name: "o/r" };
+
+  test("links to the repository page", () => {
+    expect(dashboardUrl("https://app.example/", repository)).toBe(
+      "https://app.example/o/r",
+    );
+  });
+
+  test("is undefined without a base URL", () => {
+    expect(dashboardUrl("", repository)).toBeUndefined();
+  });
+});
+
+describe("errorMessage", () => {
+  test("names the dashboard without a link when there is none", () => {
+    expect(errorMessage(new LockError("locked", "staging"), "main")).toBe(
+      "`staging` is locked, so nothing was deployed. Unlock it on the Deliverybot dashboard and comment again.",
+    );
+  });
 });
 
 describe("listChecks", () => {
@@ -140,7 +167,7 @@ describe("pr-deploy", () => {
     const deploy = factory.deploy();
 
     const expected =
-      "@Codertocat There is no `invalid` target in `.github/deploy.yml` on `refs/heads/changes`.\n\n" +
+      "@Codertocat There is no `invalid` target in [`.github/deploy.yml`](https://deliverybot.dev/docs/configuration/) on `refs/heads/changes`.\n\n" +
       "Available targets: `review`, `canary`, `production`, `performance`.";
     const error = factory.errorComment(expected);
     await probot.receive(factory.prDeployComment("invalid"));
@@ -156,7 +183,7 @@ describe("pr-deploy", () => {
 
     try {
       const error = factory.errorComment(
-        "@Codertocat `pr1` is locked, so nothing was deployed. Unlock it on the Deliverybot dashboard and comment again.",
+        "@Codertocat `pr1` is locked, so nothing was deployed. Unlock it on the [Deliverybot dashboard](https://deliverybot.test/Codertocat/Hello-World) and comment again.",
       );
       await probot.receive(factory.prDeployComment("review"));
       expect(deploy.isDone()).toBe(false);
@@ -172,7 +199,7 @@ describe("pr-deploy", () => {
     const deploy = factory.deploy();
 
     const expected =
-      "@Codertocat `.github/deploy.yml` on `refs/heads/changes` is invalid: config.fake is not of a type(s) object";
+      "@Codertocat [`.github/deploy.yml`](https://deliverybot.dev/docs/configuration/) on `refs/heads/changes` is invalid: config.fake is not of a type(s) object";
     const error = factory.errorComment(expected);
     await probot.receive(factory.prDeployComment("review"));
     expect(deploy.isDone()).toBe(false);
@@ -185,7 +212,7 @@ describe("pr-deploy", () => {
     const deploy = factory.deploy();
 
     const error = factory.errorComment(
-      "@Codertocat `.github/deploy.yml` wasn't found on `refs/heads/changes`.",
+      "@Codertocat [`.github/deploy.yml`](https://deliverybot.dev/docs/configuration/) wasn't found on `refs/heads/changes`.",
     );
     await probot.receive(factory.prDeployComment("review"));
     expect(deploy.isDone()).toBe(false);
@@ -341,7 +368,7 @@ describe("pr-deploy queueing", () => {
       factory.noDeployments();
       const deploy = factory.deploy();
       const locked = factory.errorComment(
-        "@Codertocat `pr1` is locked, so nothing was deployed. Unlock it on the Deliverybot dashboard and comment again.",
+        "@Codertocat `pr1` is locked, so nothing was deployed. Unlock it on the [Deliverybot dashboard](https://deliverybot.test/Codertocat/Hello-World) and comment again.",
       );
       await probot.receive(factory.checkRun());
       expect(deploy.isDone()).toBe(false);

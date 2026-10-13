@@ -16,7 +16,7 @@ export const app = load(services, [deploybot], {
     retry: { enabled: false },
     throttle: { enabled: false },
   }),
-  config: {},
+  config: { baseUrl: "https://deliverybot.test" },
   locals: {},
   root: path.resolve(import.meta.dirname, ".."),
   production: false,
