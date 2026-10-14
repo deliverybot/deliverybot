@@ -22,7 +22,7 @@ export function deploybot({
       !prActions.includes((event.payload as any).action),
   );
 
-  prClose(robot);
+  prClose(robot, watchStore);
   const publish = robot.receive.bind(robot);
   prDeploy(robot, lockStore, watchStore, publish, config.baseUrl);
   auto(robot, lockService, watchStore, lockStore, publish, config.baseUrl);

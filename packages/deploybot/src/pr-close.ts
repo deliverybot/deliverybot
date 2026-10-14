@@ -1,7 +1,28 @@
 import { Application, Context } from "@deliverybot/core";
+import { WatchStore } from "./store.js";
 import { withPreview, logCtx } from "./util.js";
 
-export function prClose(app: Application) {
+export function prClose(app: Application, watchStore: WatchStore) {
+  /**
+   * Drops the pull request's waiting deploys: `auto_deploy_on: pr` watches
+   * and deploys queued with `/deploy`. Once the pull request is closed they
+   * have nothing left to deploy, and if its branch name is reused later a
+   * stale watch must not deploy the new branch.
+   */
+  async function clearWatches(context: Context) {
+    const pr = context.payload.pull_request;
+    const repoId = context.payload.repository.id;
+    const watches = await watchStore.listWatchBySha(repoId, pr.head.sha);
+    for (const watch of watches) {
+      if (watch.prNumber !== pr.number) continue;
+      context.log.info(
+        logCtx(context, { ref: watch.ref, target: watch.target }),
+        "pr close: clear watch",
+      );
+      await watchStore.delWatch(repoId, watch);
+    }
+  }
+
   /**
    * Handles triggering pr close events and marking inactive deployments.
    */
@@ -43,6 +64,7 @@ export function prClose(app: Application) {
   }
 
   app.on("pull_request.closed", async (context) => {
+    await clearWatches(context);
     await handlePRClose(context);
   });
 }

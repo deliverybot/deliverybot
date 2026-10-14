@@ -198,6 +198,11 @@ export const movedRef = () =>
       },
     });
 
+export const goneRef = () =>
+  nock("https://api.github.com")
+    .get(/^\/repos\/Codertocat\/Hello-World\/git\/ref\/heads(\/|%2F)changes$/)
+    .reply(404, { message: "Not Found" });
+
 export const prDeployComment = (env: string): any => ({
   name: "issue_comment",
   payload: {

@@ -359,6 +359,30 @@ describe("pr-deploy queueing", () => {
     expect(cancelled.isDone()).toBe(true);
   });
 
+  test("cancels when the branch is deleted", async () => {
+    await queueDeploy();
+
+    factory.goneRef();
+    const cancelled = factory.errorComment(
+      "@Codertocat `changes` no longer exists, so the queued deploy to `review` was cancelled.",
+    );
+    await probot.receive(factory.checkRun());
+    expect(cancelled.isDone()).toBe(true);
+  });
+
+  test("drops the queued deploy when the pull request closes", async () => {
+    await queueDeploy();
+
+    factory.withDeployments([]);
+    await probot.receive(factory.prClosed());
+
+    factory.gitRef();
+    factory.noDeployments();
+    const deploy = factory.deploy();
+    await probot.receive(factory.checkRun());
+    expect(deploy.isDone()).toBe(false);
+  });
+
   test("tells when the environment got locked", async () => {
     await queueDeploy();
 
