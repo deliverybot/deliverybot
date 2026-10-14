@@ -206,6 +206,10 @@ export function auto(
           sha,
           target,
           pr,
+          // Auto deploys use the target from the default branch, which is
+          // what picked them, so a branch can't change where it deploys to.
+          // A `/deploy` someone queued is manual and reads the branch.
+          targetVal: watch.requestedBy ? undefined : targetVal,
         }),
       );
       context.log.info(logCtx(context, { ref }), "auto deploy: done");
