@@ -1,3 +1,4 @@
+import nock from "nock";
 import * as factory from "../factory.js";
 import { app, services } from "../app.js";
 import { match } from "../../src/auto.js";
@@ -87,6 +88,30 @@ describe("auto", () => {
     factory.noDeployments();
 
     await probot.receive(factory.prSync());
+    expect(deploy.isDone()).toBe(true);
+  });
+
+  test("deploys the target from the default branch, not the pushed ref", async () => {
+    // The pushed branch changed the production target to skip its checks.
+    const branchConfig = factory.fixtures.deployValid.replace(
+      /required_contexts:\n\s+- continuous-integration\/travis-ci\/push/g,
+      "required_contexts: []",
+    );
+    nock("https://api.github.com")
+      .persist()
+      .get(/\/contents\/\.github(\/|%2F)deploy\.yml/)
+      .query((q) => !!q.ref)
+      .reply(200, { content: Buffer.from(branchConfig).toString("base64") });
+    factory.config({ valid: true });
+    factory.noDeployments();
+    const deploy = factory.deploy(
+      (body: any) =>
+        body.environment === "production" &&
+        body.required_contexts.length === 1 &&
+        body.required_contexts[0] === "continuous-integration/travis-ci/push",
+    );
+
+    await probot.receive(factory.push());
     expect(deploy.isDone()).toBe(true);
   });
 

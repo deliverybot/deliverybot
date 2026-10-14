@@ -111,6 +111,10 @@ function getDeployBody(
  * We need to deploy always using the ref of a branch so that finding
  * deployments later we can query using the branch ref.
  *
+ * Reads the target from deploy.yml at `ref`, unless `targetVal` is given.
+ * Auto deploys pass the target they read from the default branch, so a branch
+ * can't change how an auto deploy target deploys.
+ *
  * Throws ConfigError, LockError.
  */
 export async function deploy(
@@ -126,6 +130,7 @@ export async function deploy(
     force,
     task,
     pr,
+    targetVal: givenTarget,
   }: {
     owner: string;
     repo: string;
@@ -135,6 +140,7 @@ export async function deploy(
     force?: boolean;
     task?: string;
     pr?: PullsGetResponse;
+    targetVal?: Target;
   },
 ) {
   const logCtx = {
@@ -161,11 +167,14 @@ export async function deploy(
     pull_request: pr,
   };
 
-  const conf = await config(github, { owner, repo, ref });
-  const targetVal = conf[target];
+  let targetVal = givenTarget;
   if (!targetVal) {
-    log.info(logCtx, "deploy: halted - no target");
-    throw new UnknownTargetError(target, Object.keys(conf));
+    const conf = await config(github, { owner, repo, ref });
+    targetVal = conf[target];
+    if (!targetVal) {
+      log.info(logCtx, "deploy: halted - no target");
+      throw new UnknownTargetError(target, Object.keys(conf));
+    }
   }
 
   const body = {
