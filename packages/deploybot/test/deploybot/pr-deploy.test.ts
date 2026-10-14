@@ -234,6 +234,21 @@ describe("pr-deploy", () => {
     expect(error.isDone()).toBe(true);
   });
 
+  test("explains an auto merge instead of a deployment", async () => {
+    factory.config({ valid: true });
+    factory.permission({ admin: true });
+    const deploy = factory.mergedDeploy();
+
+    const error = factory.errorComment(
+      expect.stringMatching(
+        /^@Codertocat Merged master into .+ instead of deploying: deploy the new commit once its checks pass\.$/,
+      ),
+    );
+    await probot.receive(factory.prDeployComment("review"));
+    expect(deploy.isDone()).toBe(true);
+    expect(error.isDone()).toBe(true);
+  });
+
   test("error comment on api error", async () => {
     factory.config({ valid: true });
     factory.permission({ admin: true });
@@ -376,6 +391,20 @@ describe("pr-deploy queueing", () => {
     } finally {
       await unlock();
     }
+  });
+
+  test("tells when an auto merge replaced the queued deploy", async () => {
+    await queueDeploy();
+
+    factory.gitRef();
+    factory.noDeployments();
+    const merge = factory.mergedDeploy();
+    const merged = factory.errorComment(
+      "@Codertocat Merged master into changes instead of deploying: deploy the new commit once its checks pass.",
+    );
+    await probot.receive(factory.checkRun());
+    expect(merge.isDone()).toBe(true);
+    expect(merged.isDone()).toBe(true);
   });
 
   test("doesn't queue when a required check already failed", async () => {

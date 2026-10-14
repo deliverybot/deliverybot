@@ -164,6 +164,7 @@ export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
         case 409:
         case "LockError":
         case "ConfigError":
+        case "AutoMergeError":
           res.status(400).json({ status: "BadRequest", error: error.message });
           break;
         default:

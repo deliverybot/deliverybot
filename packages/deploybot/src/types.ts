@@ -62,6 +62,15 @@ export class LockError extends Error {
   }
 }
 
+/**
+ * Thrown when `auto_merge` merged the default branch into the deployed ref
+ * instead of creating a deployment, or when that merge had conflicts. In both
+ * cases nothing was deployed.
+ */
+export class AutoMergeError extends Error {
+  public status = "AutoMergeError";
+}
+
 export interface Watch {
   repository: PayloadRepository;
   id: string;

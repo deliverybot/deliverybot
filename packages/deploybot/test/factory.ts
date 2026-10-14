@@ -127,7 +127,7 @@ export const config = ({ valid }: { valid?: boolean }) =>
 export const repo = () =>
   nock("https://api.github.com")
     .get("/repos/Codertocat/Hello-World")
-    .reply(200, { id: 1 });
+    .reply(200, { id: 1, default_branch: "master" });
 
 export const pr = () =>
   nock("https://api.github.com")
@@ -138,6 +138,18 @@ export const deploy = (body?: any) =>
   nock("https://api.github.com")
     .post("/repos/Codertocat/Hello-World/deployments", body)
     .reply(200, { id: 1 });
+
+export const mergedDeploy = () =>
+  nock("https://api.github.com")
+    .post("/repos/Codertocat/Hello-World/deployments")
+    .reply(202, {
+      message: "Auto-merged master into featureA on deployment.",
+    });
+
+export const conflictDeploy = (message: string) =>
+  nock("https://api.github.com")
+    .post("/repos/Codertocat/Hello-World/deployments")
+    .reply(409, { message });
 
 export const errorDeploy = () =>
   nock("https://api.github.com")

@@ -36,6 +36,7 @@ export {
   Targets,
   LockError,
   ConfigError,
+  AutoMergeError,
   UnknownTargetError,
   DeployBody,
 } from "./types.js";

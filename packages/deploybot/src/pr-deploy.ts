@@ -78,6 +78,9 @@ export function errorMessage(
   if (error?.status === 404 && /contents/.test(error?.request?.url || "")) {
     return `${configFile} wasn't found on \`${ref}\`.`;
   }
+  if (error?.status === "AutoMergeError") {
+    return `${error.message}.`;
+  }
   if (error?.status === 409) {
     return `GitHub refused the deployment, usually because required checks haven't passed yet: ${error.message}`;
   }

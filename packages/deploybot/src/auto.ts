@@ -258,6 +258,15 @@ export function auto(
             errorMessage(error, ref, dashboardUrl(baseUrl, watch.repository)),
           );
           return true;
+        case "AutoMergeError":
+          // The merge commit arrives as a new push or pull request
+          // synchronize event, which adds its own watch.
+          context.log.info(
+            logCtx(context, { target, ref, error }),
+            "auto deploy: auto merge",
+          );
+          await tellRequester(context, watch, errorMessage(error, ref));
+          return true;
         default:
           context.log.error(
             logCtx(context, { target, ref, error }),
