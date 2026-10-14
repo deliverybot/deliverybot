@@ -3,6 +3,7 @@ import yaml from "js-yaml";
 import { validate } from "jsonschema";
 import { EnvLockStore } from "./store.js";
 import {
+  AutoMergeError,
   ConfigError,
   LockError,
   UnknownTargetError,
@@ -179,14 +180,19 @@ export async function deploy(
     throw new LockError(`Deployment environment locked`, body.environment);
   }
 
+  const branch = ref.replace(/^(refs\/)?heads\//, "");
+  let created: Awaited<ReturnType<typeof github.rest.repos.createDeployment>>;
   try {
     log.info({ ...logCtx, body }, "deploy: deploying");
-    // TODO: Handle auto_merge case correctly here.
-    // https://developer.github.com/v3/repos/deployments/#merged-branch-response
-    const deploy = await github.rest.repos.createDeployment(body);
-    log.info({ ...logCtx, body }, "deploy: successful");
-    return deploy.data;
+    created = await github.rest.repos.createDeployment(body);
   } catch (error) {
+    if (error.status === 409 && /conflict merging/i.test(error.message)) {
+      log.info({ ...logCtx, error, body }, "deploy: auto merge conflict");
+      throw new AutoMergeError(
+        `Could not merge ${repository.data.default_branch} into ${branch}: resolve the conflicts and deploy again`,
+        false,
+      );
+    }
     if (error.status === 409) {
       log.info({ ...logCtx, error, body }, "deploy: checks not ready");
     } else {
@@ -194,6 +200,21 @@ export async function deploy(
     }
     throw error;
   }
+
+  // With auto_merge GitHub may merge the default branch into the ref instead of
+  // creating a deployment. The merge pushes a new commit, which is the one to
+  // deploy once its checks pass. Callers that know who asked for the deploy
+  // queue it with queueAfterMerge.
+  // https://docs.github.com/en/rest/deployments/deployments#create-a-deployment
+  if (!("id" in created.data)) {
+    log.info({ ...logCtx, body }, "deploy: auto merged default branch");
+    throw new AutoMergeError(
+      `Merged ${repository.data.default_branch} into ${branch} instead of deploying: deploy the new commit once its checks pass`,
+      true,
+    );
+  }
+  log.info({ ...logCtx, body }, "deploy: successful");
+  return created.data;
 }
 
 /**

@@ -7,7 +7,12 @@ import {
 } from "@deliverybot/core";
 import { EnvLockStore, WatchStore, watchEvent } from "./store.js";
 import { config, deploy, unmetChecks } from "./deploy.js";
-import { LockError, UnknownTargetError, Watch } from "./types.js";
+import {
+  AutoMergeError,
+  LockError,
+  UnknownTargetError,
+  Watch,
+} from "./types.js";
 import { logCtx, canWrite, listChecks } from "./util.js";
 
 type PullRequest = RestEndpointMethodTypes["pulls"]["get"]["response"]["data"];
@@ -78,10 +83,43 @@ export function errorMessage(
   if (error?.status === 404 && /contents/.test(error?.request?.url || "")) {
     return `${configFile} wasn't found on \`${ref}\`.`;
   }
+  if (error?.status === "AutoMergeError") {
+    return `${error.message}.`;
+  }
   if (error?.status === 409) {
     return `GitHub refused the deployment, usually because required checks haven't passed yet: ${error.message}`;
   }
   return `Failed to trigger deployment: ${error?.message || error}`;
+}
+
+/**
+ * Re-queues a deploy that `auto_merge` turned into a merge, on the merge
+ * commit the branch now points at, so it goes out once that commit's checks
+ * pass. `say` tells whoever asked for the deploy. Returns the new watch, which
+ * the caller checks once right away, since the merge commit may have no checks
+ * to wait for.
+ */
+export async function queueAfterMerge(
+  context: Context,
+  watchStore: WatchStore,
+  watch: Watch,
+  say: (body: string) => Promise<void>,
+): Promise<Watch> {
+  const branch = watch.ref.replace(/^(refs\/)?heads\//, "");
+  const head = await context.octokit.rest.git.getRef(
+    context.repo({ ref: `heads/${branch}` }),
+  );
+  const queued: Watch = { ...watch, id: uuid(), sha: head.data.object.sha };
+  context.log.info(
+    logCtx(context, { target: queued.target, sha: queued.sha }),
+    "pr deploy: queued after auto merge",
+  );
+  await watchStore.addWatch(queued.repository.id, queued);
+  await say(
+    `\`${branch}\` was behind, so GitHub merged the default branch into it first. ` +
+      `I'll deploy the merge commit to \`${queued.target}\` once its checks pass.`,
+  );
+  return queued;
 }
 
 /**
@@ -132,13 +170,18 @@ export async function handlePRDeploy(
   }
 
   /**
-   * Queues the deploy when required checks are still pending. Returns false
+   * Queues the deploy when required checks are still pending, or when
+   * auto_merge merged the default branch into the branch first. Returns false
    * when the refusal can't be waited out: a check already failed, or GitHub
    * refused for another reason.
    */
   async function queue(error: any, target: string, pr: PullRequest) {
+    const merged = error instanceof AutoMergeError && error.merged;
     const checks = unmetChecks(error);
-    if (!checks || checks.failed.length || !checks.pending.length) {
+    if (
+      !merged &&
+      (!checks || checks.failed.length || !checks.pending.length)
+    ) {
       return false;
     }
     // The head branch of a fork isn't in this repository, so it can't be
@@ -161,13 +204,18 @@ export async function handlePRDeploy(
       prNumber,
       requestedBy: user,
     };
+    if (merged) {
+      const queued = await queueAfterMerge(context, watchStore, watch, reply);
+      await publish(watchEvent(queued, context.payload.installation));
+      return true;
+    }
     context.log.info(
-      logCtx(context, { target, sha: watch.sha, pending: checks.pending }),
+      logCtx(context, { target, sha: watch.sha, pending: checks!.pending }),
       "pr deploy: queued until checks pass",
     );
     await watchStore.addWatch(watch.repository.id, watch);
     await reply(
-      `Waiting for ${listChecks(checks.pending)} to pass, ` +
+      `Waiting for ${listChecks(checks!.pending)} to pass, ` +
         `then I'll deploy to \`${target}\`.`,
     );
     // A check may have finished while this ran, so look once more now.
