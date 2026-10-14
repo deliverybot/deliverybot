@@ -152,10 +152,23 @@ export function auto(
     // Check if the current sha for this ref is equal to this watch. Since
     // multiple watches can be in progress we only want to process the latest
     // of them.
-    const refreshed = await context.octokit.rest.git.getRef(
-      context.repo({ ref: ref.replace("refs/", "") }),
-    );
-    const currentSha = refreshed.data.object.sha;
+    let currentSha: string;
+    try {
+      const refreshed = await context.octokit.rest.git.getRef(
+        context.repo({ ref: ref.replace("refs/", "") }),
+      );
+      currentSha = refreshed.data.object.sha;
+    } catch (error) {
+      if (error.status !== 404) throw error;
+      // The branch was deleted, for example after its pull request merged.
+      context.log.info(logCtx(context, { ref, sha }), "auto deploy: ref gone");
+      await tellRequester(
+        context,
+        watch,
+        `\`${ref.replace(/^(refs\/)?heads\//, "")}\` no longer exists, so the queued deploy to \`${target}\` was cancelled.`,
+      );
+      return true;
+    }
     if (currentSha !== sha) {
       // This is an old watch, return true.
       context.log.info(
