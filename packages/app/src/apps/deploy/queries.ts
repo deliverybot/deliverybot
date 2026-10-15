@@ -248,6 +248,103 @@ export function DeploymentList(owner: string, repo: string, data: any) {
   return { deployments, pagination: Pagination(pagination) };
 }
 
+// Listing a repository's environments needs the app's Environments
+// permission, so their names come from recent deployments instead.
+const RecentEnvironmentsQuery = `
+query recentEnvironments($owner:String!,$repo:String!) {
+  repository(owner:$owner,name:$repo) {
+    deployments(first:100,orderBy:{field:CREATED_AT,direction:DESC}) {
+      nodes { environment }
+    }
+  }
+}
+`;
+
+const DeploymentFields = `
+id environment description createdAt state
+creator { login }
+ref { name }
+commit { oid messageHeadline }
+latestStatus { state logUrl environmentUrl }
+`;
+
+// One aliased deployments connection per environment, so the active
+// deployment of every environment comes back in a single request.
+const ActiveDeploymentsQuery = (count: number) => `
+query activeDeployments($owner:String!,$repo:String!,${Array.from(
+  { length: count },
+  (_, i) => `$e${i}:[String!]`,
+).join(",")}) {
+  repository(owner:$owner,name:$repo) {
+${Array.from(
+  { length: count },
+  (_, i) =>
+    `    e${i}: deployments(environments:$e${i},first:20,orderBy:{field:CREATED_AT,direction:DESC}) { nodes { ${DeploymentFields} } }`,
+).join("\n")}
+  }
+}
+`;
+
+export async function environments(
+  token: string,
+  owner: string,
+  repo: string,
+  configured: string[],
+) {
+  const recent = await gql(token, RecentEnvironmentsQuery, { owner, repo });
+  const all: string[] = configured.concat(
+    (get(recent, "repository.deployments.nodes", []) as any[]).map(
+      (node) => node.environment,
+    ),
+  );
+  const names = all.filter((name, i) => all.indexOf(name) === i).sort();
+  if (names.length === 0) {
+    return { environments: [] };
+  }
+  const variables: any = { owner, repo };
+  names.forEach((name, i) => (variables[`e${i}`] = [name]));
+  const result = await gql(
+    token,
+    ActiveDeploymentsQuery(names.length),
+    variables,
+  );
+  return EnvironmentList(owner, repo, names, result);
+}
+
+// GitHub marks the newest successful deployment of an environment ACTIVE
+// and older ones INACTIVE; environments without one (torn down, or never
+// deployed successfully) aren't listed.
+export function EnvironmentList(
+  owner: string,
+  repo: string,
+  names: string[],
+  data: any,
+) {
+  const environments = names
+    .map((name, i) => {
+      const nodes: any[] = get(data, `repository.e${i}.nodes`, []);
+      const active = nodes.find((node) => node.state === "ACTIVE");
+      if (!active) return null;
+      const [deployment] = DeploymentList(owner, repo, {
+        repository: { deployments: { nodes: [active] } },
+      }).deployments;
+      // A newer deployment that hasn't become active yet, e.g. one in
+      // progress or one that failed.
+      const latest = nodes[0] !== active && nodes[0];
+      return {
+        ...deployment,
+        name,
+        latest: latest && {
+          state: get(latest, "latestStatus.state", "waiting").toLowerCase(),
+          status: Status(get(latest, "latestStatus.state")),
+          createdAtWords: timeAgoInWords(Date.parse(latest.createdAt)),
+        },
+      };
+    })
+    .filter(Boolean);
+  return { environments };
+}
+
 export function View(
   owner: string,
   repo: string,

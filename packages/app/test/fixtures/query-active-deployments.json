@@ -1,0 +1,105 @@
+{
+  "repository": {
+    "e0": {
+      "nodes": []
+    },
+    "e1": {
+      "nodes": [
+        {
+          "id": "MDEwOkRlcGxveW1lbnQ1",
+          "environment": "pr-12",
+          "description": null,
+          "createdAt": "2019-11-01T12:00:00Z",
+          "state": "INACTIVE",
+          "creator": {
+            "login": "Codertocat"
+          },
+          "ref": {
+            "name": "feature"
+          },
+          "commit": {
+            "oid": "1111111db6d59f3c431d3e1f261cc637155684cd",
+            "messageHeadline": "Torn down review app"
+          },
+          "latestStatus": {
+            "state": "INACTIVE",
+            "logUrl": null,
+            "environmentUrl": "https://pr-12.example.com"
+          }
+        }
+      ]
+    },
+    "e2": {
+      "nodes": [
+        {
+          "id": "MDEwOkRlcGxveW1lbnQ0",
+          "environment": "production",
+          "description": null,
+          "createdAt": "2019-11-04T12:00:00Z",
+          "state": "FAILURE",
+          "creator": {
+            "login": "Codertocat"
+          },
+          "ref": {
+            "name": "main"
+          },
+          "commit": {
+            "oid": "6dcb09b5b57875f334f61aebed695e2e4193db5e",
+            "messageHeadline": "Fix all the bugs"
+          },
+          "latestStatus": {
+            "state": "FAILURE",
+            "logUrl": "https://example.com/logs/4",
+            "environmentUrl": null
+          }
+        },
+        {
+          "id": "MDEwOkRlcGxveW1lbnQz",
+          "environment": "production",
+          "description": null,
+          "createdAt": "2019-11-03T12:00:00Z",
+          "state": "ACTIVE",
+          "creator": {
+            "login": "Codertocat"
+          },
+          "ref": {
+            "name": "main"
+          },
+          "commit": {
+            "oid": "7638417db6d59f3c431d3e1f261cc637155684cd",
+            "messageHeadline": "Ship the feature"
+          },
+          "latestStatus": {
+            "state": "SUCCESS",
+            "logUrl": "https://example.com/logs/3",
+            "environmentUrl": "https://www.example.com"
+          }
+        }
+      ]
+    },
+    "e3": {
+      "nodes": [
+        {
+          "id": "MDEwOkRlcGxveW1lbnQy",
+          "environment": "staging",
+          "description": null,
+          "createdAt": "2019-11-02T12:00:00Z",
+          "state": "ACTIVE",
+          "creator": {
+            "login": "Codertocat"
+          },
+          "ref": null,
+          "commit": {
+            "oid": "7638417db6d59f3c431d3e1f261cc637155684cd",
+            "messageHeadline": "Ship the feature"
+          },
+          "latestStatus": {
+            "state": "SUCCESS",
+            "logUrl": null,
+            "environmentUrl": "https://staging.example.com"
+          }
+        }
+      ]
+    }
+  }
+}

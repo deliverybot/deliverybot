@@ -1,0 +1,54 @@
+{{> repo_header}}
+
+<nav class="UnderlineNav mt-2">
+  <div class="content">
+    <div class="UnderlineNav-body">
+      <a href="/{{owner}}/{{repo}}" role="tab" title="Commits" class="UnderlineNav-item">Commits</a>
+      <a href="/{{owner}}/{{repo}}/environments" role="tab" title="Environments" class="UnderlineNav-item" aria-current="page">Environments</a>
+      <a href="/{{owner}}/{{repo}}/deployments" role="tab" title="Deployments" class="UnderlineNav-item">Deployments</a>
+      <a href="/{{owner}}/{{repo}}/config" role="tab" title="Config" class="UnderlineNav-item">Config</a>
+      <a href="/{{owner}}/{{repo}}/metrics" role="tab" title="Metrics" class="UnderlineNav-item">Metrics</a>
+    </div>
+  </div>
+</nav>
+</header>
+
+<main class="bg-white fill pt-3 pb-8">
+  <div class="content">
+    <div class="Box">
+      {{#if hasEnvironments}}
+      {{#each environments}}
+      <div class="Box-row d-flex flex-items-center">
+        <div class="text-green mr-2" title="active">{{> icon_check}}</div>
+        <div class="flex-auto" style="min-width: 0;">
+          <div class="css-truncate css-truncate-target" style="max-width: 100%;">
+            <strong><a class="text-gray-dark" href="{{deploymentsUrl}}">{{name}}</a></strong>
+            &middot;
+            {{#if commitUrl}}<a class="text-gray-dark" href="{{commitUrl}}" target="_blank">{{message}}</a>{{/if}}
+          </div>
+          <div class="text-gray-light">
+            {{#if shaShort}}<strong><code>{{shaShort}}</code></strong>{{/if}}
+            {{#if ref}}on <code>{{ref}}</code>{{/if}}
+            {{#if creator}}by <a href="https://github.com/{{creator}}">@{{creator}}</a>{{/if}}
+            deployed {{createdAtWords}}
+            {{#if latest}}
+            <span class="text-{{latest.status.color}}">&middot; newer deploy {{latest.state}} {{latest.createdAtWords}}</span>
+            {{/if}}
+          </div>
+        </div>
+        <div class="text-right f6 ml-2" style="white-space: nowrap;">
+          {{#if environmentUrl}}<a href="{{environmentUrl}}" target="_blank">View</a>{{/if}}
+          {{#if logUrl}}<a class="ml-2" href="{{logUrl}}" target="_blank">Logs</a>{{/if}}
+        </div>
+      </div>
+      {{/each}}
+      {{else}}
+      <div class="Box-body text-center text-gray-light p-4">
+        No active environments.
+      </div>
+      {{/if}}
+    </div>
+  </div>
+</main>
+
+{{> footer}}

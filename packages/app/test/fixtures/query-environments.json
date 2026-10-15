@@ -1,0 +1,12 @@
+{
+  "repository": {
+    "deployments": {
+      "nodes": [
+        { "environment": "production" },
+        { "environment": "staging" },
+        { "environment": "pr-12" },
+        { "environment": "production" }
+      ]
+    }
+  }
+}
