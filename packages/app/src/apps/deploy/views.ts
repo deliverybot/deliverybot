@@ -80,6 +80,31 @@ export async function Commits({
   );
 }
 
+export async function Environments({
+  csrf,
+  path,
+  repo,
+  user,
+  lock,
+}: BaseProps) {
+  const { environments } = await queries.environments(
+    user.token,
+    repo.owner,
+    repo.repo,
+  );
+  return Base(
+    { csrf, path, user, repo, branch: "", lock },
+    {
+      title: `${repo.owner}/${repo.repo} environments`,
+      environments: environments.map((env: any) => ({
+        ...env,
+        deploymentsUrl: `/${repo.owner}/${repo.repo}/deployments?environment=${encodeURIComponent(env.name)}`,
+      })),
+      hasEnvironments: environments.length > 0,
+    },
+  );
+}
+
 export interface DeploymentsProps extends BaseProps {
   options: queries.DeploymentsOptions;
 }

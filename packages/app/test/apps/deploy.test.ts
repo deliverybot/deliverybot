@@ -102,6 +102,37 @@ describe("Deploy", () => {
     expect(response.body.watch).toBe(false);
   });
 
+  it("lists active environments", async () => {
+    const scope = factory.environmentsGql();
+
+    const response = await factory
+      .request(app)
+      .get("/Codertocat/Hello-World/environments")
+      .set("cookie", session);
+    expect(response.status).toBe(200);
+    expect(scope.isDone()).toBe(true);
+    // The active deployment, not the newer failed one.
+    expect(response.text).toContain("Ship the feature");
+    expect(response.text).toContain("https://www.example.com");
+    expect(response.text).toContain("https://example.com/logs/3");
+    expect(response.text).toContain("newer deploy failure");
+    expect(response.text).toContain("https://staging.example.com");
+    expect(response.text).toContain(
+      "/Codertocat/Hello-World/deployments?environment&#x3D;production",
+    );
+    // Torn down environments aren't listed.
+    expect(response.text).not.toContain("pr-12");
+  });
+
+  it("not watch environments", async () => {
+    const response = await factory
+      .request(app)
+      .get("/Codertocat/Hello-World/environments?watch=true")
+      .set("cookie", session);
+    expect(response.status).toBe(200);
+    expect(response.body.watch).toBe(false);
+  });
+
   it("gets config", async () => {
     const response = await factory
       .request(app)

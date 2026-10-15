@@ -1,0 +1,11 @@
+{
+  "repository": {
+    "environments": {
+      "nodes": [
+        { "name": "pr-12" },
+        { "name": "production" },
+        { "name": "staging" }
+      ]
+    }
+  }
+}
