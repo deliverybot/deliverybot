@@ -101,10 +101,30 @@ export const gitCommit = () =>
     .get(/\/git\/commits\//)
     .reply(200, fixtures.commit);
 
-export const deploymentStatus = () =>
+export const deploymentStatus = (id = 1, body?: any) =>
   nock("https://api.github.com")
-    .post("/repos/Codertocat/Hello-World/deployments/1/statuses")
+    .post(`/repos/Codertocat/Hello-World/deployments/${id}/statuses`, body)
     .reply(200);
+
+export const latestDeploymentStatus = (id: number, state?: string) =>
+  nock("https://api.github.com")
+    .get(`/repos/Codertocat/Hello-World/deployments/${id}/statuses`)
+    .query(true)
+    .reply(200, state ? [{ id: 100 + id, state }] : []);
+
+export const deploymentStatusEvent = (
+  state: string,
+  deployment = { id: 5, environment: "staging" },
+): any => ({
+  name: "deployment_status",
+  payload: {
+    action: "created",
+    deployment,
+    deployment_status: { id: 1, state },
+    repository: fixtures.prClosed.repository,
+    installation: { id: 2 },
+  },
+});
 
 export const permission = ({ admin }: { admin: boolean }) =>
   nock("https://api.github.com")

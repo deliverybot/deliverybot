@@ -2,6 +2,7 @@ import { Dependencies } from "@deliverybot/core";
 import { prClose } from "./pr-close.js";
 import { prDeploy } from "./pr-deploy.js";
 import { auto } from "./auto.js";
+import { supersede } from "./supersede.js";
 import { EnvLockStore, WatchStore } from "./store.js";
 
 export function deploybot({
@@ -23,6 +24,7 @@ export function deploybot({
   );
 
   prClose(robot, watchStore);
+  supersede(robot);
   const publish = robot.receive.bind(robot);
   prDeploy(robot, lockStore, watchStore, publish, config.baseUrl);
   auto(robot, lockService, watchStore, lockStore, publish, config.baseUrl);
