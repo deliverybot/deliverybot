@@ -77,12 +77,12 @@ export const deploymentsGql = (variables?: any) =>
 
 export const environmentsGql = () =>
   nock("https://api.github.com")
-    .post("/graphql", (body: any) => body.query.includes("environments("))
+    .post("/graphql", (body: any) => body.query.includes("recentEnvironments"))
     .reply(200, { data: fixtures.environments })
     .post(
       "/graphql",
       (body: any) =>
-        JSON.stringify(body.variables.e1) === JSON.stringify(["production"]),
+        JSON.stringify(body.variables.e2) === JSON.stringify(["production"]),
     )
     .reply(200, { data: fixtures.activeDeployments });
 

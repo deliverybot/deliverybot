@@ -248,11 +248,13 @@ export function DeploymentList(owner: string, repo: string, data: any) {
   return { deployments, pagination: Pagination(pagination) };
 }
 
-const EnvironmentsQuery = `
-query environments($owner:String!,$repo:String!) {
+// Listing a repository's environments needs the app's Environments
+// permission, so their names come from recent deployments instead.
+const RecentEnvironmentsQuery = `
+query recentEnvironments($owner:String!,$repo:String!) {
   repository(owner:$owner,name:$repo) {
-    environments(first:100) {
-      nodes { name }
+    deployments(first:100,orderBy:{field:CREATED_AT,direction:DESC}) {
+      nodes { environment }
     }
   }
 }
@@ -283,13 +285,19 @@ ${Array.from(
 }
 `;
 
-export async function environments(token: string, owner: string, repo: string) {
-  const envs = await gql(token, EnvironmentsQuery, { owner, repo });
-  const names: string[] = (
-    get(envs, "repository.environments.nodes", []) as any[]
-  )
-    .map((node) => node.name)
-    .sort();
+export async function environments(
+  token: string,
+  owner: string,
+  repo: string,
+  configured: string[],
+) {
+  const recent = await gql(token, RecentEnvironmentsQuery, { owner, repo });
+  const all: string[] = configured.concat(
+    (get(recent, "repository.deployments.nodes", []) as any[]).map(
+      (node) => node.environment,
+    ),
+  );
+  const names = all.filter((name, i) => all.indexOf(name) === i).sort();
   if (names.length === 0) {
     return { environments: [] };
   }

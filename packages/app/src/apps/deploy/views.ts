@@ -87,22 +87,29 @@ export async function Environments({
   user,
   lock,
 }: BaseProps) {
+  const out = await Base(
+    { csrf, path, user, repo, branch: "", lock },
+    { title: `${repo.owner}/${repo.repo} environments` },
+  );
+  // Include the environments from the deploy config, so one that hasn't been
+  // deployed to recently still shows up.
+  const configured: string[] = out.locking.targets
+    .filter((t: any) => t.lockable)
+    .map((t: any) => t.environment as string);
   const { environments } = await queries.environments(
     user.token,
     repo.owner,
     repo.repo,
+    configured,
   );
-  return Base(
-    { csrf, path, user, repo, branch: "", lock },
-    {
-      title: `${repo.owner}/${repo.repo} environments`,
-      environments: environments.map((env: any) => ({
-        ...env,
-        deploymentsUrl: `/${repo.owner}/${repo.repo}/deployments?environment=${encodeURIComponent(env.name)}`,
-      })),
-      hasEnvironments: environments.length > 0,
-    },
-  );
+  return {
+    ...out,
+    environments: environments.map((env: any) => ({
+      ...env,
+      deploymentsUrl: `/${repo.owner}/${repo.repo}/deployments?environment=${encodeURIComponent(env.name)}`,
+    })),
+    hasEnvironments: environments.length > 0,
+  };
 }
 
 export interface DeploymentsProps extends BaseProps {

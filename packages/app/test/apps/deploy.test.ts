@@ -120,8 +120,10 @@ describe("Deploy", () => {
     expect(response.text).toContain(
       "/Codertocat/Hello-World/deployments?environment&#x3D;production",
     );
-    // Torn down environments aren't listed.
+    // Torn down environments, and configured ones never deployed to, aren't
+    // listed.
     expect(response.text).not.toContain("pr-12");
+    expect(response.text).not.toContain("performance");
   });
 
   it("not watch environments", async () => {

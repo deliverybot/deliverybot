@@ -1,10 +1,11 @@
 {
   "repository": {
-    "environments": {
+    "deployments": {
       "nodes": [
-        { "name": "pr-12" },
-        { "name": "production" },
-        { "name": "staging" }
+        { "environment": "production" },
+        { "environment": "staging" },
+        { "environment": "pr-12" },
+        { "environment": "production" }
       ]
     }
   }
