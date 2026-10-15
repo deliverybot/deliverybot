@@ -106,11 +106,15 @@ export const deploymentStatus = (id = 1, body?: any) =>
     .post(`/repos/Codertocat/Hello-World/deployments/${id}/statuses`, body)
     .reply(200);
 
-export const latestDeploymentStatus = (id: number, state?: string) =>
+// A deployment's statuses, newest first.
+export const latestDeploymentStatus = (id: number, ...states: string[]) =>
   nock("https://api.github.com")
     .get(`/repos/Codertocat/Hello-World/deployments/${id}/statuses`)
     .query(true)
-    .reply(200, state ? [{ id: 100 + id, state }] : []);
+    .reply(
+      200,
+      states.map((state, i) => ({ id: 100 * id - i, state })),
+    );
 
 export const deploymentStatusEvent = (
   state: string,
