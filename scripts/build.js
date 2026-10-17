@@ -1,133 +1,110 @@
-const fs = require('fs');
-const { spawn } = require('child_process');
+// Builds the packages, starts the app in watch mode or runs the tests.
+//
+//   node scripts/build.js           build everything once
+//   node scripts/build.js --watch   rebuild on changes and run the server
+//   node scripts/build.js --test    run the tests
+//   node scripts/build.js --clean   remove all build output
+//
+// TypeScript is compiled with `tsc -b` from the root tsconfig.json, which
+// builds the packages in dependency order and skips the ones that haven't
+// changed since the last build.
+const fs = require("fs");
+const path = require("path");
+const { spawn } = require("child_process");
 
+const root = path.join(__dirname, "..");
 const procs = [];
 
 function shutdown() {
-  procs.forEach(proc => {
-    proc.kill('SIGTERM');
-  });
+  procs.forEach((proc) => proc.kill("SIGTERM"));
 }
 
-function run(pkg, cmd, onChange) {
-  function pad(name, to) {
-    let p = "";
-    for (let i = 0; i < to - name.length; i++) {
-      p += " ";
-    }
-    return `${name}:${p}`
-  }
+// Runs a command, prefixing its output with a label so the output of
+// processes running side by side stays readable.
+function run(label, cmd, args, cwd = ".") {
+  const prefix = `${label}:`.padEnd(10);
+  const print = (data) => {
+    data
+      .toString()
+      .split("\n")
+      .forEach((line) => {
+        if (line.trim()) process.stdout.write(`${prefix} ${line}\n`);
+      });
+  };
 
   return new Promise((resolve, reject) => {
-    const proc = spawn('yarn', [cmd], { cwd: pkg === '.' ? '.' : `./packages/${pkg}` });
-    const name = pad(pkg, 10);
+    const proc = spawn(cmd, args, { cwd: path.join(root, cwd) });
     procs.push(proc);
-    proc.stdout.on('data', (data) => {
-      data.toString().split("\n").forEach(line => {
-        if (line.trim()) process.stdout.write(`${name} ${line}\n`);
-      });
-      if (onChange) onChange();
-    });
-    proc.stderr.on('data', (data) => {
-      data.toString().split("\n").forEach(line => {
-        if (line.trim()) process.stdout.write(`${name} ${line}\n`);
-      });
-      if (onChange) onChange();
-    });
+    proc.stdout.on("data", print);
+    proc.stderr.on("data", print);
+    proc.on("error", reject);
     proc.on("close", (code) => {
       if (code !== 0) {
-        console.log(`${name} ${cmd} exited with code ${code}`);
-        return reject(code);
+        return reject(new Error(`${label}: ${cmd} exited with code ${code}`));
       }
       return resolve();
     });
   });
 }
 
-function debounce(func, wait) {
-  let timeout;
-  return function (...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      func.apply(this, args);
-    }, wait);
-  };
+const bin = (name) => path.join(root, "node_modules", ".bin", name);
+const webpack = ["--config", "config/webpack.config.cjs"];
+
+// The client imports the precompiled partials, so they're generated before
+// the TypeScript build.
+async function build() {
+  await run("partials", "node", ["build.cjs", "build"], "packages/app");
+  await run("tsc", bin("tsc"), ["-b"]);
+  await run("bundle", bin("webpack"), webpack, "packages/run");
 }
 
-const restart = debounce(() => {
-  console.log("--> restart");
-  fs.utimes("tmp/restart.txt", new Date(), new Date(), (err) => {
-    if (err) console.error("Failed touch restart.txt", err);
-  });
-}, 1000);
+function watch() {
+  // In-memory storage (no DATABASE_URL) is saved to tmp/db.json.
+  fs.mkdirSync(path.join(root, "tmp"), { recursive: true });
+  return Promise.all([
+    run("server", "node", ["scripts/server.js"]),
+    run("tsc", bin("tsc"), ["-b", "--watch", "--preserveWatchOutput"]),
+    run("partials", "node", ["build.cjs", "watch"], "packages/app"),
+    run("bundle", bin("webpack"), [...webpack, "--watch"], "packages/run"),
+  ]);
+}
+
+function test() {
+  return Promise.all(
+    ["deploybot", "slackbot", "app", "postgres"].map((pkg) =>
+      run(pkg, "yarn", ["test"], `packages/${pkg}`),
+    ),
+  );
+}
+
+function clean() {
+  for (const pkg of fs.readdirSync(path.join(root, "packages"))) {
+    for (const dir of ["lib", "bundle"]) {
+      fs.rmSync(path.join(root, "packages", pkg, dir), {
+        recursive: true,
+        force: true,
+      });
+    }
+  }
+}
+
+const commands = { "--watch": watch, "--test": test, "--clean": clean };
 
 async function main() {
-  try {
-    fs.mkdirSync("./tmp");
-  } catch (err) {
-    // Ignore.
-  }
-  try {
-    fs.writeFileSync("./tmp/restart.txt", "");
-  } catch (err) {
-    // Ignore.
-  }
-
-  const watch = process.argv[2] == '--watch';
-  const test = process.argv[2] == '--test';
-
-  if (watch) {
-    await Promise.all([
-      run('.', 'server'),
-      run('core', 'build:watch', restart),
-      run('postgres', 'build:watch', restart),
-      run('app', 'build:watch', restart),
-      run('app', 'partials:watch', restart),
-      run('client', 'build:watch', restart),
-      run('run', 'build:watch', restart),
-      run('run', 'bundle:watch', restart),
-    ]);
-  } else if (test) {
-    await Promise.all([
-      run('deploybot', 'test'),
-      run('slackbot', 'test'),
-      run('app', 'test'),
-      run('postgres', 'test'),
-    ]);
-  } else {
-    await Promise.all([
-      run('core', 'clean'),
-      run('app', 'clean'),
-      run('client', 'clean'),
-      run('run', 'clean'),
-      run('deploybot', 'clean'),
-      run('slackbot', 'clean'),
-      run('postgres', 'clean'),
-    ]);
-    await run('core', 'build');
-    await run('postgres', 'build');
-    await Promise.all([
-      await run('deploybot', 'build'),
-      await run('slackbot', 'build'),
-    ]);
-    await Promise.all([
-      run('app', 'build'),
-      run('app', 'partials'),
-      run('client', 'build'),
-    ]);
-    await run('run', 'build');
-    await run('run', 'bundle');
-  }
-
+  const command = commands[process.argv[2]] || build;
+  await command();
   console.log("done");
   process.exit(0);
 }
 
-main().catch(() => {
+main().catch((err) => {
+  console.error(err.message || err);
   shutdown();
   process.exit(1);
 });
 
-['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(sig => process.on(sig, () => {
-  shutdown();
-}));
+["SIGINT", "SIGTERM", "SIGQUIT"].forEach((sig) =>
+  process.on(sig, () => {
+    shutdown();
+  }),
+);

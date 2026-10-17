@@ -13,12 +13,15 @@
     "useUnknownInCatchVariables": false,
     "sourceMap": true,
     "outDir": "./lib",
+    "rootDir": "./src",
+    "tsBuildInfoFile": "./lib/tsconfig.tsbuildinfo",
     "skipLibCheck": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
     "declaration": true,
     "resolveJsonModule": true,
-    "typeRoots": ["src/@types", "node_modules/@types"]
+    "typeRoots": ["src/@types", "node_modules/@types"],
+    "composite": true
   },
   "include": [
     "src/**/*"

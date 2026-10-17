@@ -8,9 +8,9 @@
     "lib/*"
   ],
   "scripts": {
-    "clean": "mkdir -p lib && rm -r lib",
-    "build": "tsc",
-    "build:watch": "tsc --watch --preserveWatchOutput"
+    "clean": "rm -rf lib",
+    "build": "tsc -b",
+    "build:watch": "tsc -b --watch --preserveWatchOutput"
   },
   "dependencies": {
     "@octokit/plugin-rest-endpoint-methods": "17.0.0",

@@ -15,6 +15,8 @@
     "useUnknownInCatchVariables": false,
     "sourceMap": true,
     "outDir": "./lib",
+    "rootDir": "./src",
+    "tsBuildInfoFile": "./lib/tsconfig.tsbuildinfo",
     "skipLibCheck": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
@@ -23,10 +25,17 @@
     "typeRoots": [
       "src/@types",
       "node_modules/@types"
-    ]
+    ],
+    "composite": true
   },
   "include": [
     "src/**/*"
+  ],
+  "references": [
+    { "path": "../app" },
+    { "path": "../client" },
+    { "path": "../core" },
+    { "path": "../postgres" }
   ],
   "compileOnSave": false
 }

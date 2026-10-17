@@ -10,11 +10,11 @@
     "lib/*"
   ],
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc -b",
+    "build:watch": "tsc -b --watch --preserveWatchOutput",
     "partials": "./build.cjs build",
     "partials:watch": "./build.cjs watch",
-    "clean": "mkdir -p lib && rm -r lib",
+    "clean": "rm -rf lib",
     "test": "NODE_ENV=test vitest run"
   },
   "dependencies": {

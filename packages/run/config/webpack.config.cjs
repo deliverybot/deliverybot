@@ -6,6 +6,9 @@ module.exports = {
   entry: "./lib/client.js",
   devtool: "source-map",
   mode: "production",
+  // Rebuilds only what changed since the last build. The cache lives in
+  // node_modules/.cache/webpack.
+  cache: { type: "filesystem", buildDependencies: { config: [__filename] } },
   output: {
     publicPath: "/static/bundle/",
     path: path.resolve(__dirname, "..", "bundle"),

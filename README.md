@@ -53,6 +53,10 @@ Postgres database.
 
    The dashboard runs on http://localhost:3000.
 
+`yarn build` only rebuilds the packages that changed since the last build. Run
+`yarn clean` first if you deleted or renamed a source file, so its old output
+doesn't linger in `lib/`.
+
 Run the tests with `yarn test`. The Postgres tests need `DATABASE_URL` to point
 at a database.
 
