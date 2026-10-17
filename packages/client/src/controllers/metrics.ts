@@ -29,6 +29,11 @@ export class MetricsController extends Controller {
       return;
     }
     const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    // ApexCharts' grid and axis lines default to a fixed light gray, even in
+    // its dark theme, so take them from Primer's border token.
+    const lineColor = getComputedStyle(document.documentElement)
+      .getPropertyValue("--borderColor-muted")
+      .trim();
     new ApexCharts(chart, {
       chart: {
         height: 250,
@@ -38,10 +43,15 @@ export class MetricsController extends Controller {
         zoom: { enabled: false },
       },
       theme: { mode: dark ? "dark" : "light" },
+      grid: { borderColor: lineColor },
       colors: ["#0366d6", "#28a745", "#6f42c1", "#ea4aaa", "#d73a49"],
       dataLabels: { enabled: false },
       stroke: { width: 1.5 },
-      xaxis: { categories: data.allDaysWords },
+      xaxis: {
+        categories: data.allDaysWords,
+        axisBorder: { color: lineColor },
+        axisTicks: { color: lineColor },
+      },
       series: data.environments.map((env: string) => {
         return {
           name: env,
