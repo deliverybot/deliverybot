@@ -22,7 +22,8 @@
       </div>
     </div>
     {{#if hasInstallations}}
-    <table class="width-full mt-3" data-test="installations">
+    <div class="overflow-x-auto mt-3">
+    <table class="width-full" data-test="installations">
       <thead>
         <tr class="text-left border-bottom">
           <th class="p-2">Account</th>
@@ -42,8 +43,8 @@
             {{repoCount}}
             <span class="color-fg-muted f6">({{repositorySelection}})</span>
           </td>
-          <td class="p-2 color-fg-muted">{{installed}}</td>
-          <td class="p-2 color-fg-muted">{{#if lastActivity}}{{lastActivity}}{{else}}None recorded{{/if}}</td>
+          <td class="p-2 color-fg-muted no-wrap">{{installed}}</td>
+          <td class="p-2 color-fg-muted no-wrap">{{#if lastActivity}}{{lastActivity}}{{else}}None recorded{{/if}}</td>
           <td class="p-2">
             {{#if suspended}}<span class="Label Label--severe">Suspended</span>{{else if active}}<span class="Label Label--success">Active</span>{{else}}<span class="Label Label--secondary">Idle</span>{{/if}}
           </td>
@@ -51,6 +52,7 @@
         {{/each}}
       </tbody>
     </table>
+    </div>
     {{else}}
     <p class="mt-3 color-fg-muted">No installations yet.</p>
     {{/if}}
@@ -60,7 +62,8 @@
       <div class="Subhead-description">People who signed in to this dashboard.</div>
     </div>
     {{#if hasUsers}}
-    <table class="width-full mt-3" data-test="users">
+    <div class="overflow-x-auto mt-3">
+    <table class="width-full" data-test="users">
       <thead>
         <tr class="text-left border-bottom">
           <th class="p-2">Login</th>
@@ -72,12 +75,13 @@
         {{#each users}}
         <tr class="border-bottom">
           <td class="p-2"><a target="_blank" href="https://github.com/{{username}}">{{username}}</a></td>
-          <td class="p-2 color-fg-muted">{{firstSeen}}</td>
-          <td class="p-2 color-fg-muted">{{lastSeen}}</td>
+          <td class="p-2 color-fg-muted no-wrap">{{firstSeen}}</td>
+          <td class="p-2 color-fg-muted no-wrap">{{lastSeen}}</td>
         </tr>
         {{/each}}
       </tbody>
     </table>
+    </div>
     {{else}}
     <p class="mt-3 color-fg-muted">Nobody has signed in yet.</p>
     {{/if}}

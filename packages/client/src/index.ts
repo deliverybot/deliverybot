@@ -22,6 +22,13 @@ application.register("filter", FilterController);
 application.register("select", SelectController);
 application.register("toast", ToastController);
 
+// On phones the tabs scroll sideways; keep the current one in view.
+document.addEventListener("DOMContentLoaded", () => {
+  document
+    .querySelector(".UnderlineNav-item[aria-current]")
+    ?.scrollIntoView({ block: "nearest", inline: "nearest" });
+});
+
 // Watcher defines how we can watch repositories for changes. This allows for
 // registering a better watcher instead of just polling for changes.
 export const registerWatcher = RefreshController.registerWatcher;

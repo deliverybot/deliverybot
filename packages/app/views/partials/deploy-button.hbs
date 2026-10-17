@@ -1,7 +1,6 @@
 <form
   data-controller="form"
   data-target="form.form"
-  class="d-inline-block"
   method="POST"
   action="/{{owner}}/{{repo}}/branch/{{branch}}/o/{{oid}}"
   data-form-error="Failed to deploy '{{oidShort}}'."
@@ -14,7 +13,7 @@
     Deploy
   </button>
 
-  <select name="target" class="form-select ml-2 color-fg-muted" required
+  <select name="target" class="form-select color-fg-muted" required
     data-controller="select" placeholder="Target">
     <option disabled selected value="">Target</option>
     {{#each @root.targets}}
@@ -22,7 +21,7 @@
     {{/each}}
   </select>
 
-  <label class="ml-2 color-fg-muted tooltipped tooltipped-n"
+  <label class="color-fg-muted tooltipped tooltipped-n"
     aria-label="Ignore checks and deploy anyway.">
     <input type="checkbox" name="force">
     Force

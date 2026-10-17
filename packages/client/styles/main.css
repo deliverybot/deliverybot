@@ -43,6 +43,43 @@
   max-width: 800px; width: 100%; margin: auto;
   padding: 0 16px;
 }
+
+/* A page title with its buttons, which move under the title when both don't
+   fit on one line. */
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+.page-header > div {
+  white-space: nowrap;
+}
+
+/* Tabs scroll sideways on phones. Let the content grow with them so the
+   last tab keeps its padding. */
+.UnderlineNav > .content {
+  width: max-content;
+  min-width: min(100%, 800px);
+}
+
+/* The deploy and promote controls of a commit; they wrap on phones. */
+.deploy-actions,
+.deploy-actions form {
+  gap: 8px;
+}
+.deploy-actions form {
+  display: flex;
+  align-items: center;
+}
+.deploy-actions label {
+  white-space: nowrap;
+}
+.deploy-actions .ts-wrapper.form-select {
+  flex: 1 1 120px;
+  max-width: 160px;
+}
 pre {
   overflow: auto;
   word-wrap: normal;
