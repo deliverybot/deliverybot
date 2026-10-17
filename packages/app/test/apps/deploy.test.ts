@@ -35,6 +35,19 @@ describe("Deploy", () => {
     );
   });
 
+  it("shows not found for a repository the app isn't installed on", async () => {
+    factory.cleanAll();
+    factory.repo();
+    factory.permissionNotInstalled();
+
+    const response = await factory
+      .request(app)
+      .get("/Codertocat/Hello-World")
+      .set("cookie", session);
+    expect(response.status).toBe(404);
+    expect(response.text).toContain("install Deliverybot");
+  });
+
   it("gets metrics", async () => {
     const response = await factory
       .request(app)

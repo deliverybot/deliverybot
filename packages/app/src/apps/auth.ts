@@ -77,10 +77,21 @@ export async function verifyRepo(
     return;
   }
 
-  const repoData = await octokit.rest.repos.get({ owner, repo });
-  const id = repoData.data.id;
-  const defaultBranch = repoData.data.default_branch;
-  const write = await canWrite(octokit, { owner, repo, username });
+  let id: number, defaultBranch: string, write: boolean;
+  try {
+    const repoData = await octokit.rest.repos.get({ owner, repo });
+    id = repoData.data.id;
+    defaultBranch = repoData.data.default_branch;
+    write = await canWrite(octokit, { owner, repo, username });
+  } catch (error) {
+    // The user's token only reaches repositories the app is installed on, so
+    // GitHub refuses the rest. Show the not found page, which links to
+    // installing the app, rather than a server error.
+    if (!isUnreachable(error)) throw error;
+    (req as any).log.info({ owner, repo }, "repository not reachable");
+    res.status(404).sendFile(req.app.get("error404"));
+    return;
+  }
   if (!write) {
     (req as any).log.info({ owner, repo }, "no write access");
     res.redirect("/login");
@@ -90,6 +101,15 @@ export async function verifyRepo(
   req.session.verified[`${owner}/${repo}`] = { id, defaultBranch };
   req.user!.repo = { owner, repo, id, defaultBranch };
   next();
+}
+
+function isUnreachable(error: any) {
+  return (
+    error.status === 404 ||
+    (error.status === 403 &&
+      error.response?.data?.message ===
+        "Resource not accessible by integration")
+  );
 }
 
 /**

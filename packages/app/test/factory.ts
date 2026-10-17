@@ -157,6 +157,12 @@ export const config = ({ valid, ref }: { valid?: boolean; ref?: string }) =>
       ).toString("base64"),
     });
 
+// GitHub's answer when the app isn't installed on the repository.
+export const permissionNotInstalled = () =>
+  nock("https://api.github.com")
+    .get("/repos/Codertocat/Hello-World/collaborators/Codertocat/permission")
+    .reply(403, { message: "Resource not accessible by integration" });
+
 export const repo = () =>
   nock("https://api.github.com")
     .get("/repos/Codertocat/Hello-World")
