@@ -19,6 +19,26 @@
 }
 .hidden { display: none; }
 
+/* Centered, and narrowed to the screen on phones. Sits above Primer's
+   details-overlay backdrop (z-index 111). */
+.lock-modal {
+  position: fixed;
+  top: 200px;
+  left: 50%;
+  z-index: 120;
+  width: 600px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 216px);
+  overflow-y: auto;
+  transform: translateX(-50%);
+}
+@media (max-width: 544px) {
+  .lock-modal {
+    top: 80px;
+    max-height: calc(100vh - 96px);
+  }
+}
+
 .content {
   max-width: 800px; width: 100%; margin: auto;
   padding: 0 16px;
