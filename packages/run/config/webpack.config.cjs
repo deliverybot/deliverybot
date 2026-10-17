@@ -12,7 +12,9 @@ module.exports = {
     filename: "[name].[contenthash].js",
   },
   plugins: [
-    new MiniCssExtractPlugin(),
+    // Hash the stylesheet name like the script, so a deploy never serves
+    // new markup with a cached old stylesheet.
+    new MiniCssExtractPlugin({ filename: "[name].[contenthash].css" }),
     new HtmlWebpackPlugin({
       inject: false,
       minify: true,
