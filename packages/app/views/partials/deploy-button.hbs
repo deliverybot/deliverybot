@@ -14,7 +14,7 @@
     Deploy
   </button>
 
-  <select name="target" class="form-select ml-2 text-gray-light" required
+  <select name="target" class="form-select ml-2 color-fg-muted" required
     data-controller="select" placeholder="Target">
     <option disabled selected value="">Target</option>
     {{#each @root.targets}}
@@ -22,7 +22,7 @@
     {{/each}}
   </select>
 
-  <label class="ml-2 text-gray-light tooltipped tooltipped-n"
+  <label class="ml-2 color-fg-muted tooltipped tooltipped-n"
     aria-label="Ignore checks and deploy anyway.">
     <input type="checkbox" name="force">
     Force

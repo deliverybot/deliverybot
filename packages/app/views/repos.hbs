@@ -6,7 +6,7 @@
   </h2>
   <div>
     <a data-track="add-integration" data-action="click->analytics#trackEvent" target="_blank"
-      href="{{info.integrations}}" class="btn btn-default">
+      href="{{info.integrations}}" class="btn">
       + Integration
     </a>
     <a data-track="add-install" data-action="click->analytics#trackEvent" target="_blank" href="{{info.install}}"
@@ -25,7 +25,7 @@
 </nav>
 </header>
 
-<main class="bg-white fill pt-3 pb-8">
+<main class="color-bg-default fill pt-3 pb-8">
   <div class="content" data-controller="recents">
     {{#if hasRepos}}
     <div class="clearfix">
@@ -40,7 +40,7 @@
           <p>{{description}}</p>
           {{/if}}
           {{#if stats.lastDeploy}}
-          <p class="text-gray f6">
+          <p class="color-fg-muted f6">
             Last deployed {{stats.lastDeploy.createdAt}}
             by {{stats.lastDeploy.creator}}
             with status {{stats.lastDeploy.state}}

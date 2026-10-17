@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="height-full">
+<html lang="en" class="height-full" data-color-mode="auto" data-light-theme="light" data-dark-theme="dark">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>{{title}}</title>
   <link rel="icon" href="/static/logo.png">
@@ -12,31 +13,31 @@
   {{> scripts}}
 </head>
 
-<body class="height-full bg-gray-light" data-billing-login="{{owner}}" data-controller="analytics billing toast">
+<body class="height-full color-bg-subtle" data-billing-login="{{owner}}" data-controller="analytics billing toast">
 <header>
-<nav class="box-shadow navbar d-flex flex-justify-between">
+<nav class="color-shadow-small navbar d-flex flex-justify-between">
   <div>
     <a href="/">
       <h3 class="text-mono" style="display: inline;">deliverybot</h3>
     </a>
     {{#if info.commit}}
-    <a href="{{info.commitUrl}}" target="_blank" class="Label Label--outline v-align-middle ml-2 text-gray-light text-mono">{{info.commit}}</a>
+    <a href="{{info.commitUrl}}" target="_blank" class="Label border-0 v-align-middle ml-2 color-fg-muted text-mono">{{info.commit}}</a>
     {{/if}}
   </div>
   <div>
     <a target="_blank" class="mr-2" href="{{info.documentation}}">Docs</a>
     <a class="mr-2" data-action="click->analytics#openIntercom" href="mailto:{{info.support}}">Help</a>
     <details class="dropdown details-reset details-overlay d-inline-block">
-      <summary class="text-gray p-2 d-inline" aria-haspopup="true">
+      <summary class="color-fg-muted p-2 d-inline" aria-haspopup="true">
         <img alt="@{{user.login}}" class="avatar" src="{{user.avatar}}" height="20" width="20">
       </summary>
 
-      <nav class="menu position-absolute right-0 mr-2 mt-2 box-shadow-medium" style="z-index: 1000; width: 200px;">
-        <a class="text-gray menu-item" href="/settings">Settings</a>
+      <nav class="menu position-absolute right-0 mr-2 mt-2 color-shadow-medium" style="z-index: 1000; width: 200px;">
+        <a class="color-fg-muted menu-item" href="/settings">Settings</a>
         {{#if isAdmin}}
-        <a class="text-gray menu-item" href="/_/admin">Admin</a>
+        <a class="color-fg-muted menu-item" href="/_/admin">Admin</a>
         {{/if}}
-        <a class="text-gray menu-item" href="/logout">Logout</a>
+        <a class="color-fg-muted menu-item" href="/logout">Logout</a>
       </nav>
     </details>
   </div>

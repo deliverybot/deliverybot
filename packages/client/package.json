@@ -14,6 +14,9 @@
   },
   "dependencies": {
     "@deliverybot/app": "0.7.2",
+    "@primer/css": "22.3.2",
+    "@primer/primitives": "11.10.0",
+    "@primer/view-components": "0.53.5",
     "apexcharts": "3.24.0",
     "handlebars": "4.7.10",
     "stimulus": "1.1.1",

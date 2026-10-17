@@ -13,26 +13,26 @@
 </nav>
 </header>
 
-<main class="bg-white fill pt-3 pb-8">
+<main class="color-bg-default fill pt-3 pb-8">
   <div class="content">
     <div class="Box">
       {{#if hasEnvironments}}
       {{#each environments}}
       <div class="Box-row d-flex flex-items-center">
-        <div class="text-green mr-2" title="active">{{> icon_check}}</div>
+        <div class="color-fg-success mr-2" title="active">{{> icon_check}}</div>
         <div class="flex-auto" style="min-width: 0;">
           <div class="css-truncate css-truncate-target" style="max-width: 100%;">
-            <strong><a class="text-gray-dark" href="{{deploymentsUrl}}">{{name}}</a></strong>
+            <strong><a class="color-fg-default" href="{{deploymentsUrl}}">{{name}}</a></strong>
             &middot;
-            {{#if commitUrl}}<a class="text-gray-dark" href="{{commitUrl}}" target="_blank">{{message}}</a>{{/if}}
+            {{#if commitUrl}}<a class="color-fg-default" href="{{commitUrl}}" target="_blank">{{message}}</a>{{/if}}
           </div>
-          <div class="text-gray-light">
+          <div class="color-fg-muted">
             {{#if shaShort}}<strong><code>{{shaShort}}</code></strong>{{/if}}
             {{#if ref}}on <code>{{ref}}</code>{{/if}}
             {{#if creator}}by <a href="https://github.com/{{creator}}">@{{creator}}</a>{{/if}}
             deployed {{createdAtWords}}
             {{#if latest}}
-            <span class="text-{{latest.status.color}}">&middot; newer deploy {{latest.state}} {{latest.createdAtWords}}</span>
+            <span class="color-fg-{{latest.status.color}}">&middot; newer deploy {{latest.state}} {{latest.createdAtWords}}</span>
             {{/if}}
           </div>
         </div>
@@ -43,7 +43,7 @@
       </div>
       {{/each}}
       {{else}}
-      <div class="Box-body text-center text-gray-light p-4">
+      <div class="Box-body text-center color-fg-muted p-4">
         No active environments.
       </div>
       {{/if}}
