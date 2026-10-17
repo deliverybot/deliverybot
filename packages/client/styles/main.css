@@ -129,3 +129,21 @@ main {
   margin-top: 4px;
   font-size: 14px;
 }
+
+/* Tom Select's dropdown has fixed light colors; use Primer's theme. */
+.ts-dropdown,
+.ts-dropdown .optgroup-header {
+  color: var(--fgColor-default);
+  background: var(--overlay-bgColor);
+}
+.ts-dropdown {
+  border-color: var(--borderColor-default);
+}
+.ts-dropdown .active {
+  color: var(--fgColor-default);
+  background-color: var(--bgColor-neutral-muted);
+}
+.ts-dropdown .create,
+.ts-dropdown .no-results {
+  color: var(--fgColor-muted);
+}

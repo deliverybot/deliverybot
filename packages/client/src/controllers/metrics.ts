@@ -28,13 +28,16 @@ export class MetricsController extends Controller {
     if (!chart) {
       return;
     }
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     new ApexCharts(chart, {
       chart: {
         height: 250,
         type: "line",
+        background: "transparent",
         toolbar: { show: false },
         zoom: { enabled: false },
       },
+      theme: { mode: dark ? "dark" : "light" },
       colors: ["#0366d6", "#28a745", "#6f42c1", "#ea4aaa", "#d73a49"],
       dataLabels: { enabled: false },
       stroke: { width: 1.5 },
