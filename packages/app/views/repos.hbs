@@ -28,10 +28,11 @@
 <main class="color-bg-default fill pt-3 pb-8">
   <div class="content" data-controller="recents">
     {{#if hasRepos}}
-    <div class="clearfix">
-      <div class="mt-5 p-4 col-12 col-md-8 float-left" data-target="repos.list">
+    <div class="d-md-flex flex-items-start mt-3">
+      <div class="col-12 col-md-8 pr-md-4" data-target="repos.list">
+        <div class="Box">
         {{#each repos}}
-        <div class="p-3 border-bottom">
+        <div class="Box-row">
           <h4>
             <a data-name="{{owner}}/{{repo}}" data-action="click->recents#addRecent"
               href="/{{owner}}/{{repo}}"><strong>{{owner}}&nbsp;/&nbsp;{{repo}}</strong></a>
@@ -48,9 +49,10 @@
           {{/if}}
         </div>
         {{/each}}
+        </div>
         {{> pagination}}
       </div>
-      <div class="mt-5 p-2 col-12 col-md-4 float-left">
+      <div class="col-12 col-md-4 mt-4 mt-md-0">
         <div class="Box mb-4" data-controller="recents">
           <div class="Box-body">
             <h4 class="mb-3">Recent repositories</h4>
