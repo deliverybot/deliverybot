@@ -1,6 +1,6 @@
 {{> header}}
 
-<div class="content d-flex flex-justify-between mt-5">
+<div class="content page-header mt-5">
   <h2>
     My installations
   </h2>
@@ -25,18 +25,20 @@
 <main class="color-bg-default fill pt-3 pb-8">
   <div class="content">
     {{#if hasInstalls}}
-    <div class="clearfix">
-      <div class="mt-5 p-4 col-12 col-md-8 float-left">
+    <div class="d-md-flex flex-items-start mt-3">
+      <div class="col-12 col-md-8 pr-md-4">
+        <div class="Box">
         {{#each installs}}
-        <div class="p-3 d-flex flex-justify-between border-bottom">
+        <div class="Box-row d-flex flex-items-center flex-justify-between">
           <h3>
             <a href="/{{name}}">{{name}}</a>
           </h3>
           <a target="_blank" href="{{htmlUrl}}">Edit</a>
         </div>
         {{/each}}
+        </div>
       </div>
-      <div class="mt-5 p-2 col-12 col-md-4 float-left">
+      <div class="col-12 col-md-4 mt-4 mt-md-0">
         <div class="Box mb-4" data-controller="recents">
           <div class="Box-body">
             <h4 class="mb-3">Recent repositories</h4>

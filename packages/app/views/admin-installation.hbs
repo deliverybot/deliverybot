@@ -1,6 +1,6 @@
 {{> header}}
 
-<div class="content d-flex flex-justify-between mt-5">
+<div class="content page-header mt-5">
   <h2>
     <a href="/_/admin">Admin</a> / {{install.account}}
   </h2>
@@ -29,7 +29,8 @@
     <div class="Subhead mb-0 mt-5">
       <h2 class="Subhead-heading">Recent activity</h2>
     </div>
-    <table class="width-full mt-3" data-test="recent">
+    <div class="overflow-x-auto mt-3">
+    <table class="width-full" data-test="recent">
       <thead>
         <tr class="text-left border-bottom">
           <th class="p-2">Repository</th>
@@ -42,11 +43,12 @@
         <tr class="border-bottom">
           <td class="p-2"><a target="_blank" href="https://github.com/{{fullName}}"><strong>{{fullName}}</strong></a></td>
           <td class="p-2"><code>{{lastEvent}}</code></td>
-          <td class="p-2 color-fg-muted">{{lastEventAgo}}</td>
+          <td class="p-2 color-fg-muted no-wrap">{{lastEventAgo}}</td>
         </tr>
         {{/each}}
       </tbody>
     </table>
+    </div>
     {{/if}}
 
     <div class="Subhead mb-0 mt-6">
@@ -60,7 +62,8 @@
       Could not list this installation's repositories on GitHub.
     </div>
     {{else if hasRepos}}
-    <table class="width-full mt-3" data-test="repositories">
+    <div class="overflow-x-auto mt-3">
+    <table class="width-full" data-test="repositories">
       <thead>
         <tr class="text-left border-bottom">
           <th class="p-2">Repository</th>
@@ -76,11 +79,12 @@
             {{#if private}}<span class="Label ml-1">Private</span>{{/if}}
           </td>
           <td class="p-2">{{#if lastEvent}}<code>{{lastEvent}}</code>{{else}}<span class="color-fg-muted">None recorded</span>{{/if}}</td>
-          <td class="p-2 color-fg-muted">{{lastEventAgo}}</td>
+          <td class="p-2 color-fg-muted no-wrap">{{lastEventAgo}}</td>
         </tr>
         {{/each}}
       </tbody>
     </table>
+    </div>
     {{> pagination}}
     {{else}}
     <p class="mt-3 color-fg-muted">No repositories.</p>

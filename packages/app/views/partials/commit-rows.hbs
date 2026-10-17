@@ -6,9 +6,7 @@
         <div>
           <a class="color-fg-default">
             {{> icon_down}}
-            {{message}}
-          </a>
-          <span data-target="commits.checkstatus" id="checkstatus-{{oid}}" data-hash="{{hash}}">
+            {{message}}</a>&nbsp;<span class="no-wrap" data-target="commits.checkstatus" id="checkstatus-{{oid}}" data-hash="{{hash}}">
             {{> commit_status}}
             <span class="loader"></span>
           </span>
@@ -26,7 +24,7 @@
       <div data-target="commits.details" id="details-{{oid}}" data-hash="{{hash}}">
         {{> commit_details}}
       </div>
-      <div class="Box-footer p-3 d-flex flex-justify-between">
+      <div class="Box-footer p-3 d-flex flex-wrap flex-items-center flex-justify-between deploy-actions">
         {{> deploy_button}}
         {{> promote_button}}
       </div>

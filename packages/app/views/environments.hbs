@@ -30,7 +30,7 @@
             {{#if shaShort}}<strong><code>{{shaShort}}</code></strong>{{/if}}
             {{#if ref}}on <code>{{ref}}</code>{{/if}}
             {{#if creator}}by <a href="https://github.com/{{creator}}">@{{creator}}</a>{{/if}}
-            deployed {{createdAtWords}}
+            <span class="no-wrap">deployed {{createdAtWords}}</span>
             {{#if latest}}
             <span class="color-fg-{{latest.status.color}}">&middot; newer deploy {{latest.state}} {{latest.createdAtWords}}</span>
             {{/if}}
