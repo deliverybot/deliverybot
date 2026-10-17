@@ -31,11 +31,9 @@ jobs:
       uses: actions/setup-node@v7
       with:
         node-version: ${{ matrix.node-version }}
-    - name: yarn install, build, and test
-      run: |
-        yarn install --frozen-lockfile
-        yarn build
-        yarn test
+        cache: yarn
+    - run: yarn install --frozen-lockfile
+    - run: yarn build
+    - run: yarn test
       env:
-        CI: true
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/deliverybot_test

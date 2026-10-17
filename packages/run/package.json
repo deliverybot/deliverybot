@@ -10,9 +10,9 @@
     "config/*"
   ],
   "scripts": {
-    "clean": "mkdir -p lib && mkdir -p bundle && rm -r lib && rm -r bundle",
-    "build": "tsc",
-    "build:watch": "tsc --watch --preserveWatchOutput",
+    "clean": "rm -rf lib bundle",
+    "build": "tsc -b",
+    "build:watch": "tsc -b --watch --preserveWatchOutput",
     "bundle": "webpack --config config/webpack.config.cjs",
     "bundle:watch": "webpack --config config/webpack.config.cjs --watch",
     "run": "node lib/server.js",

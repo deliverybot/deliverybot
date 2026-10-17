@@ -1,0 +1,14 @@
+{
+  // Builds every package in dependency order with `tsc -b`. Each package's
+  // tsconfig lists the packages it imports under "references".
+  "files": [],
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/postgres" },
+    { "path": "packages/deploybot" },
+    { "path": "packages/slackbot" },
+    { "path": "packages/app" },
+    { "path": "packages/client" },
+    { "path": "packages/run" }
+  ]
+}

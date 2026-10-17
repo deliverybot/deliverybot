@@ -9,9 +9,9 @@
     "lib/*"
   ],
   "scripts": {
-    "clean": "mkdir -p lib && rm -r lib",
-    "build": "tsc",
-    "build:watch": "tsc --watch --preserveWatchOutput",
+    "clean": "rm -rf lib",
+    "build": "tsc -b",
+    "build:watch": "tsc -b --watch --preserveWatchOutput",
     "test": "NODE_ENV=test vitest run"
   },
   "dependencies": {
