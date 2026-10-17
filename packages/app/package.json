@@ -22,7 +22,7 @@
     "@deliverybot/deploybot": "0.7.2",
     "@deliverybot/slackbot": "0.7.2",
     "@octokit/request": "10.0.16",
-    "js-yaml": "4.3.2",
+    "js-yaml": "5.4.3",
     "lodash.get": "4.4.2",
     "object-hash": "2.0.0"
   },
