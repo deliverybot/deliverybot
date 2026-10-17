@@ -5,7 +5,7 @@
     <a href="/_/admin">Admin</a> / {{install.account}}
   </h2>
   <div>
-    <a target="_blank" href="https://github.com/{{install.account}}" class="btn btn-default">
+    <a target="_blank" href="https://github.com/{{install.account}}" class="btn">
       View on GitHub
     </a>
   </div>
@@ -14,16 +14,16 @@
 <nav class="UnderlineNav mt-2">
   <div class="content">
     <div class="UnderlineNav-body p-3">
-      <span class="text-gray">
+      <span class="color-fg-muted">
         {{install.accountType}} &middot; {{install.repositorySelection}} repositories
-        {{#if install.suspended}}&middot; <span class="Label Label--orange">Suspended</span>{{/if}}
+        {{#if install.suspended}}&middot; <span class="Label Label--severe">Suspended</span>{{/if}}
       </span>
     </div>
   </div>
 </nav>
 </header>
 
-<main class="bg-white fill pt-3 pb-8">
+<main class="color-bg-default fill pt-3 pb-8">
   <div class="content">
     {{#if hasRecent}}
     <div class="Subhead mb-0 mt-5">
@@ -42,7 +42,7 @@
         <tr class="border-bottom">
           <td class="p-2"><a target="_blank" href="https://github.com/{{fullName}}"><strong>{{fullName}}</strong></a></td>
           <td class="p-2"><code>{{lastEvent}}</code></td>
-          <td class="p-2 text-gray">{{lastEventAgo}}</td>
+          <td class="p-2 color-fg-muted">{{lastEventAgo}}</td>
         </tr>
         {{/each}}
       </tbody>
@@ -73,17 +73,17 @@
         <tr class="border-bottom">
           <td class="p-2">
             <a target="_blank" href="https://github.com/{{fullName}}"><strong>{{fullName}}</strong></a>
-            {{#if private}}<span class="Label Label--outline ml-1">Private</span>{{/if}}
+            {{#if private}}<span class="Label ml-1">Private</span>{{/if}}
           </td>
-          <td class="p-2">{{#if lastEvent}}<code>{{lastEvent}}</code>{{else}}<span class="text-gray">None recorded</span>{{/if}}</td>
-          <td class="p-2 text-gray">{{lastEventAgo}}</td>
+          <td class="p-2">{{#if lastEvent}}<code>{{lastEvent}}</code>{{else}}<span class="color-fg-muted">None recorded</span>{{/if}}</td>
+          <td class="p-2 color-fg-muted">{{lastEventAgo}}</td>
         </tr>
         {{/each}}
       </tbody>
     </table>
     {{> pagination}}
     {{else}}
-    <p class="mt-3 text-gray">No repositories.</p>
+    <p class="mt-3 color-fg-muted">No repositories.</p>
     {{/if}}
   </div>
 </main>

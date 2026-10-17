@@ -32,7 +32,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -41,7 +42,8 @@ Object {
         Object {
           "context": "deliverybot/promotion",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -49,7 +51,8 @@ Object {
         Object {
           "context": "build",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -57,7 +60,8 @@ Object {
         Object {
           "context": "deployment",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -67,7 +71,8 @@ Object {
         "lastDeployedAt": 1574180855000,
         "lastDeployedAtWords": "a few seconds ago",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -80,7 +85,8 @@ Object {
           "description": "",
           "environment": "production",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -93,14 +99,15 @@ Object {
           "description": "",
           "environment": "staging",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
           "url": "https://github.com/colinjfw/deliverybot-example-local/commit/43aa699010bb9d3c3a2f5ec841f66f99434e4e0e/checks",
         },
       ],
-      "hash": "cdaa2136f0ebe06bd4495e6da5c33566e6f8054b",
+      "hash": "810d1aa3127ed60607ed954be471cb0c03e60ca9",
       "message": "Update README.md",
       "oid": "43aa699010bb9d3c3a2f5ec841f66f99434e4e0e",
       "oidShort": "43aa699",
@@ -115,7 +122,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -124,7 +132,8 @@ Object {
         Object {
           "context": "deliverybot/promotion",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -132,7 +141,8 @@ Object {
         Object {
           "context": "build",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -140,7 +150,8 @@ Object {
         Object {
           "context": "deployment",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -151,7 +162,8 @@ Object {
         "lastDeployedAtWords": "a few seconds ago",
         "latest": true,
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -164,7 +176,8 @@ Object {
           "description": "",
           "environment": "production",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -177,14 +190,15 @@ Object {
           "description": "",
           "environment": "staging",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
           "url": "https://github.com/colinjfw/deliverybot-example-local/commit/c57bb8ee26495cd7016f9adb87c0b5d6e79f7f5c/checks",
         },
       ],
-      "hash": "6e9cf381d093ac4f12e27a1a7040222141c4445e",
+      "hash": "6468bf4e05eedd701659ed9c0f2e48a242a4e9bc",
       "message": "Update deploy.yml",
       "oid": "c57bb8ee26495cd7016f9adb87c0b5d6e79f7f5c",
       "oidShort": "c57bb8e",
@@ -199,7 +213,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -208,7 +223,8 @@ Object {
         Object {
           "context": "deliverybot/promotion",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -216,7 +232,8 @@ Object {
         Object {
           "context": "build",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -224,7 +241,8 @@ Object {
         Object {
           "context": "deployment",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -234,7 +252,8 @@ Object {
         "lastDeployedAt": 1574139446000,
         "lastDeployedAtWords": "a few seconds ago",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -247,14 +266,15 @@ Object {
           "description": "",
           "environment": "staging",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
           "url": "https://github.com/colinjfw/deliverybot-example-local/commit/43c6569dfd5cad3e45a5c8c908f44fda29c7dca5/checks",
         },
       ],
-      "hash": "4a3ab30cc157a4b6243b54a4e7a378bcade7df1c",
+      "hash": "7e7342b6523979e7096112d41bd15dfb6e7c505a",
       "message": "Update deploy.yml",
       "oid": "43c6569dfd5cad3e45a5c8c908f44fda29c7dca5",
       "oidShort": "43c6569",
@@ -269,7 +289,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -278,7 +299,8 @@ Object {
         Object {
           "context": "build",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -286,7 +308,8 @@ Object {
         Object {
           "context": "deployment",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -296,7 +319,8 @@ Object {
         "lastDeployedAt": 1574058372000,
         "lastDeployedAtWords": "a few seconds ago",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -309,14 +333,15 @@ Object {
           "description": "",
           "environment": "staging",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
           "url": "https://github.com/colinjfw/deliverybot-example-local/commit/515cc74fb79c5e29d49c85c4a304386996ab8285/checks",
         },
       ],
-      "hash": "040f534ca0909ba1e2919b3f4120ce5969ccc765",
+      "hash": "fded4676e2326b466c603895c4595053b209330f",
       "message": "Update README.md",
       "oid": "515cc74fb79c5e29d49c85c4a304386996ab8285",
       "oidShort": "515cc74",
@@ -331,7 +356,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -340,7 +366,8 @@ Object {
         Object {
           "context": "build",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -350,13 +377,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "8d6de385a3272c50d67c937ffe320b5643f1f5d6",
+      "hash": "4d94dcf72415f6bbb05f53ecc3315fd947229de1",
       "message": "Update README.md",
       "oid": "7da5b87b7902e115854583c6e628c3a65de79f01",
       "oidShort": "7da5b87",
@@ -371,7 +399,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -380,7 +409,8 @@ Object {
         Object {
           "context": "build",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -390,13 +420,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "9c8cb9722ff96c5f48b65122645b85443393394f",
+      "hash": "b1b2ff63a2f9c0336fa63c096d18508ab3d1b71d",
       "message": "Update README.md",
       "oid": "3815abcd2848e4b5dfbc864478caeee418e3ee29",
       "oidShort": "3815abc",
@@ -411,7 +442,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -420,7 +452,8 @@ Object {
         Object {
           "context": "build",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -430,13 +463,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "5a702327a718a6e744fc1cdd013b00f3dd468691",
+      "hash": "d828de3b101f21917519b43d04978ffa301c7315",
       "message": "Update README.md",
       "oid": "1a1b398530ca62b2aaad6cb86bf25ed71f909143",
       "oidShort": "1a1b398",
@@ -451,7 +485,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -460,7 +495,8 @@ Object {
         Object {
           "context": "build",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -468,7 +504,8 @@ Object {
         Object {
           "context": "deployment",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -478,7 +515,8 @@ Object {
         "lastDeployedAt": 1573705119000,
         "lastDeployedAtWords": "a few seconds ago",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -491,7 +529,8 @@ Object {
           "description": "",
           "environment": "staging",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -504,14 +543,15 @@ Object {
           "description": "",
           "environment": "production",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
           "url": "https://github.com/colinjfw/deliverybot-example-local/commit/4034349ab90bbb234cb94ff209fd02699d866705/checks",
         },
       ],
-      "hash": "708b8b5703bd2f2b9b736fcd156c7ed008eece5a",
+      "hash": "c31b44ca4bf9e54054ebdee324cba41b1ed47013",
       "message": "Update README.md",
       "oid": "4034349ab90bbb234cb94ff209fd02699d866705",
       "oidShort": "4034349",
@@ -526,7 +566,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -535,7 +576,8 @@ Object {
         Object {
           "context": "build",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -545,13 +587,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "2f963a69fe684be34b05676a0cc5685bff41f89a",
+      "hash": "a60c90efc3a34f91e58863d902717d5cffbdda3b",
       "message": "Update README.md",
       "oid": "053d62886247d373ab8d76f83caf335635c7d0e3",
       "oidShort": "053d628",
@@ -566,7 +609,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -575,7 +619,8 @@ Object {
         Object {
           "context": "build",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -583,7 +628,8 @@ Object {
         Object {
           "context": "deployment",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
@@ -593,7 +639,8 @@ Object {
         "lastDeployedAt": 1573154378000,
         "lastDeployedAtWords": "a few seconds ago",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -606,14 +653,15 @@ Object {
           "description": "",
           "environment": "staging",
           "status": Object {
-            "color": "green",
+            "color": "success",
+            "label": "passing",
             "name": "SUCCESS",
             "success": true,
           },
           "url": "https://github.com/colinjfw/deliverybot-example-local/commit/a1e9ae8586213ea8ba8ff46a147c18d94e2d8899/checks",
         },
       ],
-      "hash": "8c47d32be9e29e419bd4620763c659e6309f052f",
+      "hash": "5ee4744203497ab9c0a3f6973d2385c31434fe35",
       "message": "Update deploy.yml",
       "oid": "a1e9ae8586213ea8ba8ff46a147c18d94e2d8899",
       "oidShort": "a1e9ae8",
@@ -629,7 +677,8 @@ Object {
     "branch": "master",
     "check": Object {
       "status": Object {
-        "color": "green",
+        "color": "success",
+        "label": "passing",
         "name": "SUCCESS",
         "success": true,
       },
@@ -638,7 +687,8 @@ Object {
       Object {
         "context": "deliverybot/promotion",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -646,7 +696,8 @@ Object {
       Object {
         "context": "build",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -654,7 +705,8 @@ Object {
       Object {
         "context": "deployment",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -665,7 +717,8 @@ Object {
       "lastDeployedAtWords": "a few seconds ago",
       "latest": true,
       "status": Object {
-        "color": "green",
+        "color": "success",
+        "label": "passing",
         "name": "SUCCESS",
         "success": true,
       },
@@ -678,7 +731,8 @@ Object {
         "description": "",
         "environment": "production",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -691,14 +745,15 @@ Object {
         "description": "",
         "environment": "staging",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
         "url": "https://github.com/colinjfw/deliverybot-example-local/commit/c57bb8ee26495cd7016f9adb87c0b5d6e79f7f5c/checks",
       },
     ],
-    "hash": "6e9cf381d093ac4f12e27a1a7040222141c4445e",
+    "hash": "6468bf4e05eedd701659ed9c0f2e48a242a4e9bc",
     "message": "Update deploy.yml",
     "oid": "c57bb8ee26495cd7016f9adb87c0b5d6e79f7f5c",
     "oidShort": "c57bb8e",
@@ -717,7 +772,8 @@ Object {
     "branch": "master",
     "check": Object {
       "status": Object {
-        "color": "green",
+        "color": "success",
+        "label": "passing",
         "name": "SUCCESS",
         "success": true,
       },
@@ -726,7 +782,8 @@ Object {
       Object {
         "context": "deliverybot/promotion",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -734,7 +791,8 @@ Object {
       Object {
         "context": "build",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -742,7 +800,8 @@ Object {
       Object {
         "context": "deployment",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
@@ -752,7 +811,8 @@ Object {
       "lastDeployedAt": 1574139446000,
       "lastDeployedAtWords": "a few seconds ago",
       "status": Object {
-        "color": "green",
+        "color": "success",
+        "label": "passing",
         "name": "SUCCESS",
         "success": true,
       },
@@ -765,14 +825,15 @@ Object {
         "description": "",
         "environment": "staging",
         "status": Object {
-          "color": "green",
+          "color": "success",
+          "label": "passing",
           "name": "SUCCESS",
           "success": true,
         },
         "url": "https://github.com/colinjfw/deliverybot-example-local/commit/43c6569dfd5cad3e45a5c8c908f44fda29c7dca5/checks",
       },
     ],
-    "hash": "4a3ab30cc157a4b6243b54a4e7a378bcade7df1c",
+    "hash": "7e7342b6523979e7096112d41bd15dfb6e7c505a",
     "message": "Update deploy.yml",
     "oid": "43c6569dfd5cad3e45a5c8c908f44fda29c7dca5",
     "oidShort": "43c6569",
@@ -803,7 +864,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
@@ -813,13 +875,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "250f0f01a7556c22496bf3a0ef88edb73056f13b",
+      "hash": "07534882760f4df0504551324c6baf898a90b945",
       "message": "Update README.md",
       "oid": "43aa699010bb9d3c3a2f5ec841f66f99434e4e0e",
       "oidShort": "43aa699",
@@ -834,7 +897,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
@@ -844,13 +908,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "a62fd0196ebe5f455322dcdceac1e76cc61bb866",
+      "hash": "48c47fd06074fdaeb5833f41c2000cfa9163fe6f",
       "message": "Update deploy.yml",
       "oid": "c57bb8ee26495cd7016f9adb87c0b5d6e79f7f5c",
       "oidShort": "c57bb8e",
@@ -865,7 +930,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
@@ -875,13 +941,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "a574c26266a48537aac8894c2ba89a4b6943395c",
+      "hash": "dbb94902eef9f603ac15214b461fd6a5f2bcea63",
       "message": "Update deploy.yml",
       "oid": "43c6569dfd5cad3e45a5c8c908f44fda29c7dca5",
       "oidShort": "43c6569",
@@ -896,7 +963,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
@@ -906,13 +974,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "b3e8bb48ebbfda067fb674a58010fe2882b4679e",
+      "hash": "a68b00d811ce2674baf16a3eba20ccdca9d44710",
       "message": "Update README.md",
       "oid": "515cc74fb79c5e29d49c85c4a304386996ab8285",
       "oidShort": "515cc74",
@@ -927,7 +996,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
@@ -937,13 +1007,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "0db0ccd57c2405cc9b14b035aabfb8d0f00c56ee",
+      "hash": "0202b796f260cfad134fd9e4a4950ba73af954de",
       "message": "Update README.md",
       "oid": "7da5b87b7902e115854583c6e628c3a65de79f01",
       "oidShort": "7da5b87",
@@ -958,7 +1029,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
@@ -968,13 +1040,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "e22e1af711a9843b5efb610002615d9658557f9c",
+      "hash": "ece4d8936931c477baf064c4963ccab13e5074ba",
       "message": "Update README.md",
       "oid": "3815abcd2848e4b5dfbc864478caeee418e3ee29",
       "oidShort": "3815abc",
@@ -989,7 +1062,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
@@ -999,13 +1073,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "8fdd36367e4479a219744ac22b019de1b3d8f3eb",
+      "hash": "683b9d0be2ccf155b01b830d56c627a0633cb686",
       "message": "Update README.md",
       "oid": "1a1b398530ca62b2aaad6cb86bf25ed71f909143",
       "oidShort": "1a1b398",
@@ -1020,7 +1095,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
@@ -1030,13 +1106,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "a0b1f07a2ca5c29387cefb511934f03b86e57b0b",
+      "hash": "d3145e87ece34ad38a987fc18ff00c8ee70f160f",
       "message": "Update README.md",
       "oid": "4034349ab90bbb234cb94ff209fd02699d866705",
       "oidShort": "4034349",
@@ -1051,7 +1128,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
@@ -1061,13 +1139,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "0f585176722f48028cdb84cc720ea2fac2efedde",
+      "hash": "d358315d0ef9377123c0566d41944647e48c490d",
       "message": "Update README.md",
       "oid": "053d62886247d373ab8d76f83caf335635c7d0e3",
       "oidShort": "053d628",
@@ -1082,7 +1161,8 @@ Object {
       "branch": "master",
       "check": Object {
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
@@ -1092,13 +1172,14 @@ Object {
         "lastDeployedAt": undefined,
         "lastDeployedAtWords": undefined,
         "status": Object {
-          "color": "gray",
+          "color": "muted",
+          "label": "waiting",
           "name": "NOTHING",
           "nothing": true,
         },
       },
       "deployments": Array [],
-      "hash": "acd010d0ee3a548f5c375d3639bb7c021a0c38b3",
+      "hash": "bc6e3fb6e7107714c75c20af0f3b801bbd5dc577",
       "message": "Update deploy.yml",
       "oid": "a1e9ae8586213ea8ba8ff46a147c18d94e2d8899",
       "oidShort": "a1e9ae8",

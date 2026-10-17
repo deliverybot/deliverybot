@@ -463,15 +463,15 @@ export function Status(status?: string) {
   const name = AggregateStatus(s);
   switch (AggregateStatus(s)) {
     case "FAILURE":
-      return { failure: true, color: "red", name };
+      return { failure: true, color: "danger", label: "failing", name };
     case "PENDING":
-      return { pending: true, color: "yellow", name };
+      return { pending: true, color: "attention", label: "pending", name };
     case "SUCCESS":
-      return { success: true, color: "green", name };
+      return { success: true, color: "success", label: "passing", name };
     case "WAITING":
-      return { waiting: true, color: "gray", name };
+      return { waiting: true, color: "muted", label: "waiting", name };
     default:
-      return { nothing: true, color: "gray", name };
+      return { nothing: true, color: "muted", label: "waiting", name };
   }
 }
 

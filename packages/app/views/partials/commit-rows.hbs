@@ -4,7 +4,7 @@
     <summary class="d-flex flex-items-center" style="outline: none;">
       <div class="flex-auto">
         <div>
-          <a class="text-gray-dark">
+          <a class="color-fg-default">
             {{> icon_down}}
             {{message}}
           </a>
@@ -14,11 +14,11 @@
           </span>
         </div>
 
-        <div class="text-gray-light">
+        <div class="color-fg-muted">
           <strong><code>{{oidShort}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
         </div>
       </div>
-      <div data-target="commits.envstatus" id="envstatus-{{oid}}" data-hash="{{hash}}" class="d-none-sm text-gray-light clearfix f6" style="width: 230px;">
+      <div data-target="commits.envstatus" id="envstatus-{{oid}}" data-hash="{{hash}}" class="d-none-sm color-fg-muted clearfix f6" style="width: 230px;">
         {{> deploy_env_status}}
       </div>
     </summary>

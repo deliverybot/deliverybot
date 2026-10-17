@@ -13,7 +13,7 @@
 </nav>
 </header>
 
-<main class="bg-white fill pt-3 pb-8">
+<main class="color-bg-default fill pt-3 pb-8">
   <div class="content">
     <details class="dropdown details-reset details-overlay d-inline-block"
       data-controller="filter" data-action="toggle->filter#toggle keydown->filter#keydown">
@@ -32,7 +32,7 @@
           <li data-target="filter.item"><a href="{{url}}" class="dropdown-item"><code>{{name}}</code></a></li>
           {{/each}}
         </ul>
-        <div class="px-3 py-1 text-gray d-none" data-target="filter.empty">No matching environments</div>
+        <div class="px-3 py-1 color-fg-muted d-none" data-target="filter.empty">No matching environments</div>
       </div>
     </details>
 
@@ -40,7 +40,7 @@
       {{#if hasDeployments}}
       {{#each deployments}}
       <div class="Box-row d-flex flex-items-center">
-        <div class="text-{{status.color}} mr-2" title="{{state}}">
+        <div class="color-fg-{{status.color}} mr-2" title="{{state}}">
           {{#if status.success}}{{> icon_check}}{{/if}}
           {{#if status.pending}}{{> icon_dot}}{{/if}}
           {{#if status.failure}}{{> icon_x}}{{/if}}
@@ -50,11 +50,11 @@
         <div class="flex-auto" style="min-width: 0;">
           <div class="css-truncate css-truncate-target" style="max-width: 100%;">
             <strong>{{environment}}</strong>
-            <span class="text-gray-light">&middot; {{state}}</span>
+            <span class="color-fg-muted">&middot; {{state}}</span>
             &middot;
-            {{#if commitUrl}}<a class="text-gray-dark" href="{{commitUrl}}" target="_blank">{{message}}</a>{{/if}}
+            {{#if commitUrl}}<a class="color-fg-default" href="{{commitUrl}}" target="_blank">{{message}}</a>{{/if}}
           </div>
-          <div class="text-gray-light">
+          <div class="color-fg-muted">
             {{#if shaShort}}<strong><code>{{shaShort}}</code></strong>{{/if}}
             {{#if ref}}on <code>{{ref}}</code>{{/if}}
             {{#if creator}}by <a href="https://github.com/{{creator}}">@{{creator}}</a>{{/if}}
@@ -68,7 +68,7 @@
       </div>
       {{/each}}
       {{else}}
-      <div class="Box-body text-center text-gray-light p-4">
+      <div class="Box-body text-center color-fg-muted p-4">
         No deployments{{#if environment}} to <code>{{environment}}</code>{{/if}} yet.
       </div>
       {{/if}}

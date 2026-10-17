@@ -1,5 +1,5 @@
 <div class="Box-row">
-  <h5 class="mt-2 text-{{check.status.color}}">
+  <h5 class="mt-2 color-fg-{{check.status.color}}">
     {{#if check.status.success}}All checks have succeeded{{/if}}
     {{#if check.status.pending}}Waiting for an in-progress check{{/if}}
     {{#if check.status.failure}}Checks have failed{{/if}}
@@ -12,7 +12,7 @@
 
 {{#each checks}}
 <div class="Box-row">
-  <span class="text-{{status.color}} mr-2">
+  <span class="color-fg-{{status.color}} mr-2">
     {{#if status.success}}{{> icon_check}}{{/if}}
     {{#if status.pending}}{{> icon_dot}}{{/if}}
     {{#if status.failure}}{{> icon_x}}{{/if}}
@@ -26,7 +26,7 @@
 {{/each}}
 
 <div class="Box-row">
-  <h5 class="mt-2 text-{{deployment.status.color}}">
+  <h5 class="mt-2 color-fg-{{deployment.status.color}}">
     {{#if deployment.status.success}}The last deployment has succeeded{{/if}}
     {{#if deployment.status.pending}}Waiting for an in-progress deployment{{/if}}
     {{#if deployment.status.failure}}Deployments have failed{{/if}}
@@ -40,7 +40,7 @@
 
 {{#each deployments}}
 <div class="Box-row">
-  <span class="text-{{status.color}} mr-2">
+  <span class="color-fg-{{status.color}} mr-2">
     {{#if status.success}}{{> icon_check}}{{/if}}
     {{#if status.pending}}{{> icon_dot}}{{/if}}
     {{#if status.failure}}{{> icon_x}}{{/if}}
@@ -49,7 +49,7 @@
   <strong>{{environment}}</strong>
   <i>{{description}}</i>
   by {{creator}}
-  <small class="text-gray-light">{{createdAtWords}}</small>
+  <small class="color-fg-muted">{{createdAtWords}}</small>
   {{#if url}}
   <a target="_blank" href="{{url}}" class="float-right">Details</a>
   {{/if}}

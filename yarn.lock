@@ -7,6 +7,70 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-1.1.0.tgz#44b5ce3485e95235aca06e628eeaaa3c816bc4cc"
   integrity sha512-Xc3VhU02wqZ1HvHRJUwL09HkZSTvidqY5Ya0NXBSYOxAp+Ln9dcJr9fySI+CkONzP3PekQo9WdzCv0PGER/mOA==
 
+"@github/auto-check-element@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@github/auto-check-element/-/auto-check-element-6.0.0.tgz#4baa1750599532c8ab79877c69ab677a0a5c411c"
+  integrity sha512-87mHEywJEtlG/37zFrx4PUgDqczgtv9jrauW3IojNy9y+nALIAm6e2jnWpfgcqeMWSevzph2M6reJoHpuSjyWw==
+  dependencies:
+    "@github/mini-throttle" "^2.1.0"
+
+"@github/auto-complete-element@^3.8.0":
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@github/auto-complete-element/-/auto-complete-element-3.8.0.tgz#8be0480b8412ffb4fb71b54a68513c5e29693d86"
+  integrity sha512-rS2Uj38V1BsenLvrIswV5IXfiYH2/KUhz6inot+JXho/fFOO+01tsW1HxqSdIXqh5EDuoY0f/GQsztZcH22AXQ==
+  dependencies:
+    "@github/combobox-nav" "^2.1.7"
+
+"@github/catalyst@^1.8.0":
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/@github/catalyst/-/catalyst-1.8.1.tgz#f36099b6d4c6283aa1264e28c9dd2d849d54ad76"
+  integrity sha512-dnN4WWpbeuQvA17LvsGdlXEueJdBk9y+I+WO5pdNpoHNOXPsFcz3hJrq1iRmdsNgQOf4S8e83axtwIxvG62eWA==
+
+"@github/clipboard-copy-element@^1.3.1":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@github/clipboard-copy-element/-/clipboard-copy-element-1.3.2.tgz#bd16790a7c32621effcaf205c3b6d5a7374fc8fc"
+  integrity sha512-+rOAp75FeTcAiTxXNWMgigs0doiYifM6868z/aTxTdNmPuQxktr8fytwL2xXj5UJAZBKsca96/afDVoHZncF6Q==
+
+"@github/combobox-nav@^2.1.7":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@github/combobox-nav/-/combobox-nav-2.3.1.tgz#76da4c47f1e33af56392c5c9cf661a28d5b4168e"
+  integrity sha512-gwxPzLw8XKecy1nP63i9lOBritS3bWmxl02UX6G0TwMQZbMem1BCS1tEZgYd3mkrkiDrUMWaX+DbFCuDFo3K+A==
+
+"@github/details-menu-element@^1.0.12":
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/@github/details-menu-element/-/details-menu-element-1.0.13.tgz#d62263077b16bc7edc386e7b23f0ce41af1301b4"
+  integrity sha512-gMkii86w/oUP5dq8yOWZn1sgbgtFj3AYETxxtpsqRggZktgd8te4+npAn4Hm+936c/lxmEzXqfjARL/CzGR4+w==
+
+"@github/image-crop-element@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@github/image-crop-element/-/image-crop-element-5.0.0.tgz#6ae2c31f1e7dc355c41c3140554fb76ca7a71ef7"
+  integrity sha512-Vgm2OwWAs1ESoib/t5sjxsAYo6YTOxxAjWDRxswX7qrqoyCejTZ3hshdo4Ep5e+Mz/GVTZC3rdMtg06dk/eT4g==
+
+"@github/include-fragment-element@^6.3.0":
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/@github/include-fragment-element/-/include-fragment-element-6.4.1.tgz#fb20bfa9b0655a5d894fd40ec5faafcddc8db80c"
+  integrity sha512-ffgXc7qwBtY/rYcMkAjxZJlyOPFaeC9K1Oc+n7Edwt3BAHPokUSdMfDivb+/dGO+NU2n7l1/L4v5uQN+wBeV4g==
+
+"@github/mini-throttle@^2.1.0":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@github/mini-throttle/-/mini-throttle-2.1.1.tgz#c66db5c3b857aaf8c467de2528cd92f36f542ac5"
+  integrity sha512-KtOPaB+FiKJ6jcKm9UKyaM5fPURHGf+xcp+b4Mzoi81hOc6M1sIGpMZMAVbNzfa2lW5+RPGKq888Px0j76OZ/A==
+
+"@github/relative-time-element@^5.0.0":
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/@github/relative-time-element/-/relative-time-element-5.3.1.tgz#827f899c5945b032e1f96a991164c0fd4ccf52a6"
+  integrity sha512-f++QCIXxGH7rMbpTASRfLyCyPydd4HqwOmATBb/sAUCq72HEZN0MX9znmJSp7NKYxuQxF8j0Mv3ez9P32c70vw==
+
+"@github/remote-input-element@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@github/remote-input-element/-/remote-input-element-0.4.0.tgz#76956e82342d5887b68f3fe7ce8c20ff1f55181b"
+  integrity sha512-apsMwsFW24F+w2wzT8oKoBi9lpm6GeFOmtuL+1YwDVmIiwixfHOD3MnEsEOv0RwmHsMdWmIjP9mxWyTWPKZHGg==
+
+"@github/tab-container-element@^3.1.2":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@github/tab-container-element/-/tab-container-element-3.4.0.tgz#0a167ed81c9f4a1c1c79f0d0a6a8c012c49a6147"
+  integrity sha512-Yx70pO8A0p7Stnm9knKkUNX8i4bjuwDYZarRkM8JH0Z+ffhpe++oNAPbzGI9GEcGugRHvKuSC6p4YOdoHtTniQ==
+
 "@jridgewell/gen-mapping@^0.3.5":
   version "0.3.13"
   resolved "https://registry.yarnpkg.com/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz#6342a19f44347518c93e43b1ac69deb3c4656a1f"
@@ -40,6 +104,11 @@
   dependencies:
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
+
+"@lit-labs/ssr-dom-shim@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@lit-labs/ssr-dom-shim/-/ssr-dom-shim-1.6.0.tgz#693e129b809741fd23e98fcb57e41fd3d082db1a"
+  integrity sha512-VHb0ALPMTlgKjM6yIxxoQNnpKyUKLD04VzeQdsiXkMqkvYlAHxq9glGLmgbb889/1GsohSOAjvQYoiBppXFqrQ==
 
 "@mswjs/interceptors@^0.44.0":
   version "0.44.0"
@@ -275,6 +344,11 @@
     "@octokit/request-error" "^7.0.0"
     "@octokit/webhooks-methods" "^6.0.0"
 
+"@oddbird/popover-polyfill@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@oddbird/popover-polyfill/-/popover-polyfill-0.5.2.tgz#9a142cae54b6e48824bec61e94e39541c9746b69"
+  integrity sha512-iFrvar5SOMtKFOSjYvs4z9UlLqDdJbMx0mgISLcPedv+g0ac5sgeETLGtipHCVIae6HJPclNEH5aCyD1RZaEHw==
+
 "@open-draft/until@^3.0.1":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@open-draft/until/-/until-3.0.1.tgz#6d35fa5842e3f7288289cf48de0a83f3b83cc5ac"
@@ -308,6 +382,47 @@
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@pinojs/redact/-/redact-0.4.0.tgz#c3de060dd12640dcc838516aa2a6803cc7b2e9d6"
   integrity sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==
+
+"@primer/behaviors@^1.3.4":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@primer/behaviors/-/behaviors-1.11.0.tgz#f8b73ad2cc61ccc2688cd7f900d973cca514e4eb"
+  integrity sha512-kDHtaw9kfCjPVT61eM731ftckhGyWiPX+OKmUccLN9sMFt9E6FXmsPAbny7O0RBxeW1Xj/NHNdbMEjYEg2dBYg==
+
+"@primer/css@22.3.2":
+  version "22.3.2"
+  resolved "https://registry.yarnpkg.com/@primer/css/-/css-22.3.2.tgz#2278648d3566961571ea128c1f28926cc5cd8209"
+  integrity sha512-Vjx7U/ILnGsEQP+cZ4p8blVTFcjE2TmwxTICvv5RjoBdS7QacDVllpJo+A9raJB0TxvetPiOqSR7NyHX3hcMKQ==
+
+"@primer/live-region-element@^0.8.0":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@primer/live-region-element/-/live-region-element-0.8.1.tgz#002319dff41cd6a30d5bde356798a5f57f4dfd07"
+  integrity sha512-g7bNs9R2A2LfETMOWYsvtT0b5Q/QLM1Fz1vrTcWa5r2LbEhrPm7cZV5pEOleFKiGybrYWmdXteV2sBAQLXuxvg==
+  dependencies:
+    "@lit-labs/ssr-dom-shim" "^1.6.0"
+
+"@primer/primitives@11.10.0":
+  version "11.10.0"
+  resolved "https://registry.yarnpkg.com/@primer/primitives/-/primitives-11.10.0.tgz#affc83ae02229e05dbc599d9903643f3b08dc3bd"
+  integrity sha512-ihZxIst4Izry284StKFjpbYvX6R/IBFTLu+qiuAmR93PsKF2hdjoabhSYwKI8iCxOUx94jVP55bI3NoY7STjYQ==
+
+"@primer/view-components@0.53.5":
+  version "0.53.5"
+  resolved "https://registry.yarnpkg.com/@primer/view-components/-/view-components-0.53.5.tgz#6f0828d8ca5f4a40069258727cda487fb16faf17"
+  integrity sha512-ItSBibNgr2bB3AOhonoC2vggJdLGULGucaWwpddEyaiCJUVhwG37IvbMSvkFX9r6GeOqdPa5PcBbM/sGWKMnJg==
+  dependencies:
+    "@github/auto-check-element" "^6.0.0"
+    "@github/auto-complete-element" "^3.8.0"
+    "@github/catalyst" "^1.8.0"
+    "@github/clipboard-copy-element" "^1.3.1"
+    "@github/details-menu-element" "^1.0.12"
+    "@github/image-crop-element" "^5.0.0"
+    "@github/include-fragment-element" "^6.3.0"
+    "@github/relative-time-element" "^5.0.0"
+    "@github/remote-input-element" "^0.4.0"
+    "@github/tab-container-element" "^3.1.2"
+    "@oddbird/popover-polyfill" "^0.5.2"
+    "@primer/behaviors" "^1.3.4"
+    "@primer/live-region-element" "^0.8.0"
 
 "@probot/get-private-key@2.1.1", "@probot/get-private-key@^2.1.1":
   version "2.1.1"
@@ -489,7 +604,7 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.9.tgz#cf3f0e876d7bee15a93ab925b82bf570a3904a24"
   integrity sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==
 
-"@types/express-serve-static-core@4.19.6", "@types/express-serve-static-core@^4.17.33":
+"@types/express-serve-static-core@^4.17.33":
   version "4.19.6"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.19.6.tgz#e01324c2a024ff367d92c66f48553ced0ab50267"
   integrity sha512-N4LZ2xG7DatVqhCZzOGb1Yi5lMbXSZcmdLDe9EzSndPV2HpWYWzRbaerl2n27irrm94EPpprqa8KpskPT085+A==
@@ -622,7 +737,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/serve-static@*", "@types/serve-static@1.15.7":
+"@types/serve-static@*":
   version "1.15.7"
   resolved "https://registry.yarnpkg.com/@types/serve-static/-/serve-static-1.15.7.tgz#22174bbd74fb97fe303109738e9b5c2f3064f714"
   integrity sha512-W8Ym+h8nhuRwaKPaDw34QUkwsGi6Rc4yYqvKFo5rm2FUEhCFbzVWrxXUxuKK8TASjWsysJY0nsmNCGhCOIsrOw==
@@ -1597,12 +1712,24 @@ graceful-fs@^4.1.2, graceful-fs@^4.2.11, graceful-fs@^4.2.4:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
-handlebars@4.7.10, handlebars@4.7.9, handlebars@^4.1.0:
+handlebars@4.7.10, handlebars@^4.1.0:
   version "4.7.10"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.7.10.tgz#12419ea1b41391b3ffcf003f2164dcbce090c417"
   integrity sha512-P5VJMVM7qgBn6vjXMw8WG9uVI+ncf2pi72j4de4yz5ZULLj2RGqLYaKOYGsgyrViQ0tePOVlN1tDCCXXtFqXKg==
   dependencies:
     minimist "^1.2.8"
+    neo-async "^2.6.2"
+    source-map "^0.6.1"
+    wordwrap "^1.0.0"
+  optionalDependencies:
+    uglify-js "^3.1.4"
+
+handlebars@4.7.9:
+  version "4.7.9"
+  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.7.9.tgz#6f139082ab58dc4e5a0e51efe7db5ae890d56a0f"
+  integrity sha512-4E71E0rpOaQuJR2A3xDZ+GM1HyWYv1clR58tC8emQNeQe3RH7MAzSbat+V0wG78LQBo6m6bzSG/L4pBuCsgnUQ==
+  dependencies:
+    minimist "^1.2.5"
     neo-async "^2.6.2"
     source-map "^0.6.1"
     wordwrap "^1.0.0"
@@ -1981,7 +2108,7 @@ mini-css-extract-plugin@2.10.2:
     schema-utils "^4.0.0"
     tapable "^2.2.1"
 
-minimist@^1.2.6, minimist@^1.2.8:
+minimist@^1.2.5, minimist@^1.2.6, minimist@^1.2.8:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==

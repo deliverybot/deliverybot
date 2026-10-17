@@ -12,7 +12,7 @@
 </nav>
 </header>
 
-<main class="bg-white fill pt-3 pb-8">
+<main class="color-bg-default fill pt-3 pb-8">
   <div class="content">
     <div class="Subhead mb-0 mt-5">
       <h2 class="Subhead-heading">Installations</h2>
@@ -40,19 +40,19 @@
           <td class="p-2">{{accountType}}</td>
           <td class="p-2">
             {{repoCount}}
-            <span class="text-gray f6">({{repositorySelection}})</span>
+            <span class="color-fg-muted f6">({{repositorySelection}})</span>
           </td>
-          <td class="p-2 text-gray">{{installed}}</td>
-          <td class="p-2 text-gray">{{#if lastActivity}}{{lastActivity}}{{else}}None recorded{{/if}}</td>
+          <td class="p-2 color-fg-muted">{{installed}}</td>
+          <td class="p-2 color-fg-muted">{{#if lastActivity}}{{lastActivity}}{{else}}None recorded{{/if}}</td>
           <td class="p-2">
-            {{#if suspended}}<span class="Label Label--orange">Suspended</span>{{else if active}}<span class="Label Label--green">Active</span>{{else}}<span class="Label Label--gray">Idle</span>{{/if}}
+            {{#if suspended}}<span class="Label Label--severe">Suspended</span>{{else if active}}<span class="Label Label--success">Active</span>{{else}}<span class="Label Label--secondary">Idle</span>{{/if}}
           </td>
         </tr>
         {{/each}}
       </tbody>
     </table>
     {{else}}
-    <p class="mt-3 text-gray">No installations yet.</p>
+    <p class="mt-3 color-fg-muted">No installations yet.</p>
     {{/if}}
 
     <div class="Subhead mb-0 mt-6">
@@ -72,14 +72,14 @@
         {{#each users}}
         <tr class="border-bottom">
           <td class="p-2"><a target="_blank" href="https://github.com/{{username}}">{{username}}</a></td>
-          <td class="p-2 text-gray">{{firstSeen}}</td>
-          <td class="p-2 text-gray">{{lastSeen}}</td>
+          <td class="p-2 color-fg-muted">{{firstSeen}}</td>
+          <td class="p-2 color-fg-muted">{{lastSeen}}</td>
         </tr>
         {{/each}}
       </tbody>
     </table>
     {{else}}
-    <p class="mt-3 text-gray">Nobody has signed in yet.</p>
+    <p class="mt-3 color-fg-muted">Nobody has signed in yet.</p>
     {{/if}}
   </div>
 </main>

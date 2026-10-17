@@ -77,7 +77,7 @@ describe("Admin", () => {
       .get("/_/admin")
       .set("cookie", cookie);
     expect(idle.text).toContain("None recorded");
-    expect(idle.text).toContain('Label--gray">Idle');
+    expect(idle.text).toContain('Label--secondary">Idle');
     expect(idle.text).toContain("0 active in the last 30 days");
 
     await deliverybot.probot.receive({
@@ -94,7 +94,7 @@ describe("Admin", () => {
       .get("/_/admin")
       .set("cookie", cookie);
     expect(active.text).not.toContain("None recorded");
-    expect(active.text).toContain('Label--green">Active');
+    expect(active.text).toContain('Label--success">Active');
     expect(active.text).toContain("1 active in the last 30 days");
   });
 
