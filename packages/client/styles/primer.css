@@ -2,6 +2,7 @@
    (Box, Label, State, Subhead, UnderlineNav, flash, menus) come from the
    view-components stylesheet. */
 @import "@primer/primitives/dist/css/functional/themes/light.css";
+@import "@primer/primitives/dist/css/functional/themes/dark.css";
 @import "@primer/css/dist/primitives.css";
 @import "@primer/css/dist/core.css";
 @import "@primer/css/dist/product.css";
