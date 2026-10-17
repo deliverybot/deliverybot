@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Error</title>
+    <script>
+      // A repository the app can no longer reach lands here; drop it from the
+      // browser's recent repositories so the dashboard stops linking to it.
+      try {
+        var repo = location.pathname.replace(/^\/|\/$/g, "");
+        if (repo.split("/").length === 2) {
+          var recents = JSON.parse(localStorage.getItem("recents") || "[]");
+          localStorage.setItem(
+            "recents",
+            JSON.stringify(recents.filter(function (r) { return r !== repo; }))
+          );
+        }
+      } catch (e) {}
+    </script>
     <link rel="icon" href="/static/logo.png">
     <style>
       /* Self-contained so the page renders even when the app's assets don't. */
