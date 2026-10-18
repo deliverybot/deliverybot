@@ -9,11 +9,11 @@ staging:
   environment: staging
   required_contexts: ["build (22.x)"]
 
-# Promote the latest master commit in the dashboard to ship it. Promoting sets
-# the deliverybot/promotion status, which this target waits for. Auto deploys
-# only follow the tip of master, so deploy an older commit by hand instead.
+# Every push to master, once staging deployed that commit. The Deploy workflow
+# sets the deploy/staging commit status when a staging deploy finishes. Auto
+# deploys only follow the tip of master, so deploy an older commit by hand.
 production:
   auto_deploy_on: refs/heads/master
   environment: production
   production_environment: true
-  required_contexts: ["build (22.x)", "deliverybot/promotion"]
+  required_contexts: ["build (22.x)", "deploy/staging"]

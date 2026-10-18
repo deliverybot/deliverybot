@@ -2,9 +2,10 @@ name: Deploy
 
 # Deliverybot deploys itself. The Image workflow builds an image for every push
 # to master. Deliverybot (configured in .github/deploy.yml) then creates a
-# GitHub deployment for staging once CI is green, and for production when
-# someone promotes the latest master commit in the dashboard. That `deployment`
-# event runs this workflow, which reports back through deployment statuses.
+# GitHub deployment for staging once CI is green, and for production once
+# staging deployed that same commit (the deploy/staging commit status below).
+# That `deployment` event runs this workflow, which reports back through
+# deployment statuses.
 # Re-running an Image run doesn't deploy anything.
 #
 # Break glass: if a deploy breaks Deliverybot itself, it can no longer create
@@ -56,6 +57,7 @@ jobs:
     permissions:
       contents: read
       deployments: write
+      statuses: write
     env:
       ENVIRONMENT: ${{ github.event.deployment.environment || inputs.environment }}
       SHA: ${{ needs.image.outputs.sha }}
@@ -186,6 +188,18 @@ jobs:
           state: error
           deployment-id: ${{ env.DEPLOYMENT_ID }}
           description: Deploy cancelled
+
+      # Production waits for this status on the same commit (.github/deploy.yml).
+      # Break-glass runs don't set it, so they never chain into production.
+      - name: Report the staging deploy on the commit
+        if: always() && github.event_name == 'deployment' && env.ENVIRONMENT == 'staging'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/statuses/${{ github.event.deployment.sha }}" \
+            -f state="$STATE" -f context=deploy/staging \
+            -f target_url="$ENVIRONMENT_URL" -f description="Staging deploy: $STATE"
 
   # If the image job fails or is skipped, the deploy job never starts, so the
   # deployment Deliverybot created would stay pending.
