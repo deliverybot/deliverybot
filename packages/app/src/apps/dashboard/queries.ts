@@ -7,19 +7,23 @@ class NotFoundError extends Error {
   status = 404;
 }
 
-export async function repos(
-  user: User,
-  install: { id: number },
-  page?: number,
-) {
+const reposPerPage = 50;
+
+/**
+ * One page of an installation's repositories, leaving out archived ones.
+ * `hasNext` comes from GitHub's total, since hiding archived repositories
+ * can leave a page short while more follow.
+ */
+export async function repos(user: User, install: { id: number }, page = 1) {
   const resp =
     await user.github.rest.apps.listInstallationReposForAuthenticatedUser({
       page,
-      per_page: 50,
+      per_page: reposPerPage,
       installation_id: install.id,
     });
-  const stats = await repoStats(user.token, resp.data.repositories);
-  const result = resp.data.repositories.map((repo, i) => ({
+  const active = resp.data.repositories.filter((repo) => !repo.archived);
+  const stats = active.length ? await repoStats(user.token, active) : [];
+  const result = active.map((repo, i) => ({
     owner: repo.owner.login,
     repo: repo.name,
     description: repo.description,
@@ -29,7 +33,10 @@ export async function repos(
       owner: repo.owner.login,
     },
   }));
-  return result;
+  return {
+    repos: result,
+    hasNext: page * reposPerPage < resp.data.total_count,
+  };
 }
 
 export async function install(user: User, name: string) {

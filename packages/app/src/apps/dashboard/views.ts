@@ -50,10 +50,10 @@ export async function Repos({ user, name, query, csrf }: ReposProps) {
 
   const page = getPage(query);
   const install = await queries.install(user, name);
-  const repos = await queries.repos(user, install, page);
+  const { repos, hasNext } = await queries.repos(user, install, page);
   const pagination = {
     prev: page <= 1 ? null : page - 1,
-    next: repos.length < 50 ? null : page + 1,
+    next: hasNext ? page + 1 : null,
   };
 
   return Base({
