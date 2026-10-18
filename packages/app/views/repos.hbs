@@ -19,7 +19,8 @@
 <nav class="UnderlineNav mt-2">
   <div class="content">
     <div class="UnderlineNav-body">
-      <a href="/{{install.name}}" role="tab" title="Repositories" class="UnderlineNav-item" aria-current="page">Repositories</a>
+      <a href="/{{install.name}}" role="tab" title="Repositories" class="UnderlineNav-item"{{#unless setup}} aria-current="page"{{/unless}}>Repositories</a>
+      <a href="/{{install.name}}?tab=setup" role="tab" title="Repositories to set up" class="UnderlineNav-item"{{#if setup}} aria-current="page"{{/if}}>Set up</a>
     </div>
   </div>
 </nav>
@@ -33,6 +34,9 @@
         <div class="Box">
         {{#each repos}}
         <div class="Box-row">
+          {{#if setupUrl}}
+          <a class="btn btn-sm float-right ml-2" target="_blank" href="{{setupUrl}}">Add deploy.yml</a>
+          {{/if}}
           <h4>
             <a data-name="{{owner}}/{{repo}}" data-action="click->recents#addRecent"
               href="/{{owner}}/{{repo}}"><strong>{{owner}}&nbsp;/&nbsp;{{repo}}</strong></a>
@@ -70,13 +74,22 @@
         </div>
       </div>
     </div>
+    {{else if setup}}
+    <div class="text-center">
+      <p class="lead">
+        Every repository Deliverybot can reach already has a deploy config.
+      </p>
+      <a class="btn btn-outline" role="button" target="_blank" href="{{info.install}}">
+        Add repositories
+      </a>
+    </div>
     {{else}}
     <div class="text-center">
       <p class="lead">
-        You don't have deliverybot installed on any repositories.
+        None of your repositories have a <code>.github/deploy.yml</code> yet.
       </p>
-      <a class="btn btn-outline" role="button" target="_blank" href="{{info.install}}">
-        Install now
+      <a class="btn btn-outline" role="button" href="/{{install.name}}?tab=setup">
+        Set one up
       </a>
     </div>
     {{/if}}

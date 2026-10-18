@@ -50,7 +50,8 @@ export async function Repos({ user, name, query, csrf }: ReposProps) {
 
   const page = getPage(query);
   const install = await queries.install(user, name);
-  const { repos, hasNext } = await queries.repos(user, install, page);
+  const setup = query.tab === "setup";
+  const { repos, hasNext } = await queries.repos(user, install, page, setup);
   const pagination = {
     prev: page <= 1 ? null : page - 1,
     next: hasNext ? page + 1 : null,
@@ -62,6 +63,8 @@ export async function Repos({ user, name, query, csrf }: ReposProps) {
     title: install.name,
     install,
     pagination,
+    setup,
+    url: { path: `/${install.name}`, query: setup ? "tab=setup&" : "" },
     hasRepos: repos.length > 0,
     repos,
   });
