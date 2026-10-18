@@ -36,7 +36,7 @@
     "nock": "15.0.1",
     "probot": "14.3.2",
     "supertest": "7.3.1",
-    "typescript": "5.6.3",
+    "typescript": "7.0.2",
     "vite": "8.3.4",
     "vitest": "5.0.4",
     "walk": "^2.3.15"
