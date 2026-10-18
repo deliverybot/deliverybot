@@ -157,6 +157,48 @@ describe("Admin", () => {
     expect(response.text).not.toContain("?after=4");
   });
 
+  it("shows configured repositories per installation", async () => {
+    const [, cookie] = await factory.login(app);
+    const notChecked = await factory
+      .request(app)
+      .get("/_/admin")
+      .set("cookie", cookie);
+    expect(notChecked.text).toContain("Not checked");
+
+    const active = { id: 5, nodeId: "R_5", fullName: "octo-org/active" };
+    await store.setConfigured(active, 77, true);
+    await store.markConfigsSynced(77);
+    const index = await factory
+      .request(app)
+      .get("/_/admin")
+      .set("cookie", cookie);
+    expect(index.text).toContain("1 of them configured");
+    expect(index.text).toMatch(/<td class="p-2">1<\/td>/);
+
+    nock("https://api.github.com")
+      .get("/installation/repositories")
+      .query({ per_page: 50, page: 1 })
+      .reply(200, {
+        total_count: 2,
+        repositories: [
+          { id: 4, full_name: "octo-org/idle", private: false },
+          { id: 5, full_name: "octo-org/active", private: false },
+        ],
+      });
+    const page = await factory
+      .request(app)
+      .get("/_/admin/installations/77")
+      .set("cookie", cookie);
+    const configured = page.text.slice(
+      page.text.indexOf('data-test="configured"'),
+      page.text.indexOf('data-test="repositories"'),
+    );
+    expect(configured).toContain("octo-org/active");
+    expect(configured).not.toContain("octo-org/idle");
+    expect(page.text.match(/Label--success ml-1">Configured/g)).toHaveLength(1);
+    await store.forgetRepositories([5]);
+  });
+
   it("returns 404 for unknown installations", async () => {
     const [, cookie] = await factory.login(app);
     const response = await factory

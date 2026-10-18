@@ -17,7 +17,8 @@
     <div class="Subhead mb-0 mt-5">
       <h2 class="Subhead-heading">Installations</h2>
       <div class="Subhead-description">
-        {{installations.length}} installations with access to {{totalRepos}} repositories.
+        {{installations.length}} installations with access to {{totalRepos}} repositories,
+        {{totalConfigured}} of them configured.
         {{activeCount}} active in the last {{activeDays}} days.
       </div>
     </div>
@@ -29,6 +30,7 @@
           <th class="p-2">Account</th>
           <th class="p-2">Type</th>
           <th class="p-2">Repositories</th>
+          <th class="p-2">Configured</th>
           <th class="p-2">Installed</th>
           <th class="p-2">Last activity</th>
           <th class="p-2">Status</th>
@@ -43,6 +45,7 @@
             {{repoCount}}
             <span class="color-fg-muted f6">({{repositorySelection}})</span>
           </td>
+          <td class="p-2">{{#if configsChecked}}{{configuredCount}}{{else}}<span class="color-fg-muted">Not checked</span>{{/if}}</td>
           <td class="p-2 color-fg-muted no-wrap">{{installed}}</td>
           <td class="p-2 color-fg-muted no-wrap">{{#if lastActivity}}{{lastActivity}}{{else}}None recorded{{/if}}</td>
           <td class="p-2">

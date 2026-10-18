@@ -219,6 +219,22 @@ describe("configured repositories", () => {
     await store.setConfigured(repo(10, "first/b"), 1, false);
     expect(await store.listConfigured(1)).toEqual([repo(11, "first/c")]);
 
+    await store.upsert({
+      id: 1,
+      account: "first",
+      accountType: "User",
+      repositorySelection: "all",
+      suspended: false,
+    });
+    expect((await store.list()).find((i) => i.id === 1)).toMatchObject({
+      configuredCount: 1,
+      configsSyncedAt: null,
+    });
+    await store.markConfigsSynced(1);
+    expect(
+      (await store.list()).find((i) => i.id === 1)!.configsSyncedAt,
+    ).toBeTruthy();
+
     await store.forgetRepositories([11]);
     expect(await store.listConfigured(1)).toEqual([]);
     await store.delete(2);

@@ -80,6 +80,8 @@ export interface InstallationRecord extends Installation {
   lastActivityAt: string | null;
   /** When every repository was last checked for a deploy config. */
   configsSyncedAt: string | null;
+  /** Repositories with a deploy config. */
+  configuredCount: number;
   createdAt: string;
   updatedAt: string;
 }

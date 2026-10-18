@@ -20,6 +20,7 @@ export class InstallationStore {
       ...installation,
       repositoryCount: existing ? existing.repositoryCount : null,
       configsSyncedAt: existing ? existing.configsSyncedAt : null,
+      configuredCount: 0,
       lastActivityAt: null,
       createdAt: existing ? existing.createdAt : now,
       updatedAt: now,
@@ -35,6 +36,7 @@ export class InstallationStore {
       repositoryCount,
       lastActivityAt,
       configsSyncedAt,
+      configuredCount,
       ...installation
     } = i;
     return installation;
@@ -57,7 +59,13 @@ export class InstallationStore {
       if (!seen || a.lastEventAt > seen) last[a.installationId] = a.lastEventAt;
     }
     return Object.values(this.installations)
-      .map((i) => ({ ...i, lastActivityAt: last[i.id] || null }))
+      .map((i) => ({
+        ...i,
+        lastActivityAt: last[i.id] || null,
+        configuredCount: Object.values(this.configured).filter(
+          (r) => r.installationId === i.id,
+        ).length,
+      }))
       .sort(
         (a, b) =>
           (b.lastActivityAt || "").localeCompare(a.lastActivityAt || "") ||

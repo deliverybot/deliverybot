@@ -77,6 +77,7 @@ export function admin({
     const installations = installs.map((i) => ({
       ...i,
       repoCount: i.repositoryCount === null ? "?" : i.repositoryCount,
+      configsChecked: !!i.configsSyncedAt,
       installed: ago(i.createdAt),
       lastActivity: i.lastActivityAt ? ago(i.lastActivityAt) : null,
       active: !!i.lastActivityAt && Date.parse(i.lastActivityAt) >= activeSince,
@@ -93,6 +94,7 @@ export function admin({
         (sum, i) => sum + (i.repositoryCount || 0),
         0,
       ),
+      totalConfigured: installs.reduce((sum, i) => sum + i.configuredCount, 0),
       users: users.map((u) => ({
         username: u.username,
         firstSeen: ago(u.createdAt),
@@ -104,15 +106,25 @@ export function admin({
 
   async function installation(req: AuthedRequest, res: Response) {
     const id = Number(req.params.id);
-    const install = Number.isSafeInteger(id) ? await store.get(id) : undefined;
+    const install = Number.isSafeInteger(id)
+      ? (await store.list()).find((i) => i.id === id)
+      : undefined;
     if (!install) throw new NotFoundError("Installation not found");
     const page = pageParam(req.query);
 
-    const activity = await store.listActivity(id);
+    const [activity, configuredList] = await Promise.all([
+      store.listActivity(id),
+      store.listConfigured(id),
+    ]);
     const byId = new Map(activity.map((a) => [a.id, a]));
-    const row = (r: { fullName: string; private?: boolean }, a?: any) => ({
+    const configuredIds = new Set(configuredList.map((r) => r.id));
+    const row = (
+      r: { id: number; fullName: string; private?: boolean },
+      a?: any,
+    ) => ({
       fullName: r.fullName,
       private: !!r.private,
+      configured: configuredIds.has(r.id),
       lastEvent: a?.lastEvent,
       lastEventAgo: a ? ago(a.lastEventAt) : null,
     });
@@ -132,7 +144,10 @@ export function admin({
           });
         total = data.total_count;
         repos = data.repositories.map((r) =>
-          row({ fullName: r.full_name, private: r.private }, byId.get(r.id)),
+          row(
+            { id: r.id, fullName: r.full_name, private: r.private },
+            byId.get(r.id),
+          ),
         );
       } catch (error) {
         req.log.warn({ error, installation: id }, "admin: repo list failed");
@@ -142,7 +157,8 @@ export function admin({
 
     const recent = activity
       .slice(0, RECENT)
-      .map((a) => row({ fullName: a.fullName }, a));
+      .map((a) => row({ id: a.id, fullName: a.fullName }, a));
+    const configured = configuredList.map((r) => row(r, byId.get(r.id)));
 
     res.render("admin-installation", {
       title: `Admin: ${install.account}`,
@@ -151,6 +167,9 @@ export function admin({
       install,
       recent,
       hasRecent: recent.length > 0,
+      configured,
+      hasConfigured: configured.length > 0,
+      configsChecked: !!install.configsSyncedAt,
       repos,
       hasRepos: repos.length > 0,
       total,
