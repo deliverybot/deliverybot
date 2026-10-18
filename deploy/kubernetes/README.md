@@ -17,9 +17,11 @@ Deliverybot deploys itself. The `Image` workflow
 (`.github/workflows/image.yml`) builds an image for every push to `master` and
 pushes it to `ghcr.io/deliverybot/deliverybot`, tagged with the commit SHA.
 Deliverybot, configured in `.github/deploy.yml`, then creates GitHub
-deployments: staging automatically once CI passes, production
-when someone promotes the latest `master` commit in the dashboard (an older
-commit is deployed by hand from the dashboard). Each deployment runs the `Deploy`
+deployments: staging automatically once CI passes, and production right after
+staging deployed the same commit. A finished staging deploy sets the
+`deploy/staging` commit status, which the production target waits for; a
+failed staging deploy sets it to failure, so production stays on the previous
+commit. An older commit is deployed by hand from the dashboard. Each deployment runs the `Deploy`
 workflow (`.github/workflows/deploy.yml`), which applies the overlay and
 reports the result as deployment statuses. It builds the image itself when
 there isn't one yet, so branches and pull requests (`/deploy staging`) can be
