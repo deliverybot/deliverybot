@@ -14,10 +14,54 @@ async function countRepositories(octokit: any): Promise<number> {
   return data.total_count;
 }
 
+const configPath = ".github/deploy.yml";
+
+/** Whether a repository has a deploy config on its default branch. */
+async function hasConfig(
+  octokit: any,
+  owner: string,
+  repo: string,
+): Promise<boolean> {
+  try {
+    const { data } = await octokit.rest.repos.getContent({
+      owner,
+      repo,
+      path: configPath,
+    });
+    return !Array.isArray(data) && data.type === "file";
+  } catch (error: any) {
+    if (error.status === 404) return false;
+    throw error;
+  }
+}
+
+/**
+ * Records which of an installation's repositories have a deploy config,
+ * logging a repository it can't check instead of failing the rest.
+ */
+async function recordConfigs(
+  octokit: any,
+  store: InstallationStore,
+  installationId: number,
+  repos: { id: number; full_name: string }[],
+  log: { warn: (obj: any, msg: string) => void },
+) {
+  for (const r of repos) {
+    try {
+      const [owner, repo] = r.full_name.split("/");
+      const configured = await hasConfig(octokit, owner, repo);
+      await store.setConfigured(r.id, installationId, configured);
+    } catch (error) {
+      log.warn({ error, repo: r.full_name }, "config check failed");
+    }
+  }
+}
+
 /**
  * Copies every installation GitHub lists for the app into the store, with
- * its repository count, for installations made before they were tracked or
- * whose webhooks were missed. Returns how many it saved.
+ * its repository count and which repositories have a deploy config, for
+ * installations made before they were tracked or whose webhooks were
+ * missed. Returns how many it saved.
  */
 export async function syncInstallations(
   robot: Application,
@@ -40,10 +84,15 @@ export async function syncInstallations(
     });
     if (!i.suspended_at) {
       try {
-        const count = await countRepositories(await robot.auth(i.id));
-        await store.setRepositoryCount(i.id, count);
+        const octokit = await robot.auth(i.id);
+        const repos = await octokit.paginate(
+          octokit.rest.apps.listReposAccessibleToInstallation,
+          { per_page: 100 },
+        );
+        await store.setRepositoryCount(i.id, repos.length);
+        await recordConfigs(octokit, store, i.id, repos, robot.log);
       } catch (error) {
-        robot.log.warn({ error, installation: i.id }, "repo count failed");
+        robot.log.warn({ error, installation: i.id }, "repo sync failed");
       }
     }
     saved++;
@@ -53,7 +102,8 @@ export async function syncInstallations(
 
 /**
  * Tracks GitHub App installations, which are Deliverybot's tenants, and the
- * last event of each of their repositories. Deletes a repository's stored
+ * last event of each of their repositories, and which repositories have a
+ * deploy config on their default branch. Deletes a repository's stored
  * data (environment locks, pending auto-deploys and activity) once the app
  * loses access to it.
  */
@@ -128,6 +178,48 @@ export function installations({
       await refreshCount(context);
     },
   );
+
+  robot.on("installation.created", (context) =>
+    recordConfigs(
+      context.octokit,
+      store,
+      context.payload.installation.id,
+      context.payload.repositories || [],
+      context.log,
+    ),
+  );
+
+  robot.on("installation_repositories.added", (context) =>
+    recordConfigs(
+      context.octokit,
+      store,
+      context.payload.installation.id,
+      context.payload.repositories_added,
+      context.log,
+    ),
+  );
+
+  // A push lists at most 20 commits, so a longer one is checked regardless.
+  robot.on("push", async (context) => {
+    const { ref, commits, repository, installation } = context.payload as any;
+    if (!installation || ref !== `refs/heads/${repository.default_branch}`) {
+      return;
+    }
+    const touched =
+      commits.length >= 20 ||
+      commits.some((c: any) =>
+        [...c.added, ...c.modified, ...c.removed].includes(configPath),
+      );
+    if (!touched) return;
+    await recordConfigs(
+      context.octokit,
+      store,
+      installation.id,
+      [repository],
+      context.log,
+    );
+  });
+
   robot.on("installation.suspend", (context) => save(context, true));
 
   robot.on("installation.deleted", async (context) => {

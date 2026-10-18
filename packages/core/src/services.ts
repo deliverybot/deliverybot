@@ -106,4 +106,12 @@ export interface InstallationStore {
   /** Repository activity of one installation, most recent first. */
   listActivity(installationId: number): Promise<RepositoryActivity[]>;
   forgetRepositories(ids: number[]): Promise<void>;
+  /** Records whether a repository has a deploy config on its default branch. */
+  setConfigured(
+    id: number,
+    installationId: number,
+    configured: boolean,
+  ): Promise<void>;
+  /** Ids of an installation's repositories that have a deploy config. */
+  listConfigured(installationId: number): Promise<number[]>;
 }

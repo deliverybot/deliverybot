@@ -118,6 +118,93 @@ describe("Installations", () => {
     expect(await kv.get("repos/11/locks/prod")).toBeUndefined();
   });
 
+  // Persists, since auto deploy also reads the config on a push.
+  const config = (repo: string, status: number) =>
+    nock("https://api.github.com")
+      .persist()
+      .get(`/repos/octo-org/${repo}/contents/.github%2Fdeploy.yml`)
+      .reply(status, status === 200 ? { type: "file" } : {});
+
+  const push = (ref: string, files: Partial<Record<string, string[]>>) =>
+    receive("push", {
+      ref,
+      installation,
+      repository: {
+        id: 5,
+        full_name: "octo-org/app",
+        name: "app",
+        owner: { login: "octo-org" },
+        default_branch: "main",
+      },
+      commits: [{ added: [], modified: [], removed: [], ...files }],
+    });
+
+  it("records which added repositories have a deploy config", async () => {
+    count(2);
+    config("a", 200);
+    config("b", 404);
+    await receive("installation_repositories", {
+      action: "added",
+      installation,
+      repositories_added: [
+        { id: 3, full_name: "octo-org/a" },
+        { id: 4, full_name: "octo-org/b" },
+      ],
+    });
+    expect(await store.listConfigured(42)).toEqual([3]);
+    await store.forgetRepositories([3]);
+  });
+
+  it("rechecks the deploy config when a push to the default branch touches it", async () => {
+    config("app", 200);
+    await push("refs/heads/main", { added: [".github/deploy.yml"] });
+    expect(await store.listConfigured(42)).toEqual([5]);
+
+    // The config is gone, but pushes to other branches, or that leave the
+    // config alone, don't check.
+    nock.cleanAll();
+    config("app", 404);
+    await push("refs/heads/feature", { removed: [".github/deploy.yml"] });
+    await push("refs/heads/main", { modified: ["README.md"] });
+    expect(await store.listConfigured(42)).toEqual([5]);
+
+    await push("refs/heads/main", { removed: [".github/deploy.yml"] });
+    expect(await store.listConfigured(42)).toEqual([]);
+  });
+
+  it("records which repositories have a deploy config when syncing", async () => {
+    nock("https://api.github.com")
+      .get("/app/installations")
+      .query(true)
+      .reply(200, [
+        {
+          id: 42,
+          account: { login: "octo-org", type: "Organization" },
+          repository_selection: "selected",
+          suspended_at: null,
+        },
+      ])
+      .post("/app/installations/42/access_tokens")
+      .reply(200, { token: "test" })
+      .get("/installation/repositories")
+      .query({ per_page: 100 })
+      .reply(200, {
+        total_count: 2,
+        repositories: [
+          { id: 6, full_name: "octo-org/c" },
+          { id: 7, full_name: "octo-org/d" },
+        ],
+      });
+    config("c", 404);
+    config("d", 200);
+    expect(await syncInstallations(app.probot, store)).toBe(1);
+    expect(await store.listConfigured(42)).toEqual([7]);
+    expect((await store.list()).find((i) => i.id === 42)).toMatchObject({
+      repositoryCount: 2,
+    });
+    await store.forgetRepositories([7]);
+  });
+
   it("copies installations GitHub lists", async () => {
     nock("https://api.github.com")
       .get("/app/installations")

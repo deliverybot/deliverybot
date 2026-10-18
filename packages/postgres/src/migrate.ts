@@ -99,6 +99,16 @@ export const migrations: string[] = [
   -- Kept up to date by webhooks so the admin dashboard doesn't ask GitHub.
   ALTER TABLE installations ADD COLUMN repository_count integer;
   `,
+  `
+  -- Repositories with a .github/deploy.yml on their default branch, kept up
+  -- to date by webhooks so the dashboard doesn't check every repository.
+  CREATE TABLE configured_repositories (
+    id bigint PRIMARY KEY,
+    installation_id bigint NOT NULL
+  );
+  CREATE INDEX configured_repositories_installation
+    ON configured_repositories (installation_id);
+  `,
 ];
 
 // Arbitrary constant so concurrent processes don't migrate at the same time.

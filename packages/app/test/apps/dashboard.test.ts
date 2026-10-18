@@ -1,11 +1,17 @@
 import nock from "nock";
 import * as factory from "../factory.js";
-import { app as deliverybot } from "../app.js";
+import { app as deliverybot, services } from "../app.js";
 
 const app = deliverybot.express;
+const store = services.installationService();
+
+// Repository ids by name, so configured repositories can be stored by id.
+const ids: { [name: string]: number } = {};
 
 function repo(name: string, archived = false) {
+  ids[name] = ids[name] || Object.keys(ids).length + 1000;
   return {
+    id: ids[name],
     name,
     archived,
     description: null,
@@ -21,8 +27,9 @@ describe("Dashboard", () => {
     await deliverybot.loaded();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     factory.cleanAll();
+    await store.forgetRepositories(Object.values(ids));
   });
 
   beforeEach(async () => {
@@ -49,18 +56,9 @@ describe("Dashboard", () => {
       .reply(200, { total_count: list.length, repositories: list });
   }
 
-  // Answers the deploy config check, where `configured` names the
-  // repositories that have one, in the order the query asks for them.
-  function configs(names: string[], configured: string[]) {
-    const data: any = {};
-    names.forEach((name, i) => {
-      data[`r${i}`] = {
-        object: configured.includes(name) ? { __typename: "Blob" } : null,
-      };
-    });
-    nock("https://api.github.com")
-      .post("/graphql", (body: any) => body.query.includes("deploy.yml"))
-      .reply(200, { data });
+  // Marks the named repositories, made by `repo`, as configured.
+  async function configs(names: string[]) {
+    for (const name of names) await store.setConfigured(ids[name], 1, true);
   }
 
   function stats(count: number) {
@@ -88,7 +86,7 @@ describe("Dashboard", () => {
 
   it("lists only configured repositories, leaving out archived ones", async () => {
     repositories([repo("app"), repo("docs"), repo("old", true)]);
-    configs(["app", "docs"], ["app"]);
+    await configs(["app"]);
     stats(1);
 
     const response = await get("/Codertocat");
@@ -101,7 +99,7 @@ describe("Dashboard", () => {
 
   it("lists repositories without a deploy config to set up", async () => {
     repositories([repo("app"), repo("docs"), repo("old", true)]);
-    configs(["app", "docs"], ["app"]);
+    await configs(["app"]);
 
     const response = await get("/Codertocat?tab=setup");
     expect(response.status).toBe(200);
@@ -115,7 +113,6 @@ describe("Dashboard", () => {
 
   it("points to the setup tab when no repository is configured", async () => {
     repositories([repo("docs")]);
-    configs(["docs"], []);
 
     const response = await get("/Codertocat");
     expect(response.status).toBe(200);
@@ -126,7 +123,7 @@ describe("Dashboard", () => {
   it("pages the configured repositories", async () => {
     const names = Array.from({ length: 51 }, (_, i) => `r${i}`);
     repositories(names.map((name) => repo(name)));
-    configs(names, names);
+    await configs(names);
     stats(1);
 
     const response = await get("/Codertocat?after=2");
@@ -138,7 +135,6 @@ describe("Dashboard", () => {
   it("keeps the setup tab when paging", async () => {
     const names = Array.from({ length: 51 }, (_, i) => `r${i}`);
     repositories(names.map((name) => repo(name)));
-    configs(names, []);
 
     const response = await get("/Codertocat?tab=setup");
     expect(response.text).toContain('href="/Codertocat?tab=setup&after=2"');

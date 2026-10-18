@@ -199,6 +199,22 @@ describe("installations", () => {
   });
 });
 
+describe("configured repositories", () => {
+  test("records, lists and forgets them per installation", async () => {
+    const store = db.services.installationService();
+    await store.setConfigured(10, 1, true);
+    await store.setConfigured(11, 1, true);
+    await store.setConfigured(12, 2, true);
+    await store.setConfigured(11, 1, false);
+    expect(await store.listConfigured(1)).toEqual([10]);
+
+    await store.forgetRepositories([10]);
+    expect(await store.listConfigured(1)).toEqual([]);
+    await store.delete(2);
+    expect(await store.listConfigured(2)).toEqual([]);
+  });
+});
+
 describe("repository activity", () => {
   const install = (id: number, account: string) => ({
     id,

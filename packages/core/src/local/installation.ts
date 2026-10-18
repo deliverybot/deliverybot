@@ -7,6 +7,8 @@ import {
 export class InstallationStore {
   private installations: { [id: number]: InstallationRecord } = {};
   private activity: { [id: number]: RepositoryActivity } = {};
+  // Installation id of each repository with a deploy config.
+  private configured: { [id: number]: number } = {};
 
   async upsert(installation: Installation): Promise<void> {
     const now = new Date().toISOString();
@@ -37,6 +39,9 @@ export class InstallationStore {
     delete this.installations[id];
     for (const a of Object.values(this.activity)) {
       if (a.installationId === id) delete this.activity[a.id];
+    }
+    for (const [repo, installationId] of Object.entries(this.configured)) {
+      if (installationId === id) delete this.configured[Number(repo)];
     }
   }
 
@@ -71,6 +76,20 @@ export class InstallationStore {
   }
 
   async forgetRepositories(ids: number[]): Promise<void> {
-    for (const id of ids) delete this.activity[id];
+    for (const id of ids) {
+      delete this.activity[id];
+      delete this.configured[id];
+    }
+  }
+
+  async setConfigured(id: number, installationId: number, configured: boolean) {
+    if (configured) this.configured[id] = installationId;
+    else delete this.configured[id];
+  }
+
+  async listConfigured(installationId: number): Promise<number[]> {
+    return Object.entries(this.configured)
+      .filter(([, i]) => i === installationId)
+      .map(([id]) => Number(id));
   }
 }

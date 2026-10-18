@@ -43,6 +43,10 @@ export class PostgresInstallationStore implements InstallationStore {
       "DELETE FROM repositories WHERE installation_id = $1",
       [id],
     );
+    await this.pool.query(
+      "DELETE FROM configured_repositories WHERE installation_id = $1",
+      [id],
+    );
   }
 
   async list(): Promise<InstallationRecord[]> {
@@ -93,6 +97,34 @@ export class PostgresInstallationStore implements InstallationStore {
   async forgetRepositories(ids: number[]): Promise<void> {
     if (!ids.length) return;
     await this.pool.query("DELETE FROM repositories WHERE id = ANY($1)", [ids]);
+    await this.pool.query(
+      "DELETE FROM configured_repositories WHERE id = ANY($1)",
+      [ids],
+    );
+  }
+
+  async setConfigured(id: number, installationId: number, configured: boolean) {
+    if (configured) {
+      await this.pool.query(
+        `INSERT INTO configured_repositories (id, installation_id)
+         VALUES ($1, $2)
+         ON CONFLICT (id) DO UPDATE SET installation_id = $2`,
+        [id, installationId],
+      );
+    } else {
+      await this.pool.query(
+        "DELETE FROM configured_repositories WHERE id = $1",
+        [id],
+      );
+    }
+  }
+
+  async listConfigured(installationId: number): Promise<number[]> {
+    const { rows } = await this.pool.query(
+      "SELECT id FROM configured_repositories WHERE installation_id = $1",
+      [installationId],
+    );
+    return rows.map((r) => Number(r.id));
   }
 }
 
