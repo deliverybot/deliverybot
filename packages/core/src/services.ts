@@ -78,6 +78,8 @@ export interface InstallationRecord extends Installation {
   repositoryCount: number | null;
   /** The most recent webhook event for any of its repositories. */
   lastActivityAt: string | null;
+  /** When every repository was last checked for a deploy config. */
+  configsSyncedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -91,6 +93,14 @@ export interface RepositoryActivity {
   lastEventAt: string;
 }
 
+/** A repository with a deploy config on its default branch. */
+export interface ConfiguredRepository {
+  id: number;
+  /** GraphQL node id, which survives renames and transfers. */
+  nodeId: string;
+  fullName: string;
+}
+
 export interface InstallationStore {
   upsert(installation: Installation): Promise<void>;
   get(id: number): Promise<Installation | undefined>;
@@ -100,10 +110,19 @@ export interface InstallationStore {
   /** All installations, most recently active first. */
   list(): Promise<InstallationRecord[]>;
   setRepositoryCount(id: number, count: number): Promise<void>;
+  markConfigsSynced(id: number): Promise<void>;
   recordActivity(
     activity: Omit<RepositoryActivity, "lastEventAt">,
   ): Promise<void>;
   /** Repository activity of one installation, most recent first. */
   listActivity(installationId: number): Promise<RepositoryActivity[]>;
   forgetRepositories(ids: number[]): Promise<void>;
+  /** Records whether a repository has a deploy config on its default branch. */
+  setConfigured(
+    repo: ConfiguredRepository,
+    installationId: number,
+    configured: boolean,
+  ): Promise<void>;
+  /** An installation's repositories with a deploy config, by name. */
+  listConfigured(installationId: number): Promise<ConfiguredRepository[]>;
 }

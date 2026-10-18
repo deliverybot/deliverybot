@@ -1,4 +1,5 @@
 import { User } from "../auth.js";
+import { InstallationStore } from "@deliverybot/core";
 import * as queries from "./queries.js";
 
 interface BaseProps {
@@ -34,9 +35,10 @@ export async function Index({ user, csrf }: BaseProps) {
 interface ReposProps extends BaseProps {
   name: string;
   query: any;
+  store: InstallationStore;
 }
 
-export async function Repos({ user, name, query, csrf }: ReposProps) {
+export async function Repos({ user, name, query, csrf, store }: ReposProps) {
   function getPage(params: any) {
     const { before, after } = params;
     if (before) {
@@ -50,7 +52,10 @@ export async function Repos({ user, name, query, csrf }: ReposProps) {
 
   const page = getPage(query);
   const install = await queries.install(user, name);
-  const { repos, hasNext } = await queries.repos(user, install, page);
+  const setup = query.tab === "setup";
+  const configured = await store.listConfigured(install.id);
+  const list = setup ? queries.unconfiguredRepos : queries.configuredRepos;
+  const { repos, hasNext } = await list(user, install, configured, page);
   const pagination = {
     prev: page <= 1 ? null : page - 1,
     next: hasNext ? page + 1 : null,
@@ -62,6 +67,8 @@ export async function Repos({ user, name, query, csrf }: ReposProps) {
     title: install.name,
     install,
     pagination,
+    setup,
+    url: { path: `/${install.name}`, query: setup ? "tab=setup&" : "" },
     hasRepos: repos.length > 0,
     repos,
   });

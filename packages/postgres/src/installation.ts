@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import {
+  ConfiguredRepository,
   Installation,
   InstallationRecord,
   InstallationStore,
@@ -32,6 +33,7 @@ export class PostgresInstallationStore implements InstallationStore {
       updatedAt,
       repositoryCount,
       lastActivityAt,
+      configsSyncedAt,
       ...installation
     } = toInstallation(rows[0]);
     return installation;
@@ -41,6 +43,10 @@ export class PostgresInstallationStore implements InstallationStore {
     await this.pool.query("DELETE FROM installations WHERE id = $1", [id]);
     await this.pool.query(
       "DELETE FROM repositories WHERE installation_id = $1",
+      [id],
+    );
+    await this.pool.query(
+      "DELETE FROM configured_repositories WHERE installation_id = $1",
       [id],
     );
   }
@@ -61,6 +67,13 @@ export class PostgresInstallationStore implements InstallationStore {
     await this.pool.query(
       "UPDATE installations SET repository_count = $2 WHERE id = $1",
       [id, count],
+    );
+  }
+
+  async markConfigsSynced(id: number): Promise<void> {
+    await this.pool.query(
+      "UPDATE installations SET configs_synced_at = now() WHERE id = $1",
+      [id],
     );
   }
 
@@ -93,6 +106,45 @@ export class PostgresInstallationStore implements InstallationStore {
   async forgetRepositories(ids: number[]): Promise<void> {
     if (!ids.length) return;
     await this.pool.query("DELETE FROM repositories WHERE id = ANY($1)", [ids]);
+    await this.pool.query(
+      "DELETE FROM configured_repositories WHERE id = ANY($1)",
+      [ids],
+    );
+  }
+
+  async setConfigured(
+    repo: ConfiguredRepository,
+    installationId: number,
+    configured: boolean,
+  ) {
+    if (configured) {
+      await this.pool.query(
+        `INSERT INTO configured_repositories
+           (id, installation_id, node_id, full_name)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (id) DO UPDATE SET
+           installation_id = $2, node_id = $3, full_name = $4`,
+        [repo.id, installationId, repo.nodeId, repo.fullName],
+      );
+    } else {
+      await this.pool.query(
+        "DELETE FROM configured_repositories WHERE id = $1",
+        [repo.id],
+      );
+    }
+  }
+
+  async listConfigured(installationId: number) {
+    const { rows } = await this.pool.query(
+      `SELECT * FROM configured_repositories WHERE installation_id = $1
+       ORDER BY full_name`,
+      [installationId],
+    );
+    return rows.map((r) => ({
+      id: Number(r.id),
+      nodeId: r.node_id,
+      fullName: r.full_name,
+    }));
   }
 }
 
@@ -104,6 +156,9 @@ function toInstallation(r: any): InstallationRecord {
     repositorySelection: r.repository_selection,
     suspended: r.suspended,
     repositoryCount: r.repository_count,
+    configsSyncedAt: r.configs_synced_at
+      ? r.configs_synced_at.toISOString()
+      : null,
     lastActivityAt: r.last_activity_at
       ? r.last_activity_at.toISOString()
       : null,

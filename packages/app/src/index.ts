@@ -1,6 +1,6 @@
 import type { Probot } from "probot";
 export { apps, main, slack, jobs } from "./apps/index.js";
-export { syncInstallations } from "./apps/installations.js";
+export { backfillConfigs, syncInstallations } from "./apps/installations.js";
 export { load, logger } from "@deliverybot/core";
 
 // The image build sets COMMIT_SHA to the commit it was built from.

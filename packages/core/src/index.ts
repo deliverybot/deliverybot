@@ -62,5 +62,6 @@ export {
   InstallationStore,
   InstallationRecord,
   RepositoryActivity,
+  ConfiguredRepository,
 } from "./services.js";
 export { local as localServices } from "./local/index.js";

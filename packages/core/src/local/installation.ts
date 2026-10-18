@@ -1,4 +1,5 @@
 import {
+  ConfiguredRepository,
   Installation,
   InstallationRecord,
   RepositoryActivity,
@@ -7,6 +8,10 @@ import {
 export class InstallationStore {
   private installations: { [id: number]: InstallationRecord } = {};
   private activity: { [id: number]: RepositoryActivity } = {};
+  // Repositories with a deploy config, with their installation id.
+  private configured: {
+    [id: number]: ConfiguredRepository & { installationId: number };
+  } = {};
 
   async upsert(installation: Installation): Promise<void> {
     const now = new Date().toISOString();
@@ -14,6 +19,7 @@ export class InstallationStore {
     this.installations[installation.id] = {
       ...installation,
       repositoryCount: existing ? existing.repositoryCount : null,
+      configsSyncedAt: existing ? existing.configsSyncedAt : null,
       lastActivityAt: null,
       createdAt: existing ? existing.createdAt : now,
       updatedAt: now,
@@ -28,6 +34,7 @@ export class InstallationStore {
       updatedAt,
       repositoryCount,
       lastActivityAt,
+      configsSyncedAt,
       ...installation
     } = i;
     return installation;
@@ -37,6 +44,9 @@ export class InstallationStore {
     delete this.installations[id];
     for (const a of Object.values(this.activity)) {
       if (a.installationId === id) delete this.activity[a.id];
+    }
+    for (const r of Object.values(this.configured)) {
+      if (r.installationId === id) delete this.configured[r.id];
     }
   }
 
@@ -60,6 +70,11 @@ export class InstallationStore {
     if (i) i.repositoryCount = count;
   }
 
+  async markConfigsSynced(id: number): Promise<void> {
+    const i = this.installations[id];
+    if (i) i.configsSyncedAt = new Date().toISOString();
+  }
+
   async recordActivity(a: Omit<RepositoryActivity, "lastEventAt">) {
     this.activity[a.id] = { ...a, lastEventAt: new Date().toISOString() };
   }
@@ -71,6 +86,25 @@ export class InstallationStore {
   }
 
   async forgetRepositories(ids: number[]): Promise<void> {
-    for (const id of ids) delete this.activity[id];
+    for (const id of ids) {
+      delete this.activity[id];
+      delete this.configured[id];
+    }
+  }
+
+  async setConfigured(
+    repo: ConfiguredRepository,
+    installationId: number,
+    configured: boolean,
+  ) {
+    if (configured) this.configured[repo.id] = { ...repo, installationId };
+    else delete this.configured[repo.id];
+  }
+
+  async listConfigured(installationId: number) {
+    return Object.values(this.configured)
+      .filter((r) => r.installationId === installationId)
+      .sort((a, b) => a.fullName.localeCompare(b.fullName))
+      .map(({ installationId, ...repo }) => repo);
   }
 }

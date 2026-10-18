@@ -199,6 +199,33 @@ describe("installations", () => {
   });
 });
 
+describe("configured repositories", () => {
+  test("records, lists and forgets them per installation", async () => {
+    const store = db.services.installationService();
+    const repo = (id: number, fullName: string) => ({
+      id,
+      nodeId: `R_${id}`,
+      fullName,
+    });
+    await store.setConfigured(repo(10, "first/b"), 1, true);
+    await store.setConfigured(repo(11, "first/a"), 1, true);
+    await store.setConfigured(repo(12, "second/a"), 2, true);
+    expect(await store.listConfigured(1)).toEqual([
+      repo(11, "first/a"),
+      repo(10, "first/b"),
+    ]);
+    // A rename updates the stored name.
+    await store.setConfigured(repo(11, "first/c"), 1, true);
+    await store.setConfigured(repo(10, "first/b"), 1, false);
+    expect(await store.listConfigured(1)).toEqual([repo(11, "first/c")]);
+
+    await store.forgetRepositories([11]);
+    expect(await store.listConfigured(1)).toEqual([]);
+    await store.delete(2);
+    expect(await store.listConfigured(2)).toEqual([]);
+  });
+});
+
 describe("repository activity", () => {
   const install = (id: number, account: string) => ({
     id,

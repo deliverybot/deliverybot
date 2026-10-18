@@ -3,7 +3,9 @@ import { Response } from "express";
 import { Dependencies } from "@deliverybot/core";
 import { Index, Repos, MySettings } from "./views.js";
 
-export function dashboard({ app, csrf }: Dependencies) {
+export function dashboard({ app, csrf, installationService }: Dependencies) {
+  const store = installationService();
+
   async function index(req: AuthedRequest, res: Response) {
     const data = await Index({
       user: req.user!,
@@ -19,6 +21,7 @@ export function dashboard({ app, csrf }: Dependencies) {
       csrf: req.csrfToken(),
       name,
       query: req.query,
+      store,
     });
     return res.render("repos", data);
   }
