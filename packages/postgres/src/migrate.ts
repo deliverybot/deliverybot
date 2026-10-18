@@ -104,7 +104,9 @@ export const migrations: string[] = [
   -- to date by webhooks so the dashboard doesn't check every repository.
   CREATE TABLE configured_repositories (
     id bigint PRIMARY KEY,
-    installation_id bigint NOT NULL
+    installation_id bigint NOT NULL,
+    node_id text NOT NULL,
+    full_name text NOT NULL
   );
   CREATE INDEX configured_repositories_installation
     ON configured_repositories (installation_id);

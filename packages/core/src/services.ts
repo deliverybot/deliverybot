@@ -91,6 +91,14 @@ export interface RepositoryActivity {
   lastEventAt: string;
 }
 
+/** A repository with a deploy config on its default branch. */
+export interface ConfiguredRepository {
+  id: number;
+  /** GraphQL node id, which survives renames and transfers. */
+  nodeId: string;
+  fullName: string;
+}
+
 export interface InstallationStore {
   upsert(installation: Installation): Promise<void>;
   get(id: number): Promise<Installation | undefined>;
@@ -108,10 +116,10 @@ export interface InstallationStore {
   forgetRepositories(ids: number[]): Promise<void>;
   /** Records whether a repository has a deploy config on its default branch. */
   setConfigured(
-    id: number,
+    repo: ConfiguredRepository,
     installationId: number,
     configured: boolean,
   ): Promise<void>;
-  /** Ids of an installation's repositories that have a deploy config. */
-  listConfigured(installationId: number): Promise<number[]>;
+  /** An installation's repositories with a deploy config, by name. */
+  listConfigured(installationId: number): Promise<ConfiguredRepository[]>;
 }

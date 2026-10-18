@@ -1,4 +1,5 @@
 import {
+  ConfiguredRepository,
   Installation,
   InstallationRecord,
   RepositoryActivity,
@@ -7,8 +8,10 @@ import {
 export class InstallationStore {
   private installations: { [id: number]: InstallationRecord } = {};
   private activity: { [id: number]: RepositoryActivity } = {};
-  // Installation id of each repository with a deploy config.
-  private configured: { [id: number]: number } = {};
+  // Repositories with a deploy config, with their installation id.
+  private configured: {
+    [id: number]: ConfiguredRepository & { installationId: number };
+  } = {};
 
   async upsert(installation: Installation): Promise<void> {
     const now = new Date().toISOString();
@@ -40,8 +43,8 @@ export class InstallationStore {
     for (const a of Object.values(this.activity)) {
       if (a.installationId === id) delete this.activity[a.id];
     }
-    for (const [repo, installationId] of Object.entries(this.configured)) {
-      if (installationId === id) delete this.configured[Number(repo)];
+    for (const r of Object.values(this.configured)) {
+      if (r.installationId === id) delete this.configured[r.id];
     }
   }
 
@@ -82,14 +85,19 @@ export class InstallationStore {
     }
   }
 
-  async setConfigured(id: number, installationId: number, configured: boolean) {
-    if (configured) this.configured[id] = installationId;
-    else delete this.configured[id];
+  async setConfigured(
+    repo: ConfiguredRepository,
+    installationId: number,
+    configured: boolean,
+  ) {
+    if (configured) this.configured[repo.id] = { ...repo, installationId };
+    else delete this.configured[repo.id];
   }
 
-  async listConfigured(installationId: number): Promise<number[]> {
-    return Object.entries(this.configured)
-      .filter(([, i]) => i === installationId)
-      .map(([id]) => Number(id));
+  async listConfigured(installationId: number) {
+    return Object.values(this.configured)
+      .filter((r) => r.installationId === installationId)
+      .sort((a, b) => a.fullName.localeCompare(b.fullName))
+      .map(({ installationId, ...repo }) => repo);
   }
 }

@@ -43,14 +43,18 @@ async function recordConfigs(
   octokit: any,
   store: InstallationStore,
   installationId: number,
-  repos: { id: number; full_name: string }[],
+  repos: { id: number; node_id: string; full_name: string }[],
   log: { warn: (obj: any, msg: string) => void },
 ) {
   for (const r of repos) {
     try {
       const [owner, repo] = r.full_name.split("/");
       const configured = await hasConfig(octokit, owner, repo);
-      await store.setConfigured(r.id, installationId, configured);
+      await store.setConfigured(
+        { id: r.id, nodeId: r.node_id, fullName: r.full_name },
+        installationId,
+        configured,
+      );
     } catch (error) {
       log.warn({ error, repo: r.full_name }, "config check failed");
     }

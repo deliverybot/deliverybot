@@ -131,6 +131,7 @@ describe("Installations", () => {
       installation,
       repository: {
         id: 5,
+        node_id: "R_app",
         full_name: "octo-org/app",
         name: "app",
         owner: { login: "octo-org" },
@@ -147,18 +148,20 @@ describe("Installations", () => {
       action: "added",
       installation,
       repositories_added: [
-        { id: 3, full_name: "octo-org/a" },
-        { id: 4, full_name: "octo-org/b" },
+        { id: 3, node_id: "R_a", full_name: "octo-org/a" },
+        { id: 4, node_id: "R_b", full_name: "octo-org/b" },
       ],
     });
-    expect(await store.listConfigured(42)).toEqual([3]);
+    expect(await store.listConfigured(42)).toEqual([
+      { id: 3, nodeId: "R_a", fullName: "octo-org/a" },
+    ]);
     await store.forgetRepositories([3]);
   });
 
   it("rechecks the deploy config when a push to the default branch touches it", async () => {
     config("app", 200);
     await push("refs/heads/main", { added: [".github/deploy.yml"] });
-    expect(await store.listConfigured(42)).toEqual([5]);
+    expect((await store.listConfigured(42)).map((r) => r.id)).toEqual([5]);
 
     // The config is gone, but pushes to other branches, or that leave the
     // config alone, don't check.
@@ -166,7 +169,7 @@ describe("Installations", () => {
     config("app", 404);
     await push("refs/heads/feature", { removed: [".github/deploy.yml"] });
     await push("refs/heads/main", { modified: ["README.md"] });
-    expect(await store.listConfigured(42)).toEqual([5]);
+    expect((await store.listConfigured(42)).map((r) => r.id)).toEqual([5]);
 
     await push("refs/heads/main", { removed: [".github/deploy.yml"] });
     expect(await store.listConfigured(42)).toEqual([]);
@@ -191,14 +194,14 @@ describe("Installations", () => {
       .reply(200, {
         total_count: 2,
         repositories: [
-          { id: 6, full_name: "octo-org/c" },
-          { id: 7, full_name: "octo-org/d" },
+          { id: 6, node_id: "R_c", full_name: "octo-org/c" },
+          { id: 7, node_id: "R_d", full_name: "octo-org/d" },
         ],
       });
     config("c", 404);
     config("d", 200);
     expect(await syncInstallations(app.probot, store)).toBe(1);
-    expect(await store.listConfigured(42)).toEqual([7]);
+    expect((await store.listConfigured(42)).map((r) => r.id)).toEqual([7]);
     expect((await store.list()).find((i) => i.id === 42)).toMatchObject({
       repositoryCount: 2,
     });

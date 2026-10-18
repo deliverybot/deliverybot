@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import {
+  ConfiguredRepository,
   Installation,
   InstallationRecord,
   InstallationStore,
@@ -103,28 +104,39 @@ export class PostgresInstallationStore implements InstallationStore {
     );
   }
 
-  async setConfigured(id: number, installationId: number, configured: boolean) {
+  async setConfigured(
+    repo: ConfiguredRepository,
+    installationId: number,
+    configured: boolean,
+  ) {
     if (configured) {
       await this.pool.query(
-        `INSERT INTO configured_repositories (id, installation_id)
-         VALUES ($1, $2)
-         ON CONFLICT (id) DO UPDATE SET installation_id = $2`,
-        [id, installationId],
+        `INSERT INTO configured_repositories
+           (id, installation_id, node_id, full_name)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (id) DO UPDATE SET
+           installation_id = $2, node_id = $3, full_name = $4`,
+        [repo.id, installationId, repo.nodeId, repo.fullName],
       );
     } else {
       await this.pool.query(
         "DELETE FROM configured_repositories WHERE id = $1",
-        [id],
+        [repo.id],
       );
     }
   }
 
-  async listConfigured(installationId: number): Promise<number[]> {
+  async listConfigured(installationId: number) {
     const { rows } = await this.pool.query(
-      "SELECT id FROM configured_repositories WHERE installation_id = $1",
+      `SELECT * FROM configured_repositories WHERE installation_id = $1
+       ORDER BY full_name`,
       [installationId],
     );
-    return rows.map((r) => Number(r.id));
+    return rows.map((r) => ({
+      id: Number(r.id),
+      nodeId: r.node_id,
+      fullName: r.full_name,
+    }));
   }
 }
 

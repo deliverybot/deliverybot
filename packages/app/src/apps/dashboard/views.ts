@@ -54,13 +54,8 @@ export async function Repos({ user, name, query, csrf, store }: ReposProps) {
   const install = await queries.install(user, name);
   const setup = query.tab === "setup";
   const configured = await store.listConfigured(install.id);
-  const { repos, hasNext } = await queries.repos(
-    user,
-    install,
-    configured,
-    page,
-    setup,
-  );
+  const list = setup ? queries.unconfiguredRepos : queries.configuredRepos;
+  const { repos, hasNext } = await list(user, install, configured, page);
   const pagination = {
     prev: page <= 1 ? null : page - 1,
     next: hasNext ? page + 1 : null,
