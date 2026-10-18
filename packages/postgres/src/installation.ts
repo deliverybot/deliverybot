@@ -33,6 +33,7 @@ export class PostgresInstallationStore implements InstallationStore {
       updatedAt,
       repositoryCount,
       lastActivityAt,
+      configsSyncedAt,
       ...installation
     } = toInstallation(rows[0]);
     return installation;
@@ -66,6 +67,13 @@ export class PostgresInstallationStore implements InstallationStore {
     await this.pool.query(
       "UPDATE installations SET repository_count = $2 WHERE id = $1",
       [id, count],
+    );
+  }
+
+  async markConfigsSynced(id: number): Promise<void> {
+    await this.pool.query(
+      "UPDATE installations SET configs_synced_at = now() WHERE id = $1",
+      [id],
     );
   }
 
@@ -148,6 +156,9 @@ function toInstallation(r: any): InstallationRecord {
     repositorySelection: r.repository_selection,
     suspended: r.suspended,
     repositoryCount: r.repository_count,
+    configsSyncedAt: r.configs_synced_at
+      ? r.configs_synced_at.toISOString()
+      : null,
     lastActivityAt: r.last_activity_at
       ? r.last_activity_at.toISOString()
       : null,

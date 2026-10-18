@@ -1,5 +1,5 @@
 import http from "http";
-import { jobs } from "@deliverybot/app";
+import { backfillConfigs, jobs } from "@deliverybot/app";
 import { load, logger } from "@deliverybot/core";
 import { db, opts, services } from "./config.js";
 
@@ -11,6 +11,12 @@ if (!db) {
 const { probot } = load(services, jobs, { ...opts, dispatcher: undefined });
 db.queue.work((event) => probot.receive(event));
 logger.info("worker started");
+
+// Fills in configured repositories for installations that haven't had them
+// checked, alongside the queue rather than ahead of it.
+backfillConfigs(probot, services.installationService())
+  .then((count) => logger.info({ count }, "config backfill done"))
+  .catch((error) => logger.error({ error }, "config backfill failed"));
 
 // Liveness check: fails once the queue loop is stuck, so Kubernetes
 // restarts the worker instead of leaving it up but doing nothing.

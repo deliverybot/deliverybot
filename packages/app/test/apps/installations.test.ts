@@ -1,6 +1,9 @@
 import nock from "nock";
 import { app, services } from "../app.js";
-import { syncInstallations } from "../../src/apps/installations.js";
+import {
+  backfillConfigs,
+  syncInstallations,
+} from "../../src/apps/installations.js";
 
 const installation = {
   id: 42,
@@ -31,12 +34,27 @@ describe("Installations", () => {
 
   afterEach(() => nock.cleanAll());
 
-  it("saves new installations", async () => {
-    count(4);
+  // The repositories GitHub lists for the installation, all at once.
+  const list = (repos: any[]) =>
+    nock("https://api.github.com")
+      .get("/installation/repositories")
+      .query({ per_page: 100 })
+      .reply(200, { total_count: repos.length, repositories: repos });
+
+  it("saves new installations with their configured repositories", async () => {
+    list([
+      { id: 3, node_id: "R_a", full_name: "octo-org/a" },
+      { id: 4, node_id: "R_b", full_name: "octo-org/b" },
+    ]);
+    config("a", 200);
+    config("b", 404);
     await receive("installation", { action: "created", installation });
-    expect((await store.list()).find((i) => i.id === 42)).toMatchObject({
-      repositoryCount: 4,
-    });
+    const saved = (await store.list()).find((i) => i.id === 42);
+    expect(saved).toMatchObject({ repositoryCount: 2 });
+    expect(saved!.configsSyncedAt).toBeTruthy();
+    expect(await store.listConfigured(42)).toEqual([
+      { id: 3, nodeId: "R_a", fullName: "octo-org/a" },
+    ]);
     expect(await store.get(42)).toEqual({
       id: 42,
       account: "octo-org",
@@ -44,10 +62,11 @@ describe("Installations", () => {
       repositorySelection: "selected",
       suspended: false,
     });
+    await store.forgetRepositories([3]);
   });
 
   it("recounts repositories when they're added or removed", async () => {
-    count(1);
+    list([]);
     await receive("installation", { action: "created", installation });
     count(2);
     await receive("installation_repositories", {
@@ -106,7 +125,7 @@ describe("Installations", () => {
   });
 
   it("forgets deleted installations and their repositories", async () => {
-    count(2);
+    list([]);
     await receive("installation", { action: "created", installation });
     await receive("installation", {
       action: "deleted",
@@ -206,6 +225,31 @@ describe("Installations", () => {
       repositoryCount: 2,
     });
     await store.forgetRepositories([7]);
+  });
+
+  it("backfills configured repositories of unchecked installations once", async () => {
+    await store.upsert({
+      id: 43,
+      account: "other-org",
+      accountType: "Organization",
+      repositorySelection: "all",
+      suspended: false,
+    });
+    nock("https://api.github.com")
+      .get("/installation/repositories")
+      .query({ per_page: 100 })
+      .reply(200, {
+        total_count: 1,
+        repositories: [{ id: 8, node_id: "R_e", full_name: "other-org/e" }],
+      })
+      .get("/repos/other-org/e/contents/.github%2Fdeploy.yml")
+      .reply(200, { type: "file" });
+    expect(await backfillConfigs(app.probot, store)).toBe(1);
+    expect((await store.listConfigured(43)).map((r) => r.id)).toEqual([8]);
+
+    // Checked installations aren't checked again.
+    expect(await backfillConfigs(app.probot, store)).toBe(0);
+    await store.delete(43);
   });
 
   it("copies installations GitHub lists", async () => {

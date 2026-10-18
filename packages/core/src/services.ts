@@ -78,6 +78,8 @@ export interface InstallationRecord extends Installation {
   repositoryCount: number | null;
   /** The most recent webhook event for any of its repositories. */
   lastActivityAt: string | null;
+  /** When every repository was last checked for a deploy config. */
+  configsSyncedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -108,6 +110,7 @@ export interface InstallationStore {
   /** All installations, most recently active first. */
   list(): Promise<InstallationRecord[]>;
   setRepositoryCount(id: number, count: number): Promise<void>;
+  markConfigsSynced(id: number): Promise<void>;
   recordActivity(
     activity: Omit<RepositoryActivity, "lastEventAt">,
   ): Promise<void>;

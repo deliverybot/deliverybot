@@ -37,7 +37,8 @@ async function hasConfig(
 
 /**
  * Records which of an installation's repositories have a deploy config,
- * logging a repository it can't check instead of failing the rest.
+ * logging a repository it can't check instead of failing the rest. Returns
+ * whether it checked them all.
  */
 async function recordConfigs(
   octokit: any,
@@ -46,6 +47,7 @@ async function recordConfigs(
   repos: { id: number; node_id: string; full_name: string }[],
   log: { warn: (obj: any, msg: string) => void },
 ) {
+  let ok = true;
   for (const r of repos) {
     try {
       const [owner, repo] = r.full_name.split("/");
@@ -57,8 +59,53 @@ async function recordConfigs(
       );
     } catch (error) {
       log.warn({ error, repo: r.full_name }, "config check failed");
+      ok = false;
     }
   }
+  return ok;
+}
+
+/**
+ * Counts an installation's repositories and records which have a deploy
+ * config, marking the installation's configs synced once every repository
+ * was checked.
+ */
+async function syncRepositories(
+  octokit: any,
+  store: InstallationStore,
+  installationId: number,
+  log: { warn: (obj: any, msg: string) => void },
+) {
+  const repos = await octokit.paginate(
+    octokit.rest.apps.listReposAccessibleToInstallation,
+    { per_page: 100 },
+  );
+  await store.setRepositoryCount(installationId, repos.length);
+  if (await recordConfigs(octokit, store, installationId, repos, log)) {
+    await store.markConfigsSynced(installationId);
+  }
+}
+
+/**
+ * Records which repositories have a deploy config for each installation
+ * that hasn't had them checked yet: those from before configs were tracked,
+ * and any whose check failed. The worker runs this when it starts.
+ */
+export async function backfillConfigs(
+  robot: Application,
+  store: InstallationStore,
+) {
+  const pending = (await store.list()).filter(
+    (i) => !i.suspended && !i.configsSyncedAt,
+  );
+  for (const i of pending) {
+    try {
+      await syncRepositories(await robot.auth(i.id), store, i.id, robot.log);
+    } catch (error) {
+      robot.log.warn({ error, installation: i.id }, "config backfill failed");
+    }
+  }
+  return pending.length;
 }
 
 /**
@@ -88,13 +135,7 @@ export async function syncInstallations(
     });
     if (!i.suspended_at) {
       try {
-        const octokit = await robot.auth(i.id);
-        const repos = await octokit.paginate(
-          octokit.rest.apps.listReposAccessibleToInstallation,
-          { per_page: 100 },
-        );
-        await store.setRepositoryCount(i.id, repos.length);
-        await recordConfigs(octokit, store, i.id, repos, robot.log);
+        await syncRepositories(await robot.auth(i.id), store, i.id, robot.log);
       } catch (error) {
         robot.log.warn({ error, installation: i.id }, "repo sync failed");
       }
@@ -172,26 +213,22 @@ export function installations({
   });
 
   robot.on(
-    [
-      "installation.created",
-      "installation.new_permissions_accepted",
-      "installation.unsuspend",
-    ],
+    ["installation.new_permissions_accepted", "installation.unsuspend"],
     async (context) => {
       await save(context, false);
       await refreshCount(context);
     },
   );
 
-  robot.on("installation.created", (context) =>
-    recordConfigs(
-      context.octokit,
-      store,
-      context.payload.installation.id,
-      context.payload.repositories || [],
-      context.log,
-    ),
-  );
+  robot.on("installation.created", async (context) => {
+    await save(context, false);
+    const id = context.payload.installation.id;
+    try {
+      await syncRepositories(context.octokit, store, id, context.log);
+    } catch (error) {
+      context.log.warn({ error, installation: id }, "repo sync failed");
+    }
+  });
 
   robot.on("installation_repositories.added", (context) =>
     recordConfigs(

@@ -111,6 +111,11 @@ export const migrations: string[] = [
   CREATE INDEX configured_repositories_installation
     ON configured_repositories (installation_id);
   `,
+  `
+  -- When every repository of an installation was last checked for a deploy
+  -- config. The worker checks installations where this is unset.
+  ALTER TABLE installations ADD COLUMN configs_synced_at timestamptz;
+  `,
 ];
 
 // Arbitrary constant so concurrent processes don't migrate at the same time.

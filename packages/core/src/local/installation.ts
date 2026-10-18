@@ -19,6 +19,7 @@ export class InstallationStore {
     this.installations[installation.id] = {
       ...installation,
       repositoryCount: existing ? existing.repositoryCount : null,
+      configsSyncedAt: existing ? existing.configsSyncedAt : null,
       lastActivityAt: null,
       createdAt: existing ? existing.createdAt : now,
       updatedAt: now,
@@ -33,6 +34,7 @@ export class InstallationStore {
       updatedAt,
       repositoryCount,
       lastActivityAt,
+      configsSyncedAt,
       ...installation
     } = i;
     return installation;
@@ -66,6 +68,11 @@ export class InstallationStore {
   async setRepositoryCount(id: number, count: number): Promise<void> {
     const i = this.installations[id];
     if (i) i.repositoryCount = count;
+  }
+
+  async markConfigsSynced(id: number): Promise<void> {
+    const i = this.installations[id];
+    if (i) i.configsSyncedAt = new Date().toISOString();
   }
 
   async recordActivity(a: Omit<RepositoryActivity, "lastEventAt">) {
