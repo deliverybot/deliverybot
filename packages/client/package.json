@@ -19,7 +19,7 @@
     "@primer/view-components": "0.53.5",
     "apexcharts": "8.3.1",
     "handlebars": "4.7.10",
-    "stimulus": "1.1.1",
+    "stimulus": "3.2.2",
     "tom-select": "2.6.2",
     "turbolinks": "5.2.0"
   },
