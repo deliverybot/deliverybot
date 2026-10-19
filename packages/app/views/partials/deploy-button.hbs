@@ -1,13 +1,13 @@
 <form
   data-controller="form"
-  data-target="form.form"
+  data-form-target="form"
   method="POST"
   action="/{{owner}}/{{repo}}/branch/{{branch}}/o/{{oid}}"
   data-form-error="Failed to deploy '{{oidShort}}'."
   data-form-success="Deployed '{{oidShort}}' successfully.">
 
   <input type="hidden" name="_csrf" value="{{@root.csrf}}">
-  <button data-target="form.button" data-track="deploy" data-action="click->analytics#trackEvent" type="submit" data-oid="{{oid}}"
+  <button data-form-target="button" data-track="deploy" data-action="click->analytics#trackEvent" type="submit" data-oid="{{oid}}"
     class="deploy btn btn-primary"
     name="button">
     Deploy
