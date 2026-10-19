@@ -2,7 +2,7 @@
 {{#if locked}}
 <form class="d-inline-block"
   data-controller="form"
-  data-target="form.form"
+  data-form-target="form"
   data-form-error="Failed to unlock."
   data-form-success="Successfully unlocked target."
   data-form-modal="lock-modal"
@@ -19,7 +19,7 @@
 {{else}}
 <form class="d-inline-block"
   data-controller="form"
-  data-target="form.form"
+  data-form-target="form"
   data-form-error="Failed to lock."
   data-form-success="Successfully locked target."
   data-form-modal="lock-modal"

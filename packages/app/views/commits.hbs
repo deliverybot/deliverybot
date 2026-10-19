@@ -30,35 +30,35 @@
           <div class="dropdown-menu dropdown-menu-se filter-menu">
             <div class="px-2 pb-1">
               <input type="text" class="form-control input-sm input-block" placeholder="Filter branches"
-                aria-label="Filter branches" autocomplete="off" data-target="filter.input" data-action="input->filter#filter">
+                aria-label="Filter branches" autocomplete="off" data-filter-target="input" data-action="input->filter#filter">
             </div>
             <ul class="list-style-none filter-menu-list">
               {{#each branches}}
-              <li data-target="filter.item">
+              <li data-filter-target="item">
                 <a href="/{{../owner}}/{{../repo}}/branch/{{branchencode name}}" class="dropdown-item">
                   <code>{{name}}</code>
                 </a>
               </li>
               {{/each}}
             </ul>
-            <div class="px-3 py-1 color-fg-muted d-none" data-target="filter.empty">No matching branches</div>
+            <div class="px-3 py-1 color-fg-muted d-none" data-filter-target="empty">No matching branches</div>
           </div>
         </details>
       </div>
-      <div data-target="commits.lockstates">
+      <div data-commits-target="lockstates">
         {{> lock_states}}
       </div>
-      <div class="d-inline-block ml-2" data-target="commits.lock">
+      <div class="d-inline-block ml-2" data-commits-target="lock">
         {{> lock_modal}}
       </div>
-      <div class="d-inline-block d-none ml-2" data-target="commits.new">
+      <div class="d-inline-block d-none ml-2" data-commits-target="new">
         <a class="btn btn-outline btn-sm" href="/{{owner}}/{{repo}}/branch/{{branch}}">New commits available</a>
       </div>
     </div>
 
     {{> config_alert}}
 
-    <div class="Box mt-3" data-target="commits.rows" id="commit_rows">
+    <div class="Box mt-3" data-commits-target="rows" id="commit_rows">
       {{> commit_rows}}
     </div>
 

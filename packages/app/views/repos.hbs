@@ -30,7 +30,7 @@
   <div class="content" data-controller="recents">
     {{#if hasRepos}}
     <div class="d-md-flex flex-items-start mt-3">
-      <div class="col-12 col-md-8 pr-md-4" data-target="repos.list">
+      <div class="col-12 col-md-8 pr-md-4" data-repos-target="list">
         <div class="Box">
         {{#each repos}}
         <div class="Box-row">
@@ -60,7 +60,7 @@
         <div class="Box mb-4" data-controller="recents">
           <div class="Box-body">
             <h4 class="mb-3">Recent repositories</h4>
-            <div data-target="recents.recents"></div>
+            <div data-recents-target="recents"></div>
           </div>
         </div>
         <div class="Box">

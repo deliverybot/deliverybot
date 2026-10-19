@@ -6,7 +6,7 @@
         <div>
           <a class="color-fg-default">
             {{> icon_down}}
-            {{message}}</a>&nbsp;<span class="no-wrap" data-target="commits.checkstatus" id="checkstatus-{{oid}}" data-hash="{{hash}}">
+            {{message}}</a>&nbsp;<span class="no-wrap" data-commits-target="checkstatus" id="checkstatus-{{oid}}" data-hash="{{hash}}">
             {{> commit_status}}
             <span class="loader"></span>
           </span>
@@ -16,12 +16,12 @@
           <strong><code>{{oidShort}}</code></strong> - <a href="https://github.com/{{author}}">@{{author}}</a>
         </div>
       </div>
-      <div data-target="commits.envstatus" id="envstatus-{{oid}}" data-hash="{{hash}}" class="d-none-sm color-fg-muted clearfix f6" style="width: 230px;">
+      <div data-commits-target="envstatus" id="envstatus-{{oid}}" data-hash="{{hash}}" class="d-none-sm color-fg-muted clearfix f6" style="width: 230px;">
         {{> deploy_env_status}}
       </div>
     </summary>
     <div class="Box--condensed">
-      <div data-target="commits.details" id="details-{{oid}}" data-hash="{{hash}}">
+      <div data-commits-target="details" id="details-{{oid}}" data-hash="{{hash}}">
         {{> commit_details}}
       </div>
       <div class="Box-footer p-3 d-flex flex-wrap flex-items-center flex-justify-between deploy-actions">
