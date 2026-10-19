@@ -13,7 +13,7 @@
     "build:watch": "tsc -b --watch --preserveWatchOutput"
   },
   "dependencies": {
-    "@octokit/plugin-rest-endpoint-methods": "17.0.0",
+    "@octokit/plugin-rest-endpoint-methods": "18.0.0",
     "@octokit/webhooks": "14.2.0",
     "@probot/get-private-key": "2.1.1",
     "express": "4.22.3",
