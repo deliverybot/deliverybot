@@ -18,7 +18,7 @@ export class MetricsController extends Controller {
     const total = this.targets.find("total");
     const day = this.targets.find("day");
     const lead = this.targets.find("lead");
-    const chart = this.targets.find("chart");
+    const chart = this.targets.find("chart") as HTMLElement | undefined;
 
     if (loader) loader.remove();
     if (total) total.innerHTML = `${data.totalDeploys}`;
@@ -45,6 +45,12 @@ export class MetricsController extends Controller {
       theme: { mode: dark ? "dark" : "light" },
       grid: { borderColor: lineColor },
       colors: ["#0366d6", "#28a745", "#6f42c1", "#ea4aaa", "#d73a49"],
+      // ApexCharts 8 draws a white ring around the legend dots and puts them
+      // right against the label, so drop the ring and add a little space.
+      legend: {
+        markers: { strokeWidth: 0, offsetX: -4 },
+        itemMargin: { horizontal: 8 },
+      },
       dataLabels: { enabled: false },
       stroke: { width: 1.5 },
       xaxis: {
