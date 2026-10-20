@@ -90,7 +90,7 @@ describe("pr-deploy", () => {
   test("creates a deployment", async () => {
     factory.config({ valid: true });
     factory.permission({ admin: true });
-    const ack = factory.reaction("+1");
+    const ack = factory.reaction("eyes");
     const deploy = factory.deploy();
 
     await probot.receive(factory.prDeployComment("review"));
@@ -279,7 +279,7 @@ describe("pr-deploy queueing", () => {
     factory.pr().persist();
     factory.config({ valid: true });
     factory.permission({ admin: true });
-    factory.reaction("+1");
+    factory.reaction("eyes");
   });
 
   // Queues the deploy: the command and the immediate re-check both find the

@@ -124,7 +124,7 @@ export async function queueAfterMerge(
 
 /**
  * Handles /deploy commands inside a pull request. The command comment gets a
- * :+1: straight away to show it was picked up. Only failures get a reply; a
+ * :eyes: straight away to show it was picked up. Only failures get a reply; a
  * successful deployment already shows up in the pull request timeline.
  *
  * When GitHub refuses the deployment because required checks are still
@@ -154,7 +154,7 @@ export async function handlePRDeploy(
         owner,
         repo,
         comment_id: commentId,
-        content: "+1",
+        content: "eyes",
       });
     } catch (error) {
       context.log.warn(logCtx(context, { error }), "pr deploy: react failed");
