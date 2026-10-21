@@ -116,6 +116,22 @@ export const migrations: string[] = [
   -- config. The worker checks installations where this is unset.
   ALTER TABLE installations ADD COLUMN configs_synced_at timestamptz;
   `,
+  `
+  -- Deployments Deliverybot created, for the admin dashboard's activity
+  -- counts. Filled from deployment and deployment_status webhooks.
+  CREATE TABLE deployments (
+    id bigint PRIMARY KEY,
+    installation_id bigint NOT NULL,
+    repository_id bigint NOT NULL,
+    full_name text NOT NULL,
+    environment text NOT NULL,
+    state text NOT NULL DEFAULT 'pending',
+    created_at timestamptz NOT NULL
+  );
+  CREATE INDEX deployments_created ON deployments (created_at);
+  CREATE INDEX deployments_installation ON deployments (installation_id);
+  CREATE INDEX deployments_repository ON deployments (repository_id);
+  `,
 ];
 
 // Arbitrary constant so concurrent processes don't migrate at the same time.

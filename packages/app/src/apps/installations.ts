@@ -147,10 +147,10 @@ export async function syncInstallations(
 
 /**
  * Tracks GitHub App installations, which are Deliverybot's tenants, and the
- * last event of each of their repositories, and which repositories have a
- * deploy config on their default branch. Deletes a repository's stored
- * data (environment locks, pending auto-deploys and activity) once the app
- * loses access to it.
+ * last event of each of their repositories, which repositories have a
+ * deploy config on their default branch, and the deployments the app made.
+ * Deletes a repository's stored data (environment locks, pending
+ * auto-deploys, activity and deployments) once the app loses access to it.
  */
 export function installations({
   robot,
@@ -211,6 +211,31 @@ export function installations({
       lastEvent: action ? `${context.name}.${action}` : context.name,
     });
   });
+
+  // Deployments this app created, for the admin dashboard's activity
+  // counts. A status can be processed before its deployment, so both events
+  // save the whole record.
+  robot.on(
+    ["deployment.created", "deployment_status.created"],
+    async (context) => {
+      const { deployment, deployment_status, repository, installation } =
+        context.payload as any;
+      if (!installation) return;
+      const app = deployment.performed_via_github_app;
+      if (robot.appId && app?.id !== robot.appId) return;
+      const state = deployment_status?.state;
+      await store.recordDeployment({
+        id: deployment.id,
+        installationId: installation.id,
+        repositoryId: repository.id,
+        fullName: repository.full_name,
+        environment: deployment.environment,
+        createdAt: deployment.created_at,
+        // Inactive only means a newer deployment replaced it.
+        state: state === "inactive" ? undefined : state,
+      });
+    },
+  );
 
   robot.on(
     ["installation.new_permissions_accepted", "installation.unsuspend"],

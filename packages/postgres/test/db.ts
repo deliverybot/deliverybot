@@ -11,7 +11,7 @@ export async function setup() {
   });
   await migrate(db.pool);
   await db.pool.query(
-    "TRUNCATE kv, users, jobs, session, installations, repositories, configured_repositories",
+    "TRUNCATE kv, users, jobs, session, installations, repositories, configured_repositories, deployments",
   );
   return db;
 }

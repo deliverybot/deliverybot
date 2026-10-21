@@ -1,5 +1,5 @@
 import { Client } from "pg";
-import { LockError } from "@deliverybot/core";
+import { LockError, localServices } from "@deliverybot/core";
 import { setup, DATABASE_URL } from "./db.js";
 import { migrate, postgresServices } from "../src/index.js";
 import { CHANNEL } from "../src/message.js";
@@ -15,7 +15,9 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  await db.pool.query("TRUNCATE kv, users, jobs, installations, repositories");
+  await db.pool.query(
+    "TRUNCATE kv, users, jobs, installations, repositories, deployments",
+  );
 });
 
 describe("migrate", () => {
@@ -308,5 +310,87 @@ describe("repository activity", () => {
     await store.delete(1);
     expect(await store.listActivity(1)).toEqual([]);
     expect((await store.listActivity(2)).map((a) => a.id)).toEqual([20]);
+  });
+});
+
+// The in-memory store backs the tests of the other packages, so it should
+// answer the same.
+describe.each([
+  ["postgres", () => db.services.installationService()],
+  ["memory", () => localServices().installationService()],
+])("deployments (%s)", (_, service) => {
+  const hour = 60 * 60 * 1000;
+  const at = (hoursAgo: number) =>
+    new Date(Date.now() - hoursAgo * hour).toISOString();
+  const deployment = (
+    id: number,
+    installationId: number,
+    repositoryId: number,
+    hoursAgo: number,
+    state?: string,
+  ) => ({
+    id,
+    installationId,
+    repositoryId,
+    fullName: `owner/repo-${repositoryId}`,
+    environment: "production",
+    createdAt: at(hoursAgo),
+    state,
+  });
+
+  test("counts, groups and forgets them", async () => {
+    const store = service();
+    await store.recordDeployment(deployment(1, 1, 10, 0.5));
+    await store.recordDeployment(deployment(2, 1, 10, 2, "success"));
+    await store.recordDeployment(deployment(3, 1, 11, 30, "failure"));
+    await store.recordDeployment(deployment(4, 2, 20, 0.1, "error"));
+    await store.recordDeployment(deployment(5, 2, 20, 24 * 40, "success"));
+
+    // A status without a state, or one after the outcome, changes nothing.
+    await store.recordDeployment(deployment(2, 1, 10, 2));
+    await store.recordDeployment(deployment(2, 1, 10, 2, "in_progress"));
+    await store.recordDeployment(deployment(1, 1, 10, 0.5, "queued"));
+
+    expect(await store.countDeployments(at(1))).toEqual({
+      total: 2,
+      succeeded: 0,
+      failed: 1,
+      repositories: 2,
+      installations: 2,
+    });
+    expect(await store.countDeployments(at(24 * 30))).toEqual({
+      total: 4,
+      succeeded: 1,
+      failed: 2,
+      repositories: 3,
+      installations: 2,
+    });
+
+    const daily = await store.dailyDeployments(at(24 * 30));
+    expect(daily.reduce((sum, d) => sum + d.total, 0)).toBe(4);
+    expect(daily.map((d) => d.day)).toEqual(
+      [...daily.map((d) => d.day)].sort(),
+    );
+    expect(daily[0].day).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+
+    const recent = await store.recentDeployments(2);
+    expect(recent.map((d) => [d.id, d.state])).toEqual([
+      [4, "error"],
+      [1, "queued"],
+    ]);
+    expect(recent[0].fullName).toBe("owner/repo-20");
+
+    const top = await store.topInstallations(at(24 * 30), 10);
+    expect(top).toEqual([
+      expect.objectContaining({ installationId: 1, total: 3, repositories: 2 }),
+      expect.objectContaining({ installationId: 2, total: 1, repositories: 1 }),
+    ]);
+    // The newest deployment of the installation.
+    expect(top[0].lastDeployedAt).toBe(recent[1].createdAt);
+
+    await store.forgetRepositories([11]);
+    expect((await store.countDeployments(at(24 * 30))).total).toBe(3);
+    await store.delete(2);
+    expect((await store.countDeployments(at(24 * 50))).total).toBe(2);
   });
 });

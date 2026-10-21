@@ -1,5 +1,7 @@
 import {
   ConfiguredRepository,
+  DailyDeployments,
+  Deployment,
   Installation,
   InstallationRecord,
   RepositoryActivity,
@@ -12,6 +14,7 @@ export class InstallationStore {
   private configured: {
     [id: number]: ConfiguredRepository & { installationId: number };
   } = {};
+  private deployments: { [id: number]: Deployment } = {};
 
   async upsert(installation: Installation): Promise<void> {
     const now = new Date().toISOString();
@@ -49,6 +52,9 @@ export class InstallationStore {
     }
     for (const r of Object.values(this.configured)) {
       if (r.installationId === id) delete this.configured[r.id];
+    }
+    for (const d of Object.values(this.deployments)) {
+      if (d.installationId === id) delete this.deployments[d.id];
     }
   }
 
@@ -98,6 +104,9 @@ export class InstallationStore {
       delete this.activity[id];
       delete this.configured[id];
     }
+    for (const d of Object.values(this.deployments)) {
+      if (ids.includes(d.repositoryId)) delete this.deployments[d.id];
+    }
   }
 
   async setConfigured(
@@ -115,4 +124,78 @@ export class InstallationStore {
       .sort((a, b) => a.fullName.localeCompare(b.fullName))
       .map(({ installationId, ...repo }) => repo);
   }
+
+  async recordDeployment(d: Omit<Deployment, "state"> & { state?: string }) {
+    const existing = this.deployments[d.id];
+    const keep = !d.state || (existing && finished.includes(existing.state));
+    this.deployments[d.id] = {
+      ...d,
+      createdAt: new Date(d.createdAt).toISOString(),
+      state: keep ? existing?.state || "pending" : d.state!,
+    };
+  }
+
+  async countDeployments(since: string) {
+    const ds = this.since(since);
+    return {
+      total: ds.length,
+      succeeded: ds.filter((d) => d.state === "success").length,
+      failed: ds.filter((d) => failed.includes(d.state)).length,
+      repositories: new Set(ds.map((d) => d.repositoryId)).size,
+      installations: new Set(ds.map((d) => d.installationId)).size,
+    };
+  }
+
+  async dailyDeployments(since: string) {
+    const days: { [day: string]: DailyDeployments } = {};
+    for (const d of this.since(since)) {
+      const day = d.createdAt.slice(0, 10);
+      const row = (days[day] ||= { day, total: 0, succeeded: 0, failed: 0 });
+      row.total++;
+      if (d.state === "success") row.succeeded++;
+      if (failed.includes(d.state)) row.failed++;
+    }
+    return Object.values(days).sort((a, b) => a.day.localeCompare(b.day));
+  }
+
+  async recentDeployments(limit: number) {
+    return this.since("").slice(0, limit);
+  }
+
+  async topInstallations(since: string, limit: number) {
+    const byInstall: {
+      [id: number]: { ds: Deployment[]; repos: Set<number> };
+    } = {};
+    for (const d of this.since(since)) {
+      const row = (byInstall[d.installationId] ||= {
+        ds: [],
+        repos: new Set(),
+      });
+      row.ds.push(d);
+      row.repos.add(d.repositoryId);
+    }
+    return Object.entries(byInstall)
+      .map(([id, { ds, repos }]) => ({
+        installationId: Number(id),
+        total: ds.length,
+        repositories: repos.size,
+        lastDeployedAt: ds[0].createdAt,
+      }))
+      .sort(
+        (a, b) =>
+          b.total - a.total || b.lastDeployedAt.localeCompare(a.lastDeployedAt),
+      )
+      .slice(0, limit);
+  }
+
+  /** Deployments created at or after `since`, newest first. */
+  private since(since: string) {
+    return Object.values(this.deployments)
+      .filter((d) => d.createdAt >= since)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.id - a.id);
+  }
 }
+
+const failed = ["failure", "error"];
+// States a deployment doesn't leave once it reached them.
+const finished = ["success", ...failed];
