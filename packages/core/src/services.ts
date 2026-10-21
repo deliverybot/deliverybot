@@ -103,10 +103,49 @@ export interface ConfiguredRepository {
   fullName: string;
 }
 
+/** A deployment Deliverybot created, kept for the admin dashboard. */
+export interface Deployment {
+  /** GitHub's deployment id. */
+  id: number;
+  installationId: number;
+  repositoryId: number;
+  fullName: string;
+  environment: string;
+  /** The latest deployment status, or "pending" before the first one. */
+  state: string;
+  createdAt: string;
+}
+
+/** Deployments created since a point in time. */
+export interface DeploymentCounts {
+  total: number;
+  succeeded: number;
+  /** Deployments whose status is failure or error. */
+  failed: number;
+  repositories: number;
+  installations: number;
+}
+
+/** Deployments created on one UTC day, as `YYYY-MM-DD`. */
+export interface DailyDeployments {
+  day: string;
+  total: number;
+  succeeded: number;
+  failed: number;
+}
+
+/** An installation's deployments since a point in time. */
+export interface InstallationDeployments {
+  installationId: number;
+  total: number;
+  repositories: number;
+  lastDeployedAt: string;
+}
+
 export interface InstallationStore {
   upsert(installation: Installation): Promise<void>;
   get(id: number): Promise<Installation | undefined>;
-  /** Deletes the installation and the activity of its repositories. */
+  /** Deletes the installation and its repositories' activity and deployments. */
   delete(id: number): Promise<void>;
   /** Every installation, newest first. */
   /** All installations, most recently active first. */
@@ -127,4 +166,22 @@ export interface InstallationStore {
   ): Promise<void>;
   /** An installation's repositories with a deploy config, by name. */
   listConfigured(installationId: number): Promise<ConfiguredRepository[]>;
+  /**
+   * Saves a deployment. Without a state it keeps the one stored, so a
+   * status that arrives before the deployment itself isn't undone. Once a
+   * deployment succeeded or failed its state no longer changes.
+   */
+  recordDeployment(
+    deployment: Omit<Deployment, "state"> & { state?: string },
+  ): Promise<void>;
+  countDeployments(since: string): Promise<DeploymentCounts>;
+  /** Deployments per day since `since`, oldest first, leaving out empty days. */
+  dailyDeployments(since: string): Promise<DailyDeployments[]>;
+  /** The latest deployments, newest first. */
+  recentDeployments(limit: number): Promise<Deployment[]>;
+  /** Installations by deployments since `since`, most first. */
+  topInstallations(
+    since: string,
+    limit: number,
+  ): Promise<InstallationDeployments[]>;
 }

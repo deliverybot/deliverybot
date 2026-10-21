@@ -6,7 +6,10 @@
 
 <nav class="UnderlineNav mt-2">
   <div class="content">
-    <div class="UnderlineNav-body p-3">
+    <div class="UnderlineNav-body">
+      <a href="/_/admin" role="tab" title="Activity overview" class="UnderlineNav-item"{{#if tab.overview}} aria-current="page"{{/if}}>Overview</a>
+      <a href="/_/admin?tab=installations" role="tab" title="Installations" class="UnderlineNav-item"{{#if tab.installations}} aria-current="page"{{/if}}>Installations</a>
+      <a href="/_/admin?tab=users" role="tab" title="Dashboard users" class="UnderlineNav-item"{{#if tab.users}} aria-current="page"{{/if}}>Users</a>
     </div>
   </div>
 </nav>
@@ -14,6 +17,142 @@
 
 <main class="color-bg-default fill pt-3 pb-8">
   <div class="content">
+    {{#if tab.overview}}
+    {{#with overview}}
+    <div class="Box Box--condensed mt-3" data-test="deploys">
+      <div class="Box-header">Deploys</div>
+      <div class="stat-grid Box-body">
+        <div><p class="f2-light mb-0">{{deploys.hour.total}}</p><p class="color-fg-muted mb-0">Last hour</p></div>
+        <div><p class="f2-light mb-0">{{deploys.day.total}}</p><p class="color-fg-muted mb-0">Last 24 hours</p></div>
+        <div><p class="f2-light mb-0">{{deploys.week.total}}</p><p class="color-fg-muted mb-0">Last 7 days</p></div>
+        <div><p class="f2-light mb-0">{{deploys.month.total}}</p><p class="color-fg-muted mb-0">Last 30 days</p></div>
+      </div>
+    </div>
+
+    <div class="Box Box--condensed mt-3" data-test="activity">
+      <div class="Box-header">Activity</div>
+      <div class="stat-grid Box-body">
+        <div>
+          <p class="f2-light mb-0">{{#if successRate}}{{successRate}}{{else}}&ndash;{{/if}}</p>
+          <p class="mb-0">Success rate</p>
+          <p class="color-fg-muted f6 mb-0">{{failedWeek}} of {{finished}} failed, 7 days</p>
+        </div>
+        <div>
+          <p class="f2-light mb-0">{{deploys.month.installations}} <span class="f4 color-fg-muted">of {{installCount}}</span></p>
+          <p class="mb-0">Active installations</p>
+          <p class="color-fg-muted f6 mb-0">Deployed in 30 days</p>
+        </div>
+        <div>
+          <p class="f2-light mb-0">{{deploys.month.repositories}}</p>
+          <p class="mb-0">Deploying repositories</p>
+          <p class="color-fg-muted f6 mb-0">Deployed in 30 days</p>
+        </div>
+        <div>
+          <p class="f2-light mb-0">{{activeUsers}} <span class="f4 color-fg-muted">of {{userCount}}</span></p>
+          <p class="mb-0">Active users</p>
+          <p class="color-fg-muted f6 mb-0">Signed in, 30 days</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="Box Box--condensed mt-3" data-test="chart">
+      <div class="Box-header d-flex flex-justify-between flex-wrap">
+        <span>Deploys per day</span>
+        <span class="color-fg-muted f6">
+          <span class="bar-key color-bg-success-emphasis"></span> Succeeded
+          <span class="bar-key color-bg-danger-emphasis ml-2"></span> Failed
+          <span class="bar-key bar-other ml-2"></span> Other
+        </span>
+      </div>
+      <div class="Box-body">
+        <div class="d-flex">
+          <div class="bar-axis color-fg-muted f6 text-right pr-2">
+            <span>{{chart.max}}</span>
+            <span>0</span>
+          </div>
+          <div class="flex-auto">
+            <div class="bar-chart">
+              {{#each chart.days}}
+              <div class="bar" title="{{title}}">
+                <div class="color-bg-danger-emphasis" style="height: {{failed}}"></div>
+                <div class="color-bg-success-emphasis" style="height: {{succeeded}}"></div>
+                <div class="bar-other" style="height: {{other}}"></div>
+              </div>
+              {{/each}}
+            </div>
+            <div class="d-flex flex-justify-between color-fg-muted f6 mt-1">
+              <span>{{chart.first}}</span>
+              <span>{{chart.last}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="Subhead mb-0 mt-6">
+      <h2 class="Subhead-heading">Most active installations</h2>
+      <div class="Subhead-description">By deploys in the last 30 days.</div>
+    </div>
+    {{#if hasTop}}
+    <div class="overflow-x-auto mt-3">
+    <table class="width-full" data-test="top">
+      <thead>
+        <tr class="text-left border-bottom">
+          <th class="p-2">Account</th>
+          <th class="p-2">Deploys</th>
+          <th class="p-2">Repositories</th>
+          <th class="p-2">Last deploy</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each top}}
+        <tr class="border-bottom">
+          <td class="p-2"><a href="/_/admin/installations/{{installationId}}"><strong>{{account}}</strong></a></td>
+          <td class="p-2">{{total}}</td>
+          <td class="p-2">{{repositories}}</td>
+          <td class="p-2 color-fg-muted no-wrap">{{lastDeployed}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    </div>
+    {{else}}
+    <p class="mt-3 color-fg-muted">No deploys in the last 30 days.</p>
+    {{/if}}
+
+    <div class="Subhead mb-0 mt-6">
+      <h2 class="Subhead-heading">Recent deployments</h2>
+    </div>
+    {{#if hasRecent}}
+    <div class="overflow-x-auto mt-3">
+    <table class="width-full" data-test="recent">
+      <thead>
+        <tr class="text-left border-bottom">
+          <th class="p-2">Repository</th>
+          <th class="p-2">Environment</th>
+          <th class="p-2">State</th>
+          <th class="p-2">Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each recent}}
+        <tr class="border-bottom">
+          <td class="p-2"><a href="/_/admin/installations/{{installationId}}">{{fullName}}</a></td>
+          <td class="p-2"><code>{{environment}}</code></td>
+          <td class="p-2"><span class="Label Label--{{color}}">{{state}}</span></td>
+          <td class="p-2 color-fg-muted no-wrap">{{created}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    </div>
+    {{else}}
+    <p class="mt-3 color-fg-muted">No deployments recorded yet.</p>
+    {{/if}}
+    {{/with}}
+    {{/if}}
+
+    {{#if tab.installations}}
     <div class="Subhead mb-0 mt-5">
       <h2 class="Subhead-heading">Installations</h2>
       <div class="Subhead-description">
@@ -59,8 +198,10 @@
     {{else}}
     <p class="mt-3 color-fg-muted">No installations yet.</p>
     {{/if}}
+    {{/if}}
 
-    <div class="Subhead mb-0 mt-6">
+    {{#if tab.users}}
+    <div class="Subhead mb-0 mt-5">
       <h2 class="Subhead-heading">Dashboard users</h2>
       <div class="Subhead-description">People who signed in to this dashboard.</div>
     </div>
@@ -87,6 +228,7 @@
     </div>
     {{else}}
     <p class="mt-3 color-fg-muted">Nobody has signed in yet.</p>
+    {{/if}}
     {{/if}}
   </div>
 </main>

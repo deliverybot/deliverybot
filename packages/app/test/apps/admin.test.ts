@@ -44,7 +44,7 @@ describe("Admin", () => {
     const cookie = await loginAs("someone-else");
     const index = await factory
       .request(app)
-      .get("/_/admin")
+      .get("/_/admin?tab=installations")
       .set("cookie", cookie);
     expect(index.status).toBe(404);
     const detail = await factory
@@ -60,21 +60,26 @@ describe("Admin", () => {
 
     const response = await factory
       .request(app)
-      .get("/_/admin")
+      .get("/_/admin?tab=installations")
       .set("cookie", cookie);
     expect(response.status).toBe(200);
     expect(response.text).toContain("/_/admin/installations/77");
     expect(response.text).toContain("octo-org");
     expect(response.text).toMatch(/<td class="p-2">\s*3\s*<span/);
+
+    const users = await factory
+      .request(app)
+      .get("/_/admin?tab=users")
+      .set("cookie", cookie);
     // The sign in above recorded the user.
-    expect(response.text).toContain("https://github.com/Codertocat");
+    expect(users.text).toContain("https://github.com/Codertocat");
   });
 
   it("marks installations with recent activity as active", async () => {
     const [, cookie] = await factory.login(app);
     const idle = await factory
       .request(app)
-      .get("/_/admin")
+      .get("/_/admin?tab=installations")
       .set("cookie", cookie);
     expect(idle.text).toContain("None recorded");
     expect(idle.text).toContain('Label--secondary">Idle');
@@ -91,7 +96,7 @@ describe("Admin", () => {
     } as any);
     const active = await factory
       .request(app)
-      .get("/_/admin")
+      .get("/_/admin?tab=installations")
       .set("cookie", cookie);
     expect(active.text).not.toContain("None recorded");
     expect(active.text).toContain('Label--success">Active');
@@ -161,7 +166,7 @@ describe("Admin", () => {
     const [, cookie] = await factory.login(app);
     const notChecked = await factory
       .request(app)
-      .get("/_/admin")
+      .get("/_/admin?tab=installations")
       .set("cookie", cookie);
     expect(notChecked.text).toContain("Not checked");
 
@@ -170,7 +175,7 @@ describe("Admin", () => {
     await store.markConfigsSynced(77);
     const index = await factory
       .request(app)
-      .get("/_/admin")
+      .get("/_/admin?tab=installations")
       .set("cookie", cookie);
     expect(index.text).toContain("1 of them configured");
     expect(index.text).toMatch(/<td class="p-2">1<\/td>/);
@@ -197,6 +202,81 @@ describe("Admin", () => {
     expect(configured).not.toContain("octo-org/idle");
     expect(page.text.match(/Label--success ml-1">Configured/g)).toHaveLength(1);
     await store.forgetRepositories([5]);
+  });
+
+  it("counts the app's deployments on the overview", async () => {
+    const [, cookie] = await factory.login(app);
+    const overview = () =>
+      factory.request(app).get("/_/admin").set("cookie", cookie);
+    const empty = await overview();
+    expect(empty.status).toBe(200);
+    expect(empty.text).toContain("No deployments recorded yet.");
+
+    const repository = {
+      id: 5,
+      name: "active",
+      full_name: "octo-org/active",
+      owner: { login: "octo-org" },
+    };
+    const deployment = (id: number, appId = 1) => ({
+      id,
+      environment: "production",
+      created_at: new Date().toISOString(),
+      performed_via_github_app: { id: appId },
+    });
+    const receive = (name: string, payload: any) =>
+      deliverybot.probot.receive({
+        id: "1",
+        name,
+        payload: {
+          action: "created",
+          installation: { id: 77 },
+          repository,
+          ...payload,
+        },
+      } as any);
+
+    await receive("deployment", { deployment: deployment(1) });
+    // Made by another app.
+    await receive("deployment", { deployment: deployment(2, 99) });
+    // A status processed before its deployment keeps its state.
+    await receive("deployment_status", {
+      deployment: deployment(3),
+      deployment_status: { state: "failure" },
+    });
+    await receive("deployment", { deployment: deployment(3) });
+    // Superseding looks for older deployments.
+    nock("https://api.github.com")
+      .get("/repos/octo-org/active/deployments")
+      .query(true)
+      .reply(200, []);
+    await receive("deployment_status", {
+      deployment: deployment(1),
+      deployment_status: { state: "success" },
+    });
+    // Replaced by a newer deployment, which doesn't undo the success.
+    await receive("deployment_status", {
+      deployment: deployment(1),
+      deployment_status: { state: "inactive" },
+    });
+
+    const response = await overview();
+    const deploys = response.text.slice(
+      response.text.indexOf('data-test="deploys"'),
+      response.text.indexOf('data-test="activity"'),
+    );
+    expect(deploys.match(/f2-light mb-0">2</g)).toHaveLength(4);
+    expect(response.text).toContain("50%");
+    expect(response.text).toContain("1 of 2 failed, 7 days");
+    expect(response.text).toContain(
+      '1 <span class="f4 color-fg-muted">of 1</span>',
+    );
+    expect(response.text).toContain('Label--success">success');
+    expect(response.text).toContain('Label--danger">failure');
+    expect(response.text).toMatch(
+      /octo-org<\/strong><\/a><\/td>\s*<td class="p-2">2<\/td>/,
+    );
+    expect(response.text).toContain("2 deploys, 1 succeeded, 1 failed");
   });
 
   it("returns 404 for unknown installations", async () => {

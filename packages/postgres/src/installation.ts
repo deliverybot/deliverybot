@@ -1,6 +1,7 @@
 import { Pool } from "pg";
 import {
   ConfiguredRepository,
+  Deployment,
   Installation,
   InstallationRecord,
   InstallationStore,
@@ -48,6 +49,10 @@ export class PostgresInstallationStore implements InstallationStore {
     );
     await this.pool.query(
       "DELETE FROM configured_repositories WHERE installation_id = $1",
+      [id],
+    );
+    await this.pool.query(
+      "DELETE FROM deployments WHERE installation_id = $1",
       [id],
     );
   }
@@ -116,6 +121,10 @@ export class PostgresInstallationStore implements InstallationStore {
       "DELETE FROM configured_repositories WHERE id = ANY($1)",
       [ids],
     );
+    await this.pool.query(
+      "DELETE FROM deployments WHERE repository_id = ANY($1)",
+      [ids],
+    );
   }
 
   async setConfigured(
@@ -150,6 +159,105 @@ export class PostgresInstallationStore implements InstallationStore {
       id: Number(r.id),
       nodeId: r.node_id,
       fullName: r.full_name,
+    }));
+  }
+
+  async recordDeployment(d: Omit<Deployment, "state"> & { state?: string }) {
+    await this.pool.query(
+      `INSERT INTO deployments
+         (id, installation_id, repository_id, full_name, environment, state,
+          created_at)
+       VALUES ($1, $2, $3, $4, $5, coalesce($6, 'pending'), $7)
+       ON CONFLICT (id) DO UPDATE SET
+         full_name = $4, environment = $5,
+         state = CASE
+           WHEN $6::text IS NULL
+             OR deployments.state IN ('success', 'failure', 'error')
+           THEN deployments.state
+           ELSE $6
+         END`,
+      [
+        d.id,
+        d.installationId,
+        d.repositoryId,
+        d.fullName,
+        d.environment,
+        d.state ?? null,
+        d.createdAt,
+      ],
+    );
+  }
+
+  async countDeployments(since: string) {
+    const { rows } = await this.pool.query(
+      `SELECT count(*) AS total,
+         count(*) FILTER (WHERE state = 'success') AS succeeded,
+         count(*) FILTER (WHERE state IN ('failure', 'error')) AS failed,
+         count(DISTINCT repository_id) AS repositories,
+         count(DISTINCT installation_id) AS installations
+       FROM deployments WHERE created_at >= $1`,
+      [since],
+    );
+    const r = rows[0];
+    return {
+      total: Number(r.total),
+      succeeded: Number(r.succeeded),
+      failed: Number(r.failed),
+      repositories: Number(r.repositories),
+      installations: Number(r.installations),
+    };
+  }
+
+  async dailyDeployments(since: string) {
+    const { rows } = await this.pool.query(
+      `SELECT to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD') AS day,
+         count(*) AS total,
+         count(*) FILTER (WHERE state = 'success') AS succeeded,
+         count(*) FILTER (WHERE state IN ('failure', 'error')) AS failed
+       FROM deployments WHERE created_at >= $1
+       GROUP BY day ORDER BY day`,
+      [since],
+    );
+    return rows.map((r) => ({
+      day: r.day,
+      total: Number(r.total),
+      succeeded: Number(r.succeeded),
+      failed: Number(r.failed),
+    }));
+  }
+
+  async recentDeployments(limit: number) {
+    const { rows } = await this.pool.query(
+      `SELECT * FROM deployments ORDER BY created_at DESC, id DESC LIMIT $1`,
+      [limit],
+    );
+    return rows.map((r) => ({
+      id: Number(r.id),
+      installationId: Number(r.installation_id),
+      repositoryId: Number(r.repository_id),
+      fullName: r.full_name,
+      environment: r.environment,
+      state: r.state,
+      createdAt: r.created_at.toISOString(),
+    }));
+  }
+
+  async topInstallations(since: string, limit: number) {
+    const { rows } = await this.pool.query(
+      `SELECT installation_id, count(*) AS total,
+         count(DISTINCT repository_id) AS repositories,
+         max(created_at) AS last_deployed_at
+       FROM deployments WHERE created_at >= $1
+       GROUP BY installation_id
+       ORDER BY total DESC, last_deployed_at DESC
+       LIMIT $2`,
+      [since, limit],
+    );
+    return rows.map((r) => ({
+      installationId: Number(r.installation_id),
+      total: Number(r.total),
+      repositories: Number(r.repositories),
+      lastDeployedAt: r.last_deployed_at.toISOString(),
     }));
   }
 }

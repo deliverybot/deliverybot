@@ -63,5 +63,9 @@ export {
   InstallationRecord,
   RepositoryActivity,
   ConfiguredRepository,
+  Deployment,
+  DeploymentCounts,
+  DailyDeployments,
+  InstallationDeployments,
 } from "./services.js";
 export { local as localServices } from "./local/index.js";

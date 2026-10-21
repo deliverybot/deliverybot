@@ -1,5 +1,9 @@
 import { Response, NextFunction } from "express";
-import { Dependencies } from "@deliverybot/core";
+import {
+  Dependencies,
+  InstallationRecord,
+  UserRecord,
+} from "@deliverybot/core";
 import { AuthedRequest, authenticate } from "./auth.js";
 import { timeAgoInWords } from "./util.js";
 
@@ -21,6 +25,25 @@ const PER_PAGE = 50;
 const RECENT = 20;
 /** Installations with a webhook event this recent count as active. */
 const ACTIVE_DAYS = 30;
+/** Days in the deploys per day chart. */
+const CHART_DAYS = 30;
+const TOP_INSTALLATIONS = 10;
+const RECENT_DEPLOYMENTS = 10;
+
+const MINUTE = 60 * 1000;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+
+const tabs = ["overview", "installations", "users"];
+
+const stateColors: { [state: string]: string } = {
+  success: "success",
+  failure: "danger",
+  error: "danger",
+  pending: "attention",
+  queued: "attention",
+  in_progress: "attention",
+};
 
 /** The page number from `?after=` or `?before=`, as the pagination partial links. */
 function pageParam(query: any): number {
@@ -68,12 +91,92 @@ export function admin({
     return { user: u.id, login: u.username, avatar: u.avatar };
   }
 
+  /** Deployment counts, activity and the busiest installations. */
+  async function overview(installs: InstallationRecord[], users: UserRecord[]) {
+    const now = Date.now();
+    const since = (ms: number) => new Date(now - ms).toISOString();
+    // The chart's days are whole UTC days, ending with today.
+    const firstDay = new Date(now - (CHART_DAYS - 1) * DAY);
+    firstDay.setUTCHours(0, 0, 0, 0);
+
+    const [hour, day, week, month, daily, recent, top] = await Promise.all([
+      store.countDeployments(since(HOUR)),
+      store.countDeployments(since(DAY)),
+      store.countDeployments(since(7 * DAY)),
+      store.countDeployments(since(30 * DAY)),
+      store.dailyDeployments(firstDay.toISOString()),
+      store.recentDeployments(RECENT_DEPLOYMENTS),
+      store.topInstallations(since(30 * DAY), TOP_INSTALLATIONS),
+    ]);
+    const byId = new Map(installs.map((i) => [i.id, i]));
+    const account = (id: number) => byId.get(id)?.account || `#${id}`;
+
+    const byDay = new Map(daily.map((d) => [d.day, d]));
+    const days = Array.from({ length: CHART_DAYS }, (_, n) => {
+      const date = new Date(firstDay.getTime() + n * DAY);
+      const key = date.toISOString().slice(0, 10);
+      const d = byDay.get(key) || { total: 0, succeeded: 0, failed: 0 };
+      return { ...d, date, other: d.total - d.succeeded - d.failed };
+    });
+    const max = Math.max(1, ...days.map((d) => d.total));
+    const pct = (n: number) => `${((n / max) * 100).toFixed(1)}%`;
+    const label = (d: Date) =>
+      d.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        timeZone: "UTC",
+      });
+
+    const finished = week.succeeded + week.failed;
+    const monthAgo = now - 30 * DAY;
+    return {
+      deploys: { hour, day, week, month },
+      successRate: finished
+        ? `${Math.round((week.succeeded / finished) * 100)}%`
+        : null,
+      finished,
+      failedWeek: week.failed,
+      installCount: installs.length,
+      userCount: users.length,
+      activeUsers: users.filter((u) => Date.parse(u.updatedAt) >= monthAgo)
+        .length,
+      chart: {
+        max,
+        first: label(days[0].date),
+        last: label(days[days.length - 1].date),
+        days: days.map((d) => ({
+          title: `${label(d.date)}: ${d.total} deploys, ${d.succeeded} succeeded, ${d.failed} failed`,
+          succeeded: pct(d.succeeded),
+          failed: pct(d.failed),
+          other: pct(d.other),
+        })),
+      },
+      top: top.map((t) => ({
+        ...t,
+        account: account(t.installationId),
+        lastDeployed: ago(t.lastDeployedAt),
+      })),
+      hasTop: top.length > 0,
+      recent: recent.map((d) => ({
+        ...d,
+        account: account(d.installationId),
+        color: stateColors[d.state] || "secondary",
+        state: d.state.replace("_", " "),
+        created: ago(d.createdAt),
+      })),
+      hasRecent: recent.length > 0,
+    };
+  }
+
   async function index(req: AuthedRequest, res: Response) {
+    const tab = tabs.includes(req.query.tab as string)
+      ? (req.query.tab as string)
+      : "overview";
     const [installs, users] = await Promise.all([
       store.list(),
       userService().list(),
     ]);
-    const activeSince = Date.now() - ACTIVE_DAYS * 24 * 60 * 60 * 1000;
+    const activeSince = Date.now() - ACTIVE_DAYS * DAY;
     const installations = installs.map((i) => ({
       ...i,
       repoCount: i.repositoryCount === null ? "?" : i.repositoryCount,
@@ -86,6 +189,8 @@ export function admin({
       title: "Admin",
       csrf: req.csrfToken(),
       user: user(req),
+      tab: { [tab]: true },
+      overview: tab === "overview" ? await overview(installs, users) : null,
       installations,
       hasInstallations: installations.length > 0,
       activeCount: installations.filter((i) => !i.suspended && i.active).length,
