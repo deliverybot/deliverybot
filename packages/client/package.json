@@ -17,7 +17,7 @@
     "@primer/css": "22.3.2",
     "@primer/primitives": "11.10.0",
     "@primer/view-components": "0.53.5",
-    "apexcharts": "8.3.1",
+    "apexcharts": "8.4.0",
     "handlebars": "4.7.10",
     "stimulus": "3.2.2",
     "tom-select": "2.6.2",
