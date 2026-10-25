@@ -34,8 +34,6 @@ export interface AppOptions {
  * dispatcher (for example a queue) instead of processing them in-process.
  */
 export class Application extends Probot {
-  /** The GitHub App's id, which tells the deployments it made apart. */
-  public appId?: number;
   private dispatcher?: Dispatcher;
   private ignored: EventFilter[] = [];
 
@@ -95,7 +93,7 @@ export class Octokit extends ProbotOctokit {
 }
 
 export function application(opts: AppOptions) {
-  const app = new Application({
+  return new Application({
     appId: opts.id,
     // Accepts the .pem contents as-is, base64 encoded, or with escaped
     // newlines, so it fits in a single-line environment variable.
@@ -108,8 +106,6 @@ export function application(opts: AppOptions) {
     log: opts.logger,
     Octokit: opts.Octokit,
   });
-  app.appId = opts.id;
-  return app;
 }
 
 /**

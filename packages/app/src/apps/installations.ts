@@ -212,6 +212,22 @@ export function installations({
     });
   });
 
+  // GitHub leaves performed_via_github_app empty on deployments an app makes
+  // with an installation token, so its own are told apart by their creator,
+  // the app's bot user. Looked up once, and again after a failed lookup.
+  let botLogin: Promise<string> | undefined;
+  function appBot() {
+    botLogin ||= robot
+      .auth()
+      .then((octokit) => octokit.rest.apps.getAuthenticated())
+      .then(({ data }) => `${data!.slug}[bot]`)
+      .catch((error) => {
+        botLogin = undefined;
+        throw error;
+      });
+    return botLogin;
+  }
+
   // Deployments this app created, for the admin dashboard's activity
   // counts. A status can be processed before its deployment, so both events
   // save the whole record.
@@ -221,8 +237,7 @@ export function installations({
       const { deployment, deployment_status, repository, installation } =
         context.payload as any;
       if (!installation) return;
-      const app = deployment.performed_via_github_app;
-      if (robot.appId && app?.id !== robot.appId) return;
+      if (deployment.creator?.login !== (await appBot())) return;
       const state = deployment_status?.state;
       await store.recordDeployment({
         id: deployment.id,

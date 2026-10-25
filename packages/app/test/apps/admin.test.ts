@@ -218,11 +218,14 @@ describe("Admin", () => {
       full_name: "octo-org/active",
       owner: { login: "octo-org" },
     };
-    const deployment = (id: number, appId = 1) => ({
+    const deployment = (id: number, creator = "deliverybot[bot]") => ({
       id,
       environment: "production",
       created_at: new Date().toISOString(),
-      performed_via_github_app: { id: appId },
+      creator: { login: creator, type: "Bot" },
+      // GitHub leaves this empty on deployments made with an installation
+      // token.
+      performed_via_github_app: null,
     });
     const receive = (name: string, payload: any) =>
       deliverybot.probot.receive({
@@ -236,9 +239,14 @@ describe("Admin", () => {
         },
       } as any);
 
+    nock("https://api.github.com")
+      .get("/app")
+      .reply(200, { id: 1, slug: "deliverybot" });
     await receive("deployment", { deployment: deployment(1) });
     // Made by another app.
-    await receive("deployment", { deployment: deployment(2, 99) });
+    await receive("deployment", {
+      deployment: deployment(2, "other-app[bot]"),
+    });
     // A status processed before its deployment keeps its state.
     await receive("deployment_status", {
       deployment: deployment(3),
