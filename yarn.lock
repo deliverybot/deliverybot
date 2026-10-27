@@ -941,10 +941,10 @@ apex-commons@^0.8.0:
   resolved "https://registry.yarnpkg.com/apex-commons/-/apex-commons-0.8.2.tgz#5f93ea1f39ed56fb18aa96a09cd599f859699a3d"
   integrity sha512-XTaIc8S8YEJ6gjNMvnY2Eq5X8UM2IstpYaVSh7iERBUXIefJ8hjUR2nGhWr9guZuQpFvG9NFca9arhrDdYSgIQ==
 
-apexcharts@8.3.1:
-  version "8.3.1"
-  resolved "https://registry.yarnpkg.com/apexcharts/-/apexcharts-8.3.1.tgz#c79fbc4b93f214fd66289788cb60c1f9c7d87795"
-  integrity sha512-Z0LX1rPyXBe85082t9EqUWzikOdLy3Z184cvL+4uYS7J4kyLAzK50JBtAGKH5OU8Y6EOPqiH8BqjxjMIBF2+gw==
+apexcharts@8.4.0:
+  version "8.4.0"
+  resolved "https://registry.yarnpkg.com/apexcharts/-/apexcharts-8.4.0.tgz#dc82d1e1c9ebdb6edd601e41be92fa1f59b9f3ea"
+  integrity sha512-pPMkTOZG32qv1Dw3BwehojFoyq1ejUFOHZd6ufINvolUCBOU1tG5RTQ5j0KYv/+o14bytrcLEjkjYPfKu/PCJA==
   dependencies:
     apex-commons "^0.8.0"
 
@@ -2084,10 +2084,10 @@ no-case@^3.0.4:
     lower-case "^2.0.2"
     tslib "^2.0.3"
 
-nock@15.0.1:
-  version "15.0.1"
-  resolved "https://registry.yarnpkg.com/nock/-/nock-15.0.1.tgz#c19469f66d4c8a3907fda6d9d337e98f4c0c1879"
-  integrity sha512-Mjx5Xl4t9vP13eUZPWqwwpjjXNjvhUTo1qTdryVM3+7t6Z2w6WHZ9GVZk/zQ8Ym1vbmloWaglye3cloyHAJ8FA==
+nock@15.0.5:
+  version "15.0.5"
+  resolved "https://registry.yarnpkg.com/nock/-/nock-15.0.5.tgz#b838af589022c430550069ab1dbc63b7b60e6299"
+  integrity sha512-nVeuZGS2we1PyvqbW082Qj0EB4bd//6pZk/zOPDlaTPU72qcWrqfHg3kx9JcBcH1fJxwJHjmsfuQ4mss42su4w==
   dependencies:
     "@mswjs/interceptors" "^0.44.0"
 
