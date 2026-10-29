@@ -16,7 +16,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await db.pool.query(
-    "TRUNCATE kv, users, jobs, installations, repositories, deployments",
+    "TRUNCATE kv, users, repository_visits, jobs, installations, repositories, deployments",
   );
 });
 
@@ -179,6 +179,27 @@ describe("users", () => {
     expect(list.map((u) => u.username)).toEqual(["first", "second"]);
     expect(list[0].createdAt).toBeTruthy();
     expect(list[0].updatedAt).toBeTruthy();
+  });
+
+  test("lists repository visits, most recent first", async () => {
+    const users = db.services.userService();
+    await users.update({ id: "1", username: "octocat", email: "" });
+    await users.update({ id: "2", username: "other", email: "" });
+    await users.recordVisit("1", { id: 10, fullName: "octocat/a" });
+    await users.recordVisit("1", { id: 11, fullName: "octocat/b" });
+    await users.recordVisit("2", { id: 12, fullName: "other/c" });
+    // A renamed repository keeps one entry, under its new name.
+    await users.recordVisit("1", { id: 10, fullName: "octocat/renamed" });
+    const visits = await users.recentVisits("1", 5);
+    expect(visits.map((v) => [v.id, v.fullName])).toEqual([
+      [10, "octocat/renamed"],
+      [11, "octocat/b"],
+    ]);
+    expect(visits[0].visitedAt).toBeTruthy();
+    expect(await users.recentVisits("1", 1)).toHaveLength(1);
+    await users.delete("1");
+    expect(await users.recentVisits("1", 5)).toEqual([]);
+    expect(await users.recentVisits("2", 5)).toHaveLength(1);
   });
 });
 

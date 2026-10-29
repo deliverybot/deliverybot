@@ -1,5 +1,5 @@
 import * as factory from "../factory.js";
-import { app as deliverybot } from "../app.js";
+import { app as deliverybot, services } from "../app.js";
 
 const app = deliverybot.express;
 const json = "application/json; charset=utf-8";
@@ -33,6 +33,29 @@ describe("Deploy", () => {
     expect(response.get("location")).toBe(
       "/Codertocat/Hello-World/branch/main",
     );
+  });
+
+  it("remembers the repository as recently visited", async () => {
+    const users = services.userService();
+    await users.delete("1");
+    await factory
+      .request(app)
+      .get("/Codertocat/Hello-World")
+      .set("cookie", session);
+    const visits = await users.recentVisits("1", 5);
+    expect(visits.map((v) => [v.id, v.fullName])).toEqual([
+      [1, "Codertocat/Hello-World"],
+    ]);
+  });
+
+  it("doesn't count polling for updates as a visit", async () => {
+    const users = services.userService();
+    await users.delete("1");
+    await factory
+      .request(app)
+      .get("/Codertocat/Hello-World/branch/main?watch=true")
+      .set("cookie", session);
+    expect(await users.recentVisits("1", 5)).toEqual([]);
   });
 
   it("shows not found for a repository the app isn't installed on", async () => {

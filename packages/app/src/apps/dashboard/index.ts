@@ -3,13 +3,30 @@ import { Response } from "express";
 import { Dependencies } from "@deliverybot/core";
 import { Index, Repos, MySettings } from "./views.js";
 
-export function dashboard({ app, csrf, installationService }: Dependencies) {
+/** How many repositories the recent repositories sidebar lists. */
+const RECENT_REPOS = 5;
+
+export function dashboard({
+  app,
+  csrf,
+  installationService,
+  userService,
+}: Dependencies) {
   const store = installationService();
+
+  async function recents(req: AuthedRequest) {
+    const visits = await userService().recentVisits(req.user!.id, RECENT_REPOS);
+    return visits.map((v) => {
+      const [owner, repo] = v.fullName.split("/");
+      return { owner, repo };
+    });
+  }
 
   async function index(req: AuthedRequest, res: Response) {
     const data = await Index({
       user: req.user!,
       csrf: req.csrfToken(),
+      recents: await recents(req),
     });
     res.render("index", data);
   }
@@ -22,6 +39,7 @@ export function dashboard({ app, csrf, installationService }: Dependencies) {
       name,
       query: req.query,
       store,
+      recents: await recents(req),
     });
     return res.render("repos", data);
   }

@@ -55,6 +55,7 @@ export {
   UserService,
   UserStore,
   UserRecord,
+  RepositoryVisit,
   KVService,
   KVStore,
   Installation,

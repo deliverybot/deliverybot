@@ -131,6 +131,24 @@ describe("Dashboard", () => {
     expect(response.text).not.toContain('href="/Codertocat/old"');
   });
 
+  it("shows the repositories the user opened last", async () => {
+    const users = services.userService();
+    await users.delete("1");
+    await users.recordVisit("1", { id: 1, fullName: "Codertocat/first" });
+    await users.recordVisit("1", { id: 2, fullName: "Codertocat/second" });
+    await users.recordVisit("2", { id: 3, fullName: "other/theirs" });
+
+    const response = await get("/");
+    expect(response.status).toBe(200);
+    const first = response.text.indexOf('href="/Codertocat/first"');
+    const second = response.text.indexOf('href="/Codertocat/second"');
+    expect(second).toBeGreaterThan(-1);
+    expect(first).toBeGreaterThan(second);
+    expect(response.text).not.toContain('href="/other/theirs"');
+    await users.delete("1");
+    await users.delete("2");
+  });
+
   it("points to the setup tab when no repository is configured", async () => {
     const response = await get("/Codertocat");
     expect(response.status).toBe(200);

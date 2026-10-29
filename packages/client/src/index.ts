@@ -5,7 +5,6 @@ import "turbolinks";
 
 import { CommitsController } from "./controllers/commits";
 import { MetricsController } from "./controllers/metrics";
-import { RecentsController } from "./controllers/recents";
 import { FormController } from "./controllers/form";
 import { FilterController } from "./controllers/filter";
 import { SelectController } from "./controllers/select";
@@ -16,7 +15,6 @@ const application = Application.start();
 
 application.register("commits", CommitsController);
 application.register("metrics", MetricsController);
-application.register("recents", RecentsController);
 application.register("form", FormController);
 application.register("filter", FilterController);
 application.register("select", SelectController);

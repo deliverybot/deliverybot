@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { Dependencies } from "@deliverybot/core";
 import { WatchStore, EnvLockStore } from "@deliverybot/deploybot";
 import { AuthedRequest, authenticate, verifyRepo } from "../auth.js";
@@ -14,7 +14,13 @@ import { Promote, Deploy, SetLock } from "./commands.js";
 import { branch } from "../util.js";
 import { publishRepoUpdated } from "../watch.js";
 
-export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
+export function deploy({
+  kvService,
+  app,
+  csrf,
+  messageService,
+  userService,
+}: Dependencies) {
   const watchStore = new WatchStore(kvService);
   const lockStore = new EnvLockStore(kvService);
 
@@ -29,16 +35,41 @@ export function deploy({ kvService, app, csrf, messageService }: Dependencies) {
   const commitUrl = `${indexUrl}/o/:sha`;
   const promoteUrl = `${commitUrl}/promote`;
 
-  app.get(baseUrl, csrf, authenticate, verifyRepo, redirect);
-  app.get(indexUrl, csrf, authenticate, verifyRepo, index);
+  const view = [csrf, authenticate, verifyRepo, recordVisit];
+  app.get(baseUrl, ...view, redirect);
+  app.get(indexUrl, ...view, index);
   app.post(lockUrl, csrf, authenticate, verifyRepo, lock);
   app.post(unlockUrl, csrf, authenticate, verifyRepo, unlock);
   app.post(commitUrl, csrf, authenticate, verifyRepo, create);
   app.post(promoteUrl, csrf, authenticate, verifyRepo, promote);
-  app.get(configUrl, csrf, authenticate, verifyRepo, config);
-  app.get(metricsUrl, csrf, authenticate, verifyRepo, metrics);
-  app.get(deploymentsUrl, csrf, authenticate, verifyRepo, deployments);
-  app.get(environmentsUrl, csrf, authenticate, verifyRepo, environments);
+  app.get(configUrl, ...view, config);
+  app.get(metricsUrl, ...view, metrics);
+  app.get(deploymentsUrl, ...view, deployments);
+  app.get(environmentsUrl, ...view, environments);
+
+  // Remembers the repository for the dashboard's recent repositories, once
+  // the user is known to have access. Pages polling for updates don't count
+  // as a visit, and a failure here doesn't stop the page from loading.
+  async function recordVisit(
+    req: AuthedRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const polling =
+      req.query.watch || req.headers["accept"] === "application/json";
+    if (!polling) {
+      const { id, owner, repo } = req.user!.repo!;
+      try {
+        await userService().recordVisit(req.user!.id, {
+          id,
+          fullName: `${owner}/${repo}`,
+        });
+      } catch (error) {
+        (req as any).log.warn({ error }, "could not record repository visit");
+      }
+    }
+    next();
+  }
 
   async function environments(req: AuthedRequest, res: Response) {
     if (req.query.watch) {
