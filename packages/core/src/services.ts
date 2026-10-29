@@ -54,11 +54,27 @@ export interface UserRecord extends User {
   updatedAt: string;
 }
 
+/** A repository a user opened in the dashboard. */
+export interface RepositoryVisit {
+  /** GitHub's repository id, so a rename doesn't leave a stale entry. */
+  id: number;
+  fullName: string;
+  visitedAt: string;
+}
+
 export interface UserStore {
   update(user: User): Promise<User>;
+  /** Deletes the user and their repository visits. */
   delete(id: string): Promise<void>;
   /** Every user, most recently signed in first. */
   list(): Promise<UserRecord[]>;
+  /** Records that a user opened a repository, keeping its latest name. */
+  recordVisit(
+    userId: string,
+    repo: Omit<RepositoryVisit, "visitedAt">,
+  ): Promise<void>;
+  /** The repositories a user opened last, most recent first. */
+  recentVisits(userId: string, limit: number): Promise<RepositoryVisit[]>;
 }
 
 /**

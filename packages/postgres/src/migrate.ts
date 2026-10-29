@@ -132,6 +132,19 @@ export const migrations: string[] = [
   CREATE INDEX deployments_installation ON deployments (installation_id);
   CREATE INDEX deployments_repository ON deployments (repository_id);
   `,
+  `
+  -- Repositories each user opened in the dashboard, for its "Recent
+  -- repositories" sidebar.
+  CREATE TABLE repository_visits (
+    user_id text NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    repository_id bigint NOT NULL,
+    full_name text NOT NULL,
+    visited_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (user_id, repository_id)
+  );
+  CREATE INDEX repository_visits_recent
+    ON repository_visits (user_id, visited_at DESC);
+  `,
 ];
 
 // Arbitrary constant so concurrent processes don't migrate at the same time.

@@ -21,7 +21,17 @@ function Base(props: BaseProps & { title: string }) {
   };
 }
 
-export async function Index({ user, csrf }: BaseProps) {
+/** A repository in the recent repositories sidebar. */
+interface Recent {
+  owner: string;
+  repo: string;
+}
+
+interface IndexProps extends BaseProps {
+  recents: Recent[];
+}
+
+export async function Index({ user, csrf, recents }: IndexProps) {
   const installs = await queries.installs(user);
   return Base({
     user,
@@ -29,6 +39,7 @@ export async function Index({ user, csrf }: BaseProps) {
     title: "Deliverybot",
     installs,
     hasInstalls: installs.length > 0,
+    recents,
   });
 }
 
@@ -36,9 +47,17 @@ interface ReposProps extends BaseProps {
   name: string;
   query: any;
   store: InstallationStore;
+  recents: Recent[];
 }
 
-export async function Repos({ user, name, query, csrf, store }: ReposProps) {
+export async function Repos({
+  user,
+  name,
+  query,
+  csrf,
+  store,
+  recents,
+}: ReposProps) {
   function getPage(params: any) {
     const { before, after } = params;
     if (before) {
@@ -71,6 +90,7 @@ export async function Repos({ user, name, query, csrf, store }: ReposProps) {
     url: { path: `/${install.name}`, query: setup ? "tab=setup&" : "" },
     hasRepos: repos.length > 0,
     repos,
+    recents,
   });
 }
 

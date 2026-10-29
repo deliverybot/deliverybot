@@ -27,7 +27,7 @@
 </header>
 
 <main class="color-bg-default fill pt-3 pb-8">
-  <div class="content" data-controller="recents">
+  <div class="content">
     {{#if hasRepos}}
     <div class="d-md-flex flex-items-start mt-3">
       <div class="col-12 col-md-8 pr-md-4" data-repos-target="list">
@@ -38,8 +38,7 @@
           <a class="btn btn-sm float-right ml-2" target="_blank" href="{{setupUrl}}">Add deploy.yml</a>
           {{/if}}
           <h4>
-            <a data-name="{{owner}}/{{repo}}" data-action="click->recents#addRecent"
-              href="/{{owner}}/{{repo}}"><strong>{{owner}}&nbsp;/&nbsp;{{repo}}</strong></a>
+            <a href="/{{owner}}/{{repo}}"><strong>{{owner}}&nbsp;/&nbsp;{{repo}}</strong></a>
           </h4>
           {{#if description}}
           <p>{{description}}</p>
@@ -57,10 +56,10 @@
         {{> pagination}}
       </div>
       <div class="col-12 col-md-4 mt-4 mt-md-0">
-        <div class="Box mb-4" data-controller="recents">
+        <div class="Box mb-4">
           <div class="Box-body">
             <h4 class="mb-3">Recent repositories</h4>
-            <div data-recents-target="recents"></div>
+            {{> recent_repos}}
           </div>
         </div>
         <div class="Box">
