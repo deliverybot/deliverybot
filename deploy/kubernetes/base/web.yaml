@@ -16,6 +16,18 @@ spec:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
+      # Prefer putting web pods on different nodes, so losing one node leaves
+      # the others serving. Only the current ReplicaSet counts, so a rollout
+      # isn't skewed by the pods it is replacing.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: web
+          matchLabelKeys:
+            - pod-template-hash
       # Migrations take a Postgres advisory lock, so every pod can run them
       # safely before it starts.
       initContainers:
@@ -81,6 +93,21 @@ spec:
               memory: 192Mi
             limits:
               memory: 512Mi
+---
+# Node drains (cluster upgrades) evict web pods one at a time, waiting for a
+# replacement to be ready before taking the next. With a single pod, as in
+# staging, the drain still goes ahead.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web
+spec:
+  maxUnavailable: 1
+  # A pod that isn't ready isn't serving, so don't let it hold up a drain.
+  unhealthyPodEvictionPolicy: AlwaysAllow
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: web
 ---
 apiVersion: v1
 kind: Service

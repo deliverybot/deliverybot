@@ -17,3 +17,13 @@ patches:
       - op: replace
         path: /spec/hostnames/0
         value: staging.deliverybot.dev
+  # CloudNativePG's disruption budget keeps a single-instance database from
+  # being evicted at all, which blocks draining its node during cluster
+  # upgrades. Staging can take the short outage while the pod moves.
+  - target:
+      kind: Cluster
+      name: deliverybot-db
+    patch: |
+      - op: add
+        path: /spec/enablePDB
+        value: false

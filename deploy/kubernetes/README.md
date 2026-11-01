@@ -130,6 +130,17 @@ optionally with a `recoveryTarget` time, and point the app's secret at it. Use
 a different `serverName` for the new cluster so it doesn't archive over the
 old one's WAL.
 
+## Node maintenance
+
+Cluster upgrades drain nodes one by one. The `web` PodDisruptionBudget lets a
+drain evict one web pod at a time, and the pods prefer different nodes, so
+production keeps serving. The single `worker` has no budget: its jobs are
+retried when it moves. CloudNativePG adds its own budgets to the database and
+switches the production primary over to the replica before its node is
+drained. Staging has one database instance, which those budgets would never
+let go, so staging turns them off (`enablePDB: false`) and accepts a short
+database outage instead.
+
 ## Trying it locally
 
 ```sh
