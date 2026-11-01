@@ -71,6 +71,14 @@ spec:
                 secretKeyRef:
                   name: deliverybot-db-app
                   key: uri
+          # On shutdown the server stops taking connections right away, but
+          # the gateway keeps sending requests until it sees the pod leave the
+          # Service's endpoints. Waiting a few seconds first lets it catch up,
+          # so rollouts and drains don't drop requests.
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: 5
           readinessProbe:
             httpGet:
               path: /healthz
