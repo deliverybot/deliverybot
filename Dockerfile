@@ -3,7 +3,7 @@
 #   worker:  node packages/run/lib/worker.js
 #   migrate: node packages/postgres/lib/cli.js
 
-FROM node:22.23.3-bookworm-slim AS base
+FROM node:22.23.4-bookworm-slim AS base
 WORKDIR /app
 
 # Only the package manifests, so the dependency layers below stay cached until
