@@ -30,7 +30,7 @@
     "@types/express-session": "1.19.0",
     "@types/hbs": "4.0.5",
     "@types/supertest": "7.2.1",
-    "supertest": "7.3.1",
+    "supertest": "7.3.2",
     "typescript": "5.6.3"
   },
   "description": "Controls and configures deployments using the GitHub API.",
